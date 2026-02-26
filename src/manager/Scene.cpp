@@ -1,0 +1,146 @@
+//
+// Created by Weckest on 2026-02-25.
+//
+
+#include "Scene.h"
+
+#include "AssetManager.h"
+
+Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int windowHeight) : name(sceneName) {
+
+    //load our map
+    world.getMap().load(mapPath, TextureManager::load("../assets/spritesheet.png"));
+    for (auto& collider: world.getMap().colliders) {
+        auto& e = world.createEntity();
+        e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
+        auto& c = e.addComponent<Collider>("wall");
+        c.rect.x = collider.rect.x;
+        c.rect.y = collider.rect.y;
+        c.rect.w = collider.rect.w;
+        c.rect.h = collider.rect.h;
+
+        //just to have a visual of the colliders
+        // SDL_Texture* tex = TextureManager::load("../assets/spritesheet.png");
+        // SDL_FRect tileSrc {0, 32, 32, 32};
+        // SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
+        // e.addComponent<Sprite>(tex, tileSrc, tileDst);
+    }
+
+    for (auto& item: world.getMap().items) {
+        auto& e = world.createEntity();
+        e.addComponent<Transform>(Vector2D(item.rect.x, item.rect.y), 0.0f, 1.0f);
+        auto& c = e.addComponent<Collider>("item");
+        c.rect.x = item.rect.x;
+        c.rect.y = item.rect.y;
+        c.rect.w = item.rect.w;
+        c.rect.h = item.rect.h;
+
+        //just to have a visual of the coins
+        SDL_Texture* tex = TextureManager::load("../assets/coin.png");
+        SDL_FRect tileSrc {0, 0, 32, 32};
+        SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
+        e.addComponent<Sprite>(tex, tileSrc, tileDst);
+    }
+
+    for (auto& t: world.getMap().spawners) {
+        auto& e(world.createEntity());
+        e.addComponent<TimedSpawner>(2.0f, [this, t] {
+            //create our projectile (bird)
+            auto& e(world.createDeferredEntity());
+            e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
+            e.addComponent<Velocity>(Vector2D(0.0f,-1.0f), 50.0f);
+
+            auto& anim = AssetManager::getAnimation("enemy");
+            e.addComponent<Animation>(anim);
+
+            SDL_Texture* tex = TextureManager::load("../assets/animations/bird_anim.png");
+            SDL_FRect src = {0, 0, 32, 32};
+            SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
+            e.addComponent<Sprite>(tex, src, dst);
+
+            auto& c = e.addComponent<Collider>("enemy");
+            c.rect.w = dst.w;
+            c.rect.h = dst.h;;
+
+            e.addComponent<EnemyTag>();
+        });
+    }
+
+    // player = new GameObject("../assets/ball.png", 0, 0);
+
+    //add entities
+
+    auto& cam = world.createEntity();
+    SDL_FRect camView{};
+    camView.x = 0;
+    camView.y = 0;
+    camView.w = windowWidth;
+    camView.h = windowHeight;
+    cam.addComponent<Camera>(camView, world.getMap().width * 32.0f, world.getMap().height * 32.0f);
+
+    auto& item(world.createEntity());
+    auto& itemTransform = item.addComponent<Transform>(Vector2D(100, 200), 0.0f, 1.0f);
+
+    SDL_Texture* itemTex = TextureManager::load("../assets/coin.png");
+    SDL_FRect itemRect{0, 0, 32, 32};
+
+    SDL_FRect itemDest {itemTransform.position.x, itemTransform.position.y, 32, 32};
+    item.addComponent<Sprite>(itemTex, itemRect, itemDest);
+
+    auto& itemCollider = item.addComponent<Collider>("item");
+    itemCollider.rect.w = itemDest.w;
+    itemCollider.rect.h = itemDest.h;
+
+
+    auto& player(world.createEntity());
+    auto& playerTransform = player.addComponent<Transform>(Vector2D(world.getMap().width * 32 / 2,world.getMap().height * 32 / 2), 0.0f, 0.0f);
+
+    auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0.0f,0.0f), 120.0f);
+
+    Animation anim = AssetManager::getAnimation("player");
+    player.addComponent<Animation>(anim);
+
+    SDL_Texture* tex = TextureManager::load("../assets/animations/spritesheet.png");
+    SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
+    SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64, 64};
+    player.addComponent<Sprite>(tex, playerSrc, playerDst);
+
+    auto& playerCollider = player.addComponent<Collider>("player");
+    playerCollider.rect.w = playerDst.w;
+    playerCollider.rect.h = playerDst.h;
+
+    auto& playerGun = player.addComponent<TimedSpawner>(0.25f, [this, &player] {
+        auto& e(world.createDeferredEntity());
+        auto& t = player.getComponent<Transform>();
+        auto& v = player.getComponent<Velocity>();
+        auto& s = player.getComponent<Sprite>();
+        std::cout << "pew pew" << std::endl;
+        e.addComponent<Transform>(Vector2D(t.position.x + s.dst.w / 2, t.position.y + s.dst.h / 2), 0.0f, 1.0f);
+        if (v.direction == Vector2D(0.0f,0.0f)) {
+            std::cout << "player not moving" << std::endl;
+            e.addComponent<Velocity>(Vector2D(1.0f, 0.0f), 200.0f);
+        } else {
+            e.addComponent<Velocity>(v.direction, 200.0f);
+        }
+
+        SDL_Texture* tex = TextureManager::load("../assets/bubble.png");
+        SDL_FRect src = {0, 0, 32, 32};
+        SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
+        e.addComponent<Sprite>(tex, src, dst);
+
+        auto& c = e.addComponent<Collider>("bullet");
+        c.rect.w = dst.w;
+        c.rect.h = dst.h;
+        if (e.hasComponent<Transform>() && e.hasComponent<Collider>() && e.hasComponent<Sprite>() && e.hasComponent<Velocity>()) {
+            std::cout << "Bullet good" << std::endl;
+        }
+        e.addComponent<ProjectileTag>();
+    });
+
+    player.addComponent<PlayerTag>();
+
+    //add scene state
+    auto& state(world.createEntity());
+    state.addComponent<SceneState>();
+
+}
