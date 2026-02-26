@@ -114,10 +114,8 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
         auto& t = player.getComponent<Transform>();
         auto& v = player.getComponent<Velocity>();
         auto& s = player.getComponent<Sprite>();
-        std::cout << "pew pew" << std::endl;
         e.addComponent<Transform>(Vector2D(t.position.x + s.dst.w / 2, t.position.y + s.dst.h / 2), 0.0f, 1.0f);
         if (v.direction == Vector2D(0.0f,0.0f)) {
-            std::cout << "player not moving" << std::endl;
             e.addComponent<Velocity>(Vector2D(1.0f, 0.0f), 200.0f);
         } else {
             e.addComponent<Velocity>(v.direction, 200.0f);
@@ -131,9 +129,6 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
         auto& c = e.addComponent<Collider>("bullet");
         c.rect.w = dst.w;
         c.rect.h = dst.h;
-        if (e.hasComponent<Transform>() && e.hasComponent<Collider>() && e.hasComponent<Sprite>() && e.hasComponent<Velocity>()) {
-            std::cout << "Bullet good" << std::endl;
-        }
         e.addComponent<ProjectileTag>();
     });
 

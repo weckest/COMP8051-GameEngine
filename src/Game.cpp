@@ -68,17 +68,16 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     AssetManager::loadAnimation("player", "../assets/animations/bunny_animations.xml");
     AssetManager::loadAnimation("enemy", "../assets/animations/bird_animations.xml");
 
-    std::cout << "Animation loaded..." << std::endl;
+    std::cout << "Animations loaded..." << std::endl;
+
     //load scenes
     sceneManager.loadScene("level1", "../assets/map.tmx", width, height);
     sceneManager.loadScene("level2", "../assets/map2/map2.tmx", width, height);
 
-    std::cout << "Scene loaded..." << std::endl;
+    std::cout << "Scenes loaded..." << std::endl;
 
     //start level
     sceneManager.changeSceneDeferred("level1");
-
-    std::cout << "Scene changed..." << std::endl;
 
     //resolve scene callback
     onSceneChangeRequest = [this](std::string sceneName) {
@@ -98,8 +97,6 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
         sceneManager.changeSceneDeferred(sceneName);
     };
-
-    std::cout << "Scene changed..." << std::endl;
 
 }
 
