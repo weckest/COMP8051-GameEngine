@@ -14,6 +14,7 @@ class World;
 class CollisionSystem {
 public:
     void update(World& world);
+    static std::vector<Entity*> getAllWithin(World& world, Entity& entity, float distance);
 private:
     std::vector<Entity*> queryCollidables(const std::vector<std::unique_ptr<Entity>>& entities);
 };

@@ -134,7 +134,7 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
         auto& c = e.addComponent<Collider>("bullet");
         c.rect.w = dst.w;
         c.rect.h = dst.h;
-        e.addComponent<ProjectileTag>(50.0f);
+        e.addComponent<ProjectileTag>(50.0f, 100.0f);
     });
 
     player.addComponent<PlayerTag>();

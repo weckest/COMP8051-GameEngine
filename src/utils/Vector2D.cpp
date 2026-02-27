@@ -7,7 +7,7 @@
 #include <cmath>
 
 Vector2D &Vector2D::normalize() {
-    float length = std::sqrt(x * x + y * y);
+    float length = this->length();
 
     if (length > 0) {
         this->x /= length;
@@ -15,6 +15,14 @@ Vector2D &Vector2D::normalize() {
     }
 
     return *this;
+}
+
+float Vector2D::length() const {
+    return std::sqrt(x * x + y * y);
+}
+
+float Vector2D::dot(const Vector2D &vector) const {
+    return (x * vector.x + y * vector.y);
 }
 
 Vector2D Vector2D::operator*(float scalar) const {

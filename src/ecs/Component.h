@@ -67,6 +67,7 @@ struct SceneState {
 struct PlayerTag{};
 struct ProjectileTag {
     float damage{};
+    float aoe{};
 };
 struct EnemyTag {
     float health{};

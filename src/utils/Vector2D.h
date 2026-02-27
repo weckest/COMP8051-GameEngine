@@ -19,6 +19,10 @@ public:
 
     Vector2D& normalize();
 
+    float length() const;
+
+    float dot(const Vector2D& vector) const;
+
     //member operator function
     //Vector2D has to be on the left and float on the right
     Vector2D operator*(float scalar) const;

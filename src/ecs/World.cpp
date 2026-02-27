@@ -119,31 +119,48 @@ World::World() {
             //make the coin
 
             auto& bTag = bullet->getComponent<ProjectileTag>();
-            auto& eTag = enemy->getComponent<EnemyTag>();
+            float distance = 5.0f;
+            std::vector<Entity*> entities = CollisionSystem::getAllWithin(*this, *bullet, bTag.aoe);
+            std::cout << "Enemies in AOE: " << entities.size() << std::endl;
+            for (auto& e: entities) {
+                auto& eTag = enemy->getComponent<EnemyTag>();
 
-            eTag.health -= bTag.damage;
+                auto& et = e->getComponent<Transform>();
+                std::cout << et.position.x << " " << et.position.y << " " << (e == enemy) << std::endl;
 
-            std::cout << eTag.health << std::endl;
+                if (e != enemy) {
+                    float distanceToEnemy = (bullet->getComponent<Transform>().position - e->getComponent<Transform>().position).length();
+                    float bulletDamage = bTag.damage * (bTag.aoe - distanceToEnemy) / bTag.aoe;
+                    eTag.health -= bulletDamage;
+                    std::cout << distanceToEnemy << " " << bulletDamage << std::endl;
+                } else {
+                    eTag.health -= bTag.damage;
+                    std::cout << "direct hit" << std::endl;
+                }
 
-            if (eTag.health <= 0) {
-                auto& e = this->createDeferredEntity();
-                auto& t = enemy->getComponent<Transform>();
-                e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
-                auto& c = e.addComponent<Collider>("item");
-                c.rect.x = t.position.x;
-                c.rect.y = t.position.y;
-                c.rect.w = 32;
-                c.rect.h = 32;
 
-                //adding texture to the coins
-                SDL_Texture* tex = TextureManager::load("../assets/coin.png");
-                SDL_FRect tileSrc {0, 0, 32, 32};
-                SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-                e.addComponent<Sprite>(tex, tileSrc, tileDst);
-                e.addComponent<ItemTag>();
 
-                enemy->destroy();
+                if (eTag.health <= 0) {
+                    auto& bullet = this->createDeferredEntity();
+                    auto& t = enemy->getComponent<Transform>();
+                    bullet.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
+                    auto& c = bullet.addComponent<Collider>("item");
+                    c.rect.x = t.position.x;
+                    c.rect.y = t.position.y;
+                    c.rect.w = 32;
+                    c.rect.h = 32;
+
+                    //adding texture to the coins
+                    SDL_Texture* tex = TextureManager::load("../assets/coin.png");
+                    SDL_FRect tileSrc {0, 0, 32, 32};
+                    SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
+                    bullet.addComponent<Sprite>(tex, tileSrc, tileDst);
+                    bullet.addComponent<ItemTag>();
+
+                    enemy->destroy();
+                }
             }
+
 
             bullet->destroy();
         }
