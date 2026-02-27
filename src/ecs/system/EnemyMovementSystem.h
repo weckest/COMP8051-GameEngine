@@ -37,7 +37,9 @@ public:
                 //track previous frames position
                 t.oldPosition = t.position;
 
-                Vector2D directionVec = player->getComponent<Transform>().position - t.position;
+                v.direction = player->getComponent<Transform>().position - t.position;
+
+                Vector2D directionVec = v.direction;
                 //normalizing
                 directionVec.normalize();
 

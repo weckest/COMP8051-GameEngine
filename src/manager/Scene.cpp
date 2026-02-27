@@ -54,7 +54,7 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
             auto& anim = AssetManager::getAnimation("enemy");
             e.addComponent<Animation>(anim);
 
-            SDL_Texture* tex = TextureManager::load("../assets/animations/bird_anim.png");
+            SDL_Texture* tex = TextureManager::load("../assets/animations/fox_anim.png");
             SDL_FRect src = {0, 0, 32, 32};
             SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
             e.addComponent<Sprite>(tex, src, dst);
@@ -63,7 +63,7 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
             c.rect.w = dst.w;
             c.rect.h = dst.h;;
 
-            e.addComponent<EnemyTag>();
+            e.addComponent<EnemyTag>(100.0f);
         });
     }
 
@@ -134,7 +134,7 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
         auto& c = e.addComponent<Collider>("bullet");
         c.rect.w = dst.w;
         c.rect.h = dst.h;
-        e.addComponent<ProjectileTag>();
+        e.addComponent<ProjectileTag>(50.0f);
     });
 
     player.addComponent<PlayerTag>();

@@ -35,7 +35,7 @@ public:
                 } else if (velocity.direction.y < 0.0f) {
                     newClip = "walk_up";
                 } else {
-                    newClip = "idle_right";
+                    newClip = "idle_down";
                 }
 
                 //check if the animation has switched

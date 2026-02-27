@@ -21,7 +21,8 @@ public:
 
                 i.time += dt;
                 float speed = 2.0f;
-                t.position.y = t.position.y + (std::sin(i.time * speed) - std::sin((i.time - dt)  * speed)) * 5.0f;
+                float distance = 5.0f;
+                t.position.y = t.position.y + (std::sin(i.time * speed) - std::sin((i.time - dt)  * speed)) * distance;
             }
         }
     }

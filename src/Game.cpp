@@ -66,7 +66,7 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
     //load assets
     AssetManager::loadAnimation("player", "../assets/animations/bunny_animations.xml");
-    AssetManager::loadAnimation("enemy", "../assets/animations/bird_animations.xml");
+    AssetManager::loadAnimation("enemy", "../assets/animations/fox_animations.xml");
 
     std::cout << "Animations loaded..." << std::endl;
 
