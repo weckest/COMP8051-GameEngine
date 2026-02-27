@@ -34,10 +34,6 @@ void CollisionSystem::update(World &world) {
             auto entityB = collidables[j];
             auto& colliderB = entityB->getComponent<Collider>();
             if (Collision::AABB(colliderA, colliderB)) {
-                if ((colliderA.tag == "bullet" && colliderB.tag == "enemy") ||
-                    (colliderA.tag == "enemy" && colliderB.tag == "bullet")) {
-                        std::cout << "Bullet-Enemy AABB detected\n";
-                    }
                 world.getEventManager().emit(CollisionEvent{entityA, entityB});
             }
         }

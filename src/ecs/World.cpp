@@ -122,21 +122,17 @@ World::World() {
             auto& bTag = bullet->getComponent<ProjectileTag>();
             float distance = 5.0f;
             std::vector<Entity*> entities = CollisionSystem::getAllWithin(*this, *bullet, bTag.aoe);
-            std::cout << "Enemies in AOE: " << entities.size() << std::endl;
             for (auto& e: entities) {
                 auto& eTag = enemy->getComponent<EnemyTag>();
 
                 auto& et = e->getComponent<Transform>();
-                std::cout << et.position.x << " " << et.position.y << " " << (e == enemy) << std::endl;
-
+                
                 if (e != enemy) {
                     float distanceToEnemy = (bullet->getComponent<Transform>().position - e->getComponent<Transform>().position).length();
                     float bulletDamage = bTag.damage * (bTag.aoe - distanceToEnemy) / bTag.aoe;
                     eTag.health -= bulletDamage;
-                    std::cout << distanceToEnemy << " " << bulletDamage << std::endl;
                 } else {
                     eTag.health -= bTag.damage;
-                    std::cout << "direct hit" << std::endl;
                 }
 
 

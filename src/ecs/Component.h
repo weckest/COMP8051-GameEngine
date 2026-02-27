@@ -64,7 +64,14 @@ struct SceneState {
     int coinsCollected = 0;
 };
 
-struct PlayerTag{};
+struct PlayerTag {
+    float damageModifier = 1;
+    float speedModifier = 1;
+    float fireRateModifier = 1;
+    float playerSizeModifier = 1;
+    float projectileSizeModifier = 1;
+    float aoeModifier = 1;
+};
 struct EffectTag{};
 struct ProjectileTag {
     float damage{};
@@ -72,6 +79,7 @@ struct ProjectileTag {
 };
 struct EnemyTag {
     float health{};
+    float speedModifier = 1;
 };
 struct ItemTag {
     float time;

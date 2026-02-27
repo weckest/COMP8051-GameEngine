@@ -93,16 +93,17 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
 
 
     auto& player(world.createEntity());
+    auto& pt = player.addComponent<PlayerTag>();
     auto& playerTransform = player.addComponent<Transform>(Vector2D(world.getMap().width * 32 / 2,world.getMap().height * 32 / 2), 0.0f, 0.0f);
 
-    auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0.0f,0.0f), 120.0f);
+    auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0.0f,0.0f), 120.0f * pt.speedModifier);
 
     Animation anim = AssetManager::getAnimation("player");
     player.addComponent<Animation>(anim);
 
     SDL_Texture* tex = TextureManager::load("../assets/animations/spritesheet.png");
     SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
-    SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64, 64};
+    SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64 * pt.playerSizeModifier, 64 * pt.playerSizeModifier};
     player.addComponent<Sprite>(tex, playerSrc, playerDst);
 
     auto& playerCollider = player.addComponent<Collider>("player");
@@ -110,15 +111,16 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
     playerCollider.rect.h = playerDst.h;
 
     //make the player shoot
-    auto& playerGun = player.addComponent<TimedSpawner>(0.25f, [this, &player] {
+    auto& playerGun = player.addComponent<TimedSpawner>(0.25f * 1 + (1 - pt.fireRateModifier),[this, &player, pt] {
         auto& e(world.createDeferredEntity());
+
         auto& t = player.getComponent<Transform>();
         auto& v = player.getComponent<Velocity>();
         auto& s = player.getComponent<Sprite>();
 
         SDL_Texture* tex = TextureManager::load("../assets/bubble.png");
         SDL_FRect src = {0, 0, 32, 32};
-        SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
+        SDL_FRect dst = {t.position.x, t.position.y, src.w * pt.projectileSizeModifier, src.h * pt.projectileSizeModifier};
         e.addComponent<Sprite>(tex, src, dst);
 
         //set the initial position of bullet
@@ -134,10 +136,10 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
         auto& c = e.addComponent<Collider>("bullet");
         c.rect.w = dst.w;
         c.rect.h = dst.h;
-        e.addComponent<ProjectileTag>(50.0f, 100.0f);
+        e.addComponent<ProjectileTag>(50.0f * pt.damageModifier, 100.0f * pt.aoeModifier);
     });
 
-    player.addComponent<PlayerTag>();
+
 
     //add scene state
     auto& state(world.createEntity());
