@@ -35,7 +35,7 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
         c.rect.w = item.rect.w;
         c.rect.h = item.rect.h;
 
-        //just to have a visual of the coins
+        //adding texture to the coins
         SDL_Texture* tex = TextureManager::load("../assets/coin.png");
         SDL_FRect tileSrc {0, 0, 32, 32};
         SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
@@ -44,7 +44,7 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
 
     for (auto& t: world.getMap().spawners) {
         auto& e(world.createEntity());
-        e.addComponent<TimedSpawner>(2.0f, [this, t] {
+        e.addComponent<TimedSpawner>(4.0f, [this, t] {
             //create our projectile (bird)
             auto& e(world.createDeferredEntity());
             e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
@@ -109,22 +109,27 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
     playerCollider.rect.w = playerDst.w;
     playerCollider.rect.h = playerDst.h;
 
+    //make the player shoot
     auto& playerGun = player.addComponent<TimedSpawner>(0.25f, [this, &player] {
         auto& e(world.createDeferredEntity());
         auto& t = player.getComponent<Transform>();
         auto& v = player.getComponent<Velocity>();
         auto& s = player.getComponent<Sprite>();
-        e.addComponent<Transform>(Vector2D(t.position.x + s.dst.w / 2, t.position.y + s.dst.h / 2), 0.0f, 1.0f);
+
+        SDL_Texture* tex = TextureManager::load("../assets/bubble.png");
+        SDL_FRect src = {0, 0, 32, 32};
+        SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
+        e.addComponent<Sprite>(tex, src, dst);
+
+        //set the initial position of bullet
+        e.addComponent<Transform>(Vector2D(t.position.x + s.dst.w / 2 - dst.w / 2, t.position.y + s.dst.h / 2 - dst.h / 2), 0.0f, 1.0f);
         if (v.direction == Vector2D(0.0f,0.0f)) {
             e.addComponent<Velocity>(Vector2D(1.0f, 0.0f), 200.0f);
         } else {
             e.addComponent<Velocity>(v.direction, 200.0f);
         }
 
-        SDL_Texture* tex = TextureManager::load("../assets/bubble.png");
-        SDL_FRect src = {0, 0, 32, 32};
-        SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
-        e.addComponent<Sprite>(tex, src, dst);
+
 
         auto& c = e.addComponent<Collider>("bullet");
         c.rect.w = dst.w;
