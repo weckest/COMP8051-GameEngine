@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Game.h"
+#include "manager/AssetManager.h"
 
 void callback(const CollisionEvent& collision) {
     if (collision.entityA == nullptr || collision.entityB == nullptr) return;
@@ -160,6 +161,23 @@ World::World() {
                     enemy->destroy();
                 }
             }
+
+            //make explosion where the bullet hit the enemy
+            auto& explosion = this->createDeferredEntity();
+            auto& bt = bullet->getComponent<Transform>();
+            explosion.addComponent<Transform>(bt.position);
+
+            auto& a = AssetManager::getAnimation("explosion");
+            auto& animation = explosion.addComponent<Animation>(a);
+            animation.speed = 0.075f;
+
+            SDL_Texture* tex = TextureManager::load("../assets/animations/explosion.png");
+            SDL_FRect src {0, 0, 85.33, 85.33};
+            SDL_FRect dst {bt.position.x, bt.position.y, bTag.aoe, bTag.aoe};
+            explosion.addComponent<Sprite>(tex, src, dst);
+
+            explosion.addComponent<EffectTag>();
+
 
 
             bullet->destroy();

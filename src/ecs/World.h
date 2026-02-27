@@ -13,6 +13,7 @@
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "DestructionSystem.h"
+#include "EffectSystem.h"
 #include "EnemyMovementSystem.h"
 #include "Entity.h"
 #include "EventManager.h"
@@ -38,6 +39,7 @@ class World {
     DestructionSystem destructionSystem;
     EnemyMovementSystem enemyMovementSystem;
     BobbingSystem bobbingSystem;
+    EffectSystem effectSystem;
     EventManager eventManager;
 
 
@@ -50,6 +52,7 @@ public:
         enemyMovementSystem.update(entities, dt);
         spawnTimerSystem.update(entities, dt);
         collisionSystem.update(*this);
+        effectSystem.update(entities, dt);
         animationSystem.update(entities, dt);
         cameraSystem.update(entities);
         destructionSystem.update(entities);
