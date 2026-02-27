@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "AnimationSystem.h"
+#include "BobbingSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "DestructionSystem.h"
@@ -36,6 +37,7 @@ class World {
     SpawnTimerSystem spawnTimerSystem;
     DestructionSystem destructionSystem;
     EnemyMovementSystem enemyMovementSystem;
+    BobbingSystem bobbingSystem;
     EventManager eventManager;
 
 
@@ -43,6 +45,7 @@ public:
     World();
     void update(float dt, SDL_Event& event) {
         keyboardInputSystem.update(entities, event);
+        bobbingSystem.update(entities, dt);
         movementSystem.update(entities, dt);
         enemyMovementSystem.update(entities, dt);
         spawnTimerSystem.update(entities, dt);

@@ -40,6 +40,7 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
         SDL_FRect tileSrc {0, 0, 32, 32};
         SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
         e.addComponent<Sprite>(tex, tileSrc, tileDst);
+        e.addComponent<ItemTag>();
     }
 
     for (auto& t: world.getMap().spawners) {
@@ -69,7 +70,6 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
     // player = new GameObject("../assets/ball.png", 0, 0);
 
     //add entities
-
     auto& cam = world.createEntity();
     SDL_FRect camView{};
     camView.x = 0;
@@ -142,5 +142,7 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
     //add scene state
     auto& state(world.createEntity());
     state.addComponent<SceneState>();
+
+    //subscribe to events
 
 }

@@ -62,11 +62,13 @@ struct TimedSpawner {
 //out game state, might have multiple scenes
 struct SceneState {
     int coinsCollected = 0;
-
 };
 
 struct PlayerTag{};
 struct ProjectileTag {};
 struct EnemyTag {};
+struct ItemTag {
+    float time;
+};
 
 #endif //INC_8051TUTORIAL_COMPONENT_H

@@ -131,13 +131,14 @@ World::World() {
             SDL_FRect tileSrc {0, 0, 32, 32};
             SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
             e.addComponent<Sprite>(tex, tileSrc, tileDst);
+            e.addComponent<ItemTag>();
 
             bullet->destroy();
             enemy->destroy();
         }
 
         bullet = nullptr;
-        wall = nullptr;
+        enemy = nullptr;
     });
 
     // eventManager.subscribe(callback);
