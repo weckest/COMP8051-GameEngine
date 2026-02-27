@@ -46,11 +46,22 @@ void CollisionSystem::update(World &world) {
 
 std::vector<Entity*> CollisionSystem::getAllWithin(World &world, Entity &entity, float distance) {
     std::vector<Entity*> collidables;
-    if (!entity.hasComponent<Transform>()) return collidables;
+    if (!entity.hasComponent<Transform>() && !entity.hasComponent<Sprite>()) return collidables;
+
+    auto& et = entity.getComponent<Transform>();
+    auto& es = entity.getComponent<Sprite>();
+    Vector2D eTemp = et.position;
+    eTemp.x += es.dst.w;
+    eTemp.y += es.dst.h;
 
     for (auto& e: world.getEntities()) {
-        if (e->hasComponent<Transform>() && e->hasComponent<EnemyTag>()) {
-            if ((e->getComponent<Transform>().position - entity.getComponent<Transform>().position).length() <= distance) {
+        if (e->hasComponent<Transform>() && e->hasComponent<EnemyTag>() && e->hasComponent<Sprite>()) {
+            auto& t = e->getComponent<Transform>();
+            auto& s = e->getComponent<Sprite>();
+            Vector2D temp = t.position;
+            temp.x += s.dst.w;
+            temp.y += s.dst.h;
+            if ((temp - eTemp).length() <= distance) {
                 collidables.push_back(e.get());
             }
         }

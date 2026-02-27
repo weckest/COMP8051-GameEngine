@@ -165,7 +165,10 @@ World::World() {
             //make explosion where the bullet hit the enemy
             auto& explosion = this->createDeferredEntity();
             auto& bt = bullet->getComponent<Transform>();
-            explosion.addComponent<Transform>(bt.position);
+            auto& bs = bullet->getComponent<Sprite>();
+            auto& t = explosion.addComponent<Transform>(bt.position);
+            t.position.x = bt.position.x - bs.dst.w / 2 - (bTag.aoe / 2 - bs.dst.w / 2);
+            t.position.y = bt.position.y - bs.dst.h / 2 - (bTag.aoe / 2 - bs.dst.h / 2);
 
             auto& a = AssetManager::getAnimation("explosion");
             auto& animation = explosion.addComponent<Animation>(a);
@@ -173,7 +176,7 @@ World::World() {
 
             SDL_Texture* tex = TextureManager::load("../assets/animations/explosion.png");
             SDL_FRect src {0, 0, 85.33, 85.33};
-            SDL_FRect dst {bt.position.x, bt.position.y, bTag.aoe, bTag.aoe};
+            SDL_FRect dst {t.position.x, t.position.y, bTag.aoe, bTag.aoe};
             explosion.addComponent<Sprite>(tex, src, dst);
 
             explosion.addComponent<EffectTag>();
