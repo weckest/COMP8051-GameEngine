@@ -57,9 +57,10 @@ target_link_libraries(8051Tutorial
 )
 
 if (APPLE)
-    set_target_properties(8051Tutorial PROPERTIES
-            BUILD_RPATH "${SDL3_LIB_DIR}"
-    )
+    set(CMAKE_PREFIX_PATH "/opt/homebrew/opt/sdl3")
+    find_package(SDL3 REQUIRED)
+    find_package(SDL3_image REQUIRED)
+
 
     target_compile_options(8051Tutorial PRIVATE -Wno-narrowing)
 endif ()
