@@ -18,7 +18,7 @@ set(SRC_FILES
         src/manager/Scene.cpp
 )
 
-# ✅ ALWAYS create the executable first
+# ALWAYS create the executable first
 add_executable(8051Tutorial ${SRC_FILES})
 
 # =========================
@@ -29,24 +29,28 @@ if (WIN32)
     set(SDL3_SDK_ROOT "${CMAKE_SOURCE_DIR}/SDL3_SDK_WIN32")
     set(SDL3_IMAGE_PATH "${CMAKE_SOURCE_DIR}/SDL3_Image")
 
-    include_directories(
+    target_include_directories(8051Tutorial PRIVATE
             ${SDL3_SDK_ROOT}/include
             ${SDL3_IMAGE_PATH}/include
     )
 
-    link_directories(
+    target_link_directories(8051Tutorial PRIVATE
             ${SDL3_SDK_ROOT}/lib
             ${SDL3_IMAGE_PATH}/lib
     )
 
-    file(GLOB SDL3_DLLS "${SDL3_SDK_ROOT}/bin/*.dll")
+    file(GLOB SDL3_DLLS "${SDL3_SDK_ROOT}/bin/.dll")
+    file(GLOB SDL3_IMAGE_DLLS "${SDL3_IMAGE_PATH}/bin/.dll")
+
     file(COPY ${SDL3_DLLS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    file(COPY ${SDL3_IMAGE_DLLS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
     target_link_libraries(8051Tutorial
             PRIVATE
             SDL3
             SDL3_image
             SDL3_ttf
+            SDL3_mixer
     )
 endif()
 
