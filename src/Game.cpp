@@ -50,8 +50,13 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
             std::cout << "Window created..." << std::endl;
         }
 
-        //windows will be direct3d (directx)
+#ifdef _WIN32
         renderer = SDL_CreateRenderer(window, "direct3d");
+#elif __APPLE__
+        renderer = SDL_CreateRenderer(window, "metal");
+#else
+        renderer = SDL_CreateRenderer(window, nullptr);
+#endif
 
         if (renderer) {
             std::cout << "Renderer created..." << std::endl;
