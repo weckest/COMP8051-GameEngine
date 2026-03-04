@@ -25,6 +25,10 @@ public:
                 //normalizing
                 directionVec.normalize();
 
+                if (entity->hasComponent<PlayerTag>()) {
+                    directionVec *= entity->getComponent<PlayerTag>().speedModifier;
+                }
+
                 Vector2D velocityVec1 = directionVec * v.speed;
 
                 t.position += velocityVec1 * dt;

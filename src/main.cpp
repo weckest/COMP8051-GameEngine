@@ -19,8 +19,6 @@ void test() {
     b /= 2;
     e -= a;
     bool notSame = (a!=b);
-
-
 }
 
 int main() {
@@ -46,6 +44,7 @@ int main() {
         game->render();
 
         actualFrameTime = SDL_GetTicks() - ticks; //elapsed time in ms it took the current frame
+        // std::cout << actualFrameTime << " " << deltaTime << std::endl;
         //frame limiter
         //keeps the game running at the desirer frame rate
         //if the actual frame took less time that the desired frame, delay the difference

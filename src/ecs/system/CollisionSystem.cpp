@@ -33,6 +33,9 @@ void CollisionSystem::update(World &world) {
         for (size_t j = i + 1; j < collidables.size(); j++) {
             auto entityB = collidables[j];
             auto& colliderB = entityB->getComponent<Collider>();
+            //check if entity is within 2 times the A sprite size?
+
+
             if (Collision::AABB(colliderA, colliderB)) {
                 world.getEventManager().emit(CollisionEvent{entityA, entityB});
             }
