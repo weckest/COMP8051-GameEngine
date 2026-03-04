@@ -78,19 +78,6 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
     camView.h = windowHeight;
     cam.addComponent<Camera>(camView, world.getMap().width * 32.0f, world.getMap().height * 32.0f);
 
-    auto& item(world.createEntity());
-    auto& itemTransform = item.addComponent<Transform>(Vector2D(100, 200), 0.0f, 1.0f);
-
-    SDL_Texture* itemTex = TextureManager::load("../assets/coin.png");
-    SDL_FRect itemRect{0, 0, 32, 32};
-
-    SDL_FRect itemDest {itemTransform.position.x, itemTransform.position.y, 32, 32};
-    item.addComponent<Sprite>(itemTex, itemRect, itemDest);
-
-    auto& itemCollider = item.addComponent<Collider>("item");
-    itemCollider.rect.w = itemDest.w;
-    itemCollider.rect.h = itemDest.h;
-
 
     auto& player(world.createEntity());
     auto& pt = player.addComponent<PlayerTag>();
