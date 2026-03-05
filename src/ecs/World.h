@@ -18,6 +18,7 @@
 #include "Entity.h"
 #include "EventResponseSystem.h"
 #include "KeyboardInputSystem.h"
+#include "LevelUpSystem.hpp"
 #include "event/EventManager.h"
 #include "MainMenuSystem.h"
 #include "Map.h"
@@ -47,6 +48,7 @@ class World {
     EventResponseSystem eventResponseSystem{*this};
     MainMenuSystem mainMenuSystem;
     SpawnerSystem spawnerSystem{*this};
+    LevelUpSystem levelUpSystem;
 
 
 public:
@@ -67,6 +69,7 @@ public:
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
             destructionSystem.update(entities);
+            levelUpSystem.update(entities);
         }
         synchronizeEntities();
         cleanup();

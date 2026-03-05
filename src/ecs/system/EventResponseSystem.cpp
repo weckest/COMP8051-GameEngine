@@ -55,8 +55,22 @@ void EventResponseSystem::onCollision(
 
     if (checkTagsFor(ATag, BTag, "item") && checkTagsFor(ATag, BTag, "player")) {
 
+
+
+
         if (e.state != CollisionState::Enter) return;
+
+
+        ///TEST CODE. NEED TO REMOVE LATER
+        auto& stats = entityA->getComponent<PlayerTag>();
+        stats.xp += 101;
+
+        ///END OF TEST CODE
+
         entityB->destroy();
+
+
+
 
         for (auto& entity: world.getEntities()) {
             if (!entity->hasComponent<SceneState>()) continue;
@@ -82,6 +96,9 @@ void EventResponseSystem::onCollision(
         //ideally we would only operate on data in an update function (hinting at transient entities)
         auto& health = entityA->getComponent<Health>();
         health.currentHealth--;
+
+
+
 
         Game::gameState.playerHealth = health.currentHealth;
 

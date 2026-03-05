@@ -75,6 +75,8 @@ struct PlayerTag {
     float playerSizeModifier = 1;
     float projectileSizeModifier = 1;
     float aoeModifier = 1;
+    float xp = 0;
+    int level = 1;
 };
 struct EffectTag{};
 struct ProjectileTag {

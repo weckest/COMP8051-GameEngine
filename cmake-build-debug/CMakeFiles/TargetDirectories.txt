@@ -1,0 +1,3 @@
+C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/cmake-build-debug/CMakeFiles/8051Tutorial.dir
+C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/cmake-build-debug/CMakeFiles/rebuild_cache.dir
