@@ -21,6 +21,7 @@ set(SRC_FILES
         src/ecs/system/KeyboardInputSystem.cpp
         src/ecs/system/RenderSystem.cpp
         src/ecs/system/SpawnerSystem.cpp
+        src/ecs/system/LevelUpSystem.hpp
 )
 
 # ALWAYS create the executable first

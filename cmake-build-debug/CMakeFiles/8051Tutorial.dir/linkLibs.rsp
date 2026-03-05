@@ -1,0 +1,1 @@
+  -L"C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/SDL3_SDK_WIN32/lib"  -L"C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/SDL3_Image/lib"  -lSDL3 -lSDL3_image -lSDL3_ttf -lSDL3_mixer -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
