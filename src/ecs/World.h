@@ -16,12 +16,15 @@
 #include "EffectSystem.h"
 #include "EnemyMovementSystem.h"
 #include "Entity.h"
-#include "EventManager.h"
+#include "EventResponseSystem.h"
+#include "event/EventManager.h"
 #include "KeyboardInputSystem.h"
+#include "MainMenuSystem.h"
 #include "Map.h"
 #include "MovementSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
+#include "scene/SceneType.h"
 
 
 //could also be called EntityManager
@@ -41,21 +44,29 @@ class World {
     BobbingSystem bobbingSystem;
     EffectSystem effectSystem;
     EventManager eventManager;
+    EventResponseSystem eventResponseSystem{*this};
+    MainMenuSystem mainMenuSystem;
 
 
 public:
-    World();
-    void update(float dt, SDL_Event& event) {
-        keyboardInputSystem.update(entities, event);
-        bobbingSystem.update(entities, dt);
-        movementSystem.update(entities, dt);
-        enemyMovementSystem.update(entities, dt);
-        spawnTimerSystem.update(entities, dt);
-        collisionSystem.update(*this);
-        effectSystem.update(entities, dt);
-        animationSystem.update(entities, dt);
-        cameraSystem.update(entities);
-        destructionSystem.update(entities);
+    World() = default;
+    void update(float dt, SDL_Event& event, SceneType sceneType) {
+
+        if (sceneType == SceneType::MainMenu) {
+            //main menu system
+            mainMenuSystem.update(event);
+        } else {
+            keyboardInputSystem.update(entities, event);
+            bobbingSystem.update(entities, dt);
+            movementSystem.update(entities, dt);
+            enemyMovementSystem.update(entities, dt);
+            spawnTimerSystem.update(entities, dt);
+            collisionSystem.update(*this);
+            effectSystem.update(entities, dt);
+            animationSystem.update(entities, dt);
+            cameraSystem.update(entities);
+            destructionSystem.update(entities);
+        }
         synchronizeEntities();
         cleanup();
     }

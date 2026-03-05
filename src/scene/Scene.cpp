@@ -2,11 +2,33 @@
 // Created by Weckest on 2026-02-25.
 //
 
-#include "Scene.h"
+#include "../scene/Scene.h"
 
-#include "AssetManager.h"
+#include "../manager/AssetManager.h"
+#include "Game.h"
 
-Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int windowHeight) : name(sceneName) {
+Scene::Scene(SceneType sceneType, const char *sceneName, const char *mapPath, int windowWidth, int windowHeight)
+: name(sceneName), type(sceneType) {
+
+    if (sceneType == SceneType::MainMenu) {
+
+        //camera
+        auto& cam = world.createEntity();
+        cam.addComponent<Camera>();
+
+
+        //menu
+        auto& menu(world.createEntity());
+        auto& menuTransform = menu.addComponent<Transform>(Vector2D(0,0), 0.0f, 1.0f);
+
+        SDL_Texture* tex = TextureManager::load("../assets/menu.png");
+        SDL_FRect src = {0, 0, 800, 600};
+        SDL_FRect dst = {menuTransform.position.x, menuTransform.position.y, (float)windowWidth, (float)windowHeight};
+
+        menu.addComponent<Sprite>(tex, src, dst);
+        return;
+
+    }
 
     //load our map
     world.getMap().load(mapPath, TextureManager::load("../assets/spritesheet.png"));
@@ -96,6 +118,8 @@ Scene::Scene(const char *sceneName, const char *mapPath, int windowWidth, int wi
     auto& playerCollider = player.addComponent<Collider>("player");
     playerCollider.rect.w = playerDst.w;
     playerCollider.rect.h = playerDst.h;
+
+    player.addComponent<Health>(Game::gameState.playerHealth);
 
     //make the player shoot
     auto& playerGun = player.addComponent<TimedSpawner>(0.25f * 1 + (1 - pt.fireRateModifier),[this, &player, pt] {

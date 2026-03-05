@@ -15,7 +15,9 @@ set(SRC_FILES
         src/ecs/World.cpp
         src/vendor/tinyxml2.cpp
         src/manager/AssetManager.cpp
-        src/manager/Scene.cpp
+        src/scene/Scene.cpp
+        src/ecs/system/EventResponseSystem.cpp
+        src/ecs/system/MainMenuSystem.cpp
 )
 
 # ALWAYS create the executable first

@@ -23,6 +23,8 @@ void CollisionSystem::update(World &world) {
         c.rect.y = t.position.y;
     }
 
+    std::set<CollisionKey> currentCollisions;
+
     //outer loop
     for (size_t i = 0; i < collidables.size(); i++) {
         auto entityA = collidables[i];
@@ -33,14 +35,26 @@ void CollisionSystem::update(World &world) {
         for (size_t j = i + 1; j < collidables.size(); j++) {
             auto entityB = collidables[j];
             auto& colliderB = entityB->getComponent<Collider>();
-            //check if entity is within 2 times the A sprite size?
 
 
             if (Collision::AABB(colliderA, colliderB)) {
-                world.getEventManager().emit(CollisionEvent{entityA, entityB});
+                CollisionKey key = makeKey(entityA, entityB);
+                currentCollisions.insert(key);
+                if (!activeCollisions.contains(key)) {
+                    world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
+                }
+                world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
             }
         }
     }
+
+    for (auto& key: activeCollisions) {
+        if (!currentCollisions.contains(key)) {
+            world.getEventManager().emit(CollisionEvent{key.first, key.second, CollisionState::Exit});
+        }
+    }
+
+    activeCollisions = std::move(currentCollisions); //update with current collisions
 }
 
 std::vector<Entity*> CollisionSystem::getAllWithin(World &world, Entity &entity, float distance) {

@@ -64,6 +64,10 @@ struct SceneState {
     int coinsCollected = 0;
 };
 
+struct Health {
+    int currentHealth{};
+};
+
 struct PlayerTag {
     float damageModifier = 1;
     float speedModifier = 1;
