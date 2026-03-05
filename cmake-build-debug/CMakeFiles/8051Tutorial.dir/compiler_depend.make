@@ -337,6 +337,7 @@ CMakeFiles/8051Tutorial.dir/src/Game.cpp.obj: C:/Users/beckh/CLionProjects/Comp8
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -674,6 +675,7 @@ CMakeFiles/8051Tutorial.dir/src/GameObject.cpp.obj: C:/Users/beckh/CLionProjects
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -1306,6 +1308,7 @@ CMakeFiles/8051Tutorial.dir/src/TextureManager.cpp.obj: C:/Users/beckh/CLionProj
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -1623,6 +1626,7 @@ CMakeFiles/8051Tutorial.dir/src/ecs/system/CollisionSystem.cpp.obj: C:/Users/bec
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -1958,6 +1962,7 @@ CMakeFiles/8051Tutorial.dir/src/ecs/system/EventResponseSystem.cpp.obj: C:/Users
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -2273,6 +2278,7 @@ CMakeFiles/8051Tutorial.dir/src/ecs/system/KeyboardInputSystem.cpp.obj: C:/Users
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -2607,6 +2613,7 @@ CMakeFiles/8051Tutorial.dir/src/ecs/system/MainMenuSystem.cpp.obj: C:/Users/beck
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -2921,6 +2928,7 @@ CMakeFiles/8051Tutorial.dir/src/ecs/system/RenderSystem.cpp.obj: C:/Users/beckh/
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -3233,6 +3241,7 @@ CMakeFiles/8051Tutorial.dir/src/ecs/system/SpawnerSystem.cpp.obj: C:/Users/beckh
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -3566,6 +3575,7 @@ CMakeFiles/8051Tutorial.dir/src/main.cpp.obj: C:/Users/beckh/CLionProjects/Comp8
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -4080,6 +4090,7 @@ CMakeFiles/8051Tutorial.dir/src/scene/Scene.cpp.obj: C:/Users/beckh/CLionProject
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EnemyMovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/EventResponseSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MainMenuSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/MovementSystem.h \
   C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/RenderSystem.h \
@@ -4585,6 +4596,8 @@ C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/SDL3_SDK_WIN32/
 C:/Program\ Files/JetBrains/CLion\ 2024.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/mwaitintrin.h:
 
 C:/Program\ Files/JetBrains/CLion\ 2024.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/predefined_ops.h:
+
+C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp:
 
 C:/Program\ Files/JetBrains/CLion\ 2024.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/move.h:
 

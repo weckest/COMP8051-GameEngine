@@ -275,6 +275,7 @@ CMakeFiles/8051Tutorial.dir/src/ecs/system/KeyboardInputSystem.cpp.obj: \
  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/event/BaseEvent.h \
  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/utils/Vector2D.h \
  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/KeyboardInputSystem.h \
+ C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/system/LevelUpSystem.hpp \
  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/event/EventManager.h \
  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/event/BaseEvent.h \
  C:/Users/beckh/CLionProjects/Comp8501/Project/COMP8051-GameEngne/src/ecs/Entity.h \

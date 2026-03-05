@@ -35,9 +35,15 @@ class LevelUpSystem {
 
         //Gets the stats. If xp is more than threshold, level up, subtract xp from player.
         auto& stats = playerEntity->getComponent<PlayerTag>();
+
         if (stats.xp >= xpToLevelUp) {
             stats.level++;
+
             stats.xp -= xpToLevelUp;
+
+            //Testing purposes
+            std::cout <<  "EXP " << stats.xp << std::endl;
+            std::cout << " Level" << stats.level << std::endl;
 
         }
 
@@ -54,6 +60,7 @@ private:
     void levelUp() {
         xpToLevelUp += 100;
         std::cout << "Level Up" << std::endl;
+
 
         //Do emitting stuff and getters for weapon and item, to send to the level up menu
 
