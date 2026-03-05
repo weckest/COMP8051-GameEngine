@@ -15,9 +15,12 @@ set(SRC_FILES
         src/ecs/World.cpp
         src/vendor/tinyxml2.cpp
         src/manager/AssetManager.cpp
+        src/manager/PrefabManager.cpp
         src/scene/Scene.cpp
         src/ecs/system/EventResponseSystem.cpp
         src/ecs/system/MainMenuSystem.cpp
+        src/ecs/system/KeyboardInputSystem.cpp
+        src/ecs/system/RenderSystem.cpp
 )
 
 # ALWAYS create the executable first

@@ -12,6 +12,7 @@
 
 #include "AnimationClip.h"
 #include "manager/AssetManager.h"
+#include "manager/PrefabManager.h"
 
 // GameObject* player = nullptr;
 
@@ -85,7 +86,7 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     std::cout << "Scenes loaded..." << std::endl;
 
     //init game data/state
-    gameState.playerHealth = 5;
+    gameState.playerHealth = 100;
 
     //start level
     sceneManager.changeSceneDeferred("mainmenu");
@@ -114,7 +115,6 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 void Game::handleEvents() {
 
     //SDL listens to the OS for input events internally and it addes them to a queue
-
 
     //check for next event, if an event is available it will remove from the queue and store in event
     SDL_PollEvent(&event);
@@ -153,6 +153,7 @@ void Game::render() {
 
 void Game::destroy() {
     TextureManager::clean();
+    PrefabManager::clean();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

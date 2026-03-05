@@ -17,8 +17,8 @@
 #include "EnemyMovementSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
-#include "event/EventManager.h"
 #include "KeyboardInputSystem.h"
+#include "event/EventManager.h"
 #include "MainMenuSystem.h"
 #include "Map.h"
 #include "MovementSystem.h"
@@ -26,13 +26,13 @@
 #include "SpawnTimerSystem.h"
 #include "scene/SceneType.h"
 
-
 //could also be called EntityManager
 class World {
     Map map;
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
-    RenderSystem renderSystem;
+    EventManager eventManager;
+    RenderSystem renderSystem{*this};
     MovementSystem movementSystem;
     KeyBoardInputSystem keyboardInputSystem;
     CollisionSystem collisionSystem;
@@ -43,7 +43,6 @@ class World {
     EnemyMovementSystem enemyMovementSystem;
     BobbingSystem bobbingSystem;
     EffectSystem effectSystem;
-    EventManager eventManager;
     EventResponseSystem eventResponseSystem{*this};
     MainMenuSystem mainMenuSystem;
 
@@ -56,7 +55,7 @@ public:
             //main menu system
             mainMenuSystem.update(event);
         } else {
-            keyboardInputSystem.update(entities, event);
+            keyboardInputSystem.update(*this, entities, event);
             bobbingSystem.update(entities, dt);
             movementSystem.update(entities, dt);
             enemyMovementSystem.update(entities, dt);
@@ -88,9 +87,23 @@ public:
         return *entities.back();
     }
 
+    Entity& createEntity(Entity& e) {
+        entities.emplace_back(std::make_unique<Entity>(e));
+        return *entities.back();
+    }
+
     Entity& createDeferredEntity() {
         deferredEntities.emplace_back(std::make_unique<Entity>());
         return *deferredEntities.back();
+    }
+
+    Entity& createDeferredEntity(Entity e) {
+        deferredEntities.emplace_back(std::make_unique<Entity>(e));
+        return *deferredEntities.back();
+    }
+
+    static Entity& createTempEntity() {
+        return *std::make_unique<Entity>();
     }
 
     std::vector<std::unique_ptr<Entity>>& getEntities() {

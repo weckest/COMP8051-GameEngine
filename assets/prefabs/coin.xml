@@ -1,0 +1,15 @@
+<Entity>
+    <Transform x="0" y="0" rotation="0" scale="1"/>
+
+    <Collider tag="item" w="32" h="32"/>
+
+    <Sprite
+            texture="../assets/coin.png"
+            srcX="0"
+            srcY="0"
+            srcW="32"
+            srcH="32"
+    />
+
+    <Tag name="ItemTag"/>
+</Entity>

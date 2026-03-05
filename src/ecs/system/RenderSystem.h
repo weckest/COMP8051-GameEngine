@@ -10,10 +10,17 @@
 #include "Component.h"
 #include "Entity.h"
 #include "TextureManager.h"
+#include <iostream>
+
 #include "SDL3/SDL_render.h"
 
+class World;
+
 class RenderSystem {
+    bool debug = false;
+    World& world;
 public:
+    RenderSystem(World& world);
     void render(const std::vector<std::unique_ptr<Entity>>& entities) {
 
         Entity* cameraEntity = nullptr;
@@ -48,15 +55,16 @@ public:
                 TextureManager::draw(sprite.texture, sprite.src, sprite.dst);
 
                 //collider debugs
-                // if (entity->hasComponent<Collider>()) {
-                //     auto& collider = entity->getComponent<Collider>();
-                //     std::cout << collider.tag << " " << collider.rect.x << " " << collider.rect.y << " " << collider.rect.w << " " << collider.rect.h << std::endl;
-                //     SDL_Texture* tex = TextureManager::load("../assets/spritesheet.png");
-                //     SDL_FRect src {0,32,32,32};
-                //     SDL_FRect dst {collider.rect.x - cam.view.x,collider.rect.y - cam.view.y,collider.rect.w,collider.rect.h};
-                //
-                //     TextureManager::draw(tex, src, dst);
-                // }
+                //only show if debug mode is on
+                if (entity->hasComponent<Collider>() && debug) {
+                    auto& collider = entity->getComponent<Collider>();
+                    // std::cout << collider.tag << " " << collider.rect.x << " " << collider.rect.y << " " << collider.rect.w << " " << collider.rect.h << std::endl;
+                    SDL_Texture* tex = TextureManager::load("../assets/spritesheet.png");
+                    SDL_FRect src {0,32,32,32};
+                    SDL_FRect dst {collider.rect.x - cam.view.x,collider.rect.y - cam.view.y,collider.rect.w,collider.rect.h};
+
+                    TextureManager::draw(tex, src, dst);
+                }
             }
         }
     }

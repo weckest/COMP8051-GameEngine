@@ -9,7 +9,8 @@ class Entity;
 
 enum class EventType {
     Collision,
-    PlayerAction
+    PlayerAction,
+    ToggleDebug
 };
 
 struct BaseEvent {
@@ -42,6 +43,12 @@ struct PlayerActionEvent : BaseEvent {
     PlayerAction action{};
     PlayerActionEvent(Entity* player, PlayerAction action) : player(player), action(action) {
         type = EventType::PlayerAction;
+    }
+};
+
+struct ToggleDebugEvent : BaseEvent {
+    ToggleDebugEvent() : BaseEvent() {
+        type = EventType::ToggleDebug;
     }
 };
 

@@ -5,6 +5,7 @@
 #ifndef INC_8051TUTORIAL_EVENTRESPONSESYSTEM_H
 #define INC_8051TUTORIAL_EVENTRESPONSESYSTEM_H
 #include <functional>
+#include <string>
 
 #include "event/BaseEvent.h"
 
@@ -16,9 +17,11 @@ public:
     EventResponseSystem(World& world);
 
 private:
+    bool checkTagsFor(const char* ATag, const char* BTag, std::string tag);
+
     //collisions
-    void onCollision(const CollisionEvent& e, const char* otherTag, World& world);
-    bool getCollisionEntities(const CollisionEvent& e, const char* otherTag, Entity*& player, Entity*& other);
+    void onCollision(const CollisionEvent& e, const char* ATag, const char* BTag, World& world);
+    bool getCollisionEntities(const CollisionEvent& e, const char* ATag, const char* BTag, Entity*& entityA, Entity*& entityB);
 
 
     //player action

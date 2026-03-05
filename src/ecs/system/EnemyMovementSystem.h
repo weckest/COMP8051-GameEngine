@@ -32,12 +32,18 @@ public:
         for (auto& e : entities) {
             if (e->hasComponent<EnemyTag>() && e->hasComponent<Velocity>() && e->hasComponent<Transform>()) {
                 auto& t = e->getComponent<Transform>();
+                auto& s = e->getComponent<Sprite>();
+                auto& pt = player->getComponent<Transform>();
+                auto& ps = player->getComponent<Sprite>();
                 auto& v = e->getComponent<Velocity>();
 
                 //track previous frames position
                 t.oldPosition = t.position;
 
-                v.direction = player->getComponent<Transform>().position - t.position;
+                Vector2D playerCenter = pt.position + Vector2D(ps.dst.w / 2, ps.dst.h / 2);
+                Vector2D enemyCenter = t.position + Vector2D(s.dst.w / 2, s.dst.h / 2);
+
+                v.direction = playerCenter - enemyCenter;
 
                 Vector2D directionVec = v.direction;
                 //normalizing

@@ -6,6 +6,7 @@
 
 #include "Game.h"
 #include "World.h"
+#include "manager/AssetManager.h"
 
 EventResponseSystem::EventResponseSystem(World &world) {
     world.getEventManager().subscribe(
@@ -14,9 +15,10 @@ EventResponseSystem::EventResponseSystem(World &world) {
             if (e.type != EventType::Collision) return;
             const auto& collision = static_cast<const CollisionEvent&>(e); //cast base type into collision type
 
-            onCollision(collision, "item", world);
-            onCollision(collision, "wall", world);
-            onCollision(collision, "enemy", world);
+            onCollision(collision, "player", "item", world);
+            onCollision(collision, "player", "wall", world);
+            onCollision(collision, "player", "enemy", world);
+            onCollision(collision, "bullet", "enemy", world);
         }
     );
 
@@ -32,16 +34,29 @@ EventResponseSystem::EventResponseSystem(World &world) {
    );
 }
 
-void EventResponseSystem::onCollision(const CollisionEvent &e, const char *otherTag, World &world) {
-    Entity* player = nullptr;
-    Entity* other = nullptr;
+bool EventResponseSystem::checkTagsFor(const char *ATag, const char *BTag, std::string tag) {
+    if (ATag == nullptr || BTag == nullptr) return false;
 
-    if (!getCollisionEntities(e, otherTag, player, other)) return;
+    if (ATag == tag) return true;
+    if (BTag == tag) return true;
 
-    if (std::string(otherTag) == "item") {
+    return false;
+}
+
+void EventResponseSystem::onCollision(
+    const CollisionEvent &e,
+    const char* ATag,
+    const char* BTag,
+    World &world) {
+    Entity* entityA = nullptr;
+    Entity* entityB = nullptr;
+
+    if (!getCollisionEntities(e, ATag, BTag, entityA, entityB)) return;
+
+    if (checkTagsFor(ATag, BTag, "item") && checkTagsFor(ATag, BTag, "player")) {
 
         if (e.state != CollisionState::Enter) return;
-        other->destroy();
+        entityB->destroy();
 
         for (auto& entity: world.getEntities()) {
             if (!entity->hasComponent<SceneState>()) continue;
@@ -52,38 +67,109 @@ void EventResponseSystem::onCollision(const CollisionEvent &e, const char *other
                 Game::onSceneChangeRequest("level2");
             }
         }
-    } else if (std::string(otherTag) == "wall") {
+    } else if (checkTagsFor(ATag, BTag, "wall") && checkTagsFor(ATag, BTag, "player")) {
 
         if (e.state != CollisionState::Stay) return;
 
-        auto& t = player->getComponent<Transform>();
+        auto& t = entityA->getComponent<Transform>();
         t.position = t.oldPosition;
 
-    } else if (std::string(otherTag) == "enemy") {
+    } else if (checkTagsFor(ATag, BTag, "enemy") && checkTagsFor(ATag, BTag, "player")) {
 
         if (e.state != CollisionState::Enter) return;
 
         //this logic is simple and direct
         //ideally we would only operate on data in an update function (hinting at transient entities)
-        auto& health = player->getComponent<Health>();
+        auto& health = entityA->getComponent<Health>();
         health.currentHealth--;
 
         Game::gameState.playerHealth = health.currentHealth;
 
         std::cout << health.currentHealth << std::endl;
 
+        auto& bt = entityB->getComponent<Transform>();
+        bt.position += (bt.oldPosition - bt.position) * 2;
+
         if (health.currentHealth <= 0) {
-            player->destroy();
+            entityA->destroy();
             Game::onSceneChangeRequest("gameover");
         }
+
+    } else if (checkTagsFor(ATag, BTag, "bullet") && checkTagsFor(ATag, BTag, "enemy")) {
+
+        if (e.state != CollisionState::Enter) return;
+
+         auto& bTag = entityA->getComponent<ProjectileTag>();
+         std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
+         for (auto& e: entities) {
+             auto& eTag = entityB->getComponent<EnemyTag>();
+
+             auto& et = e->getComponent<Transform>();
+
+             if (e != entityB) {
+                 float distanceToEnemy = (entityA->getComponent<Transform>().position - e->getComponent<Transform>().position).length();
+                 float bulletDamage = bTag.damage * (bTag.aoe - distanceToEnemy) / bTag.aoe;
+                 eTag.health -= bulletDamage;
+             } else {
+                 eTag.health -= bTag.damage;
+             }
+
+
+
+             if (eTag.health <= 0) {
+                 auto& bullet = world.createDeferredEntity();
+                 auto& t = entityB->getComponent<Transform>();
+                 bullet.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
+                 auto& c = bullet.addComponent<Collider>("item");
+                 c.rect.x = t.position.x;
+                 c.rect.y = t.position.y;
+                 c.rect.w = 32;
+                 c.rect.h = 32;
+
+                 //adding texture to the coins
+                 SDL_Texture* tex = TextureManager::load("../assets/coin.png");
+                 SDL_FRect tileSrc {0, 0, 32, 32};
+                 SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
+                 bullet.addComponent<Sprite>(tex, tileSrc, tileDst);
+                 bullet.addComponent<ItemTag>();
+
+                 //destroy the enemey
+                 entityB->destroy();
+             }
+         }
+
+         //make explosion where the bullet hit the enemy
+         //add a little extra since the sprite is the full size
+         float explosionSize = bTag.aoe * 1.2;
+         auto& explosion = world.createDeferredEntity();
+         auto& bt = entityA->getComponent<Transform>();
+         auto& bs = entityA->getComponent<Sprite>();
+         auto& t = explosion.addComponent<Transform>(bt.position);
+         t.position.x = bt.position.x - bs.dst.w / 2 - (explosionSize / 2 - bs.dst.w / 2);
+         t.position.y = bt.position.y - bs.dst.h / 2 - (explosionSize / 2 - bs.dst.h / 2);
+
+         auto& a = AssetManager::getAnimation("explosion");
+         auto& animation = explosion.addComponent<Animation>(a);
+         animation.speed = 0.075f;
+
+         SDL_Texture* tex = TextureManager::load("../assets/animations/explosion.png");
+         SDL_FRect src {0, 0, 85.33, 85.33};
+         SDL_FRect dst {t.position.x, t.position.y, explosionSize, explosionSize};
+         explosion.addComponent<Sprite>(tex, src, dst);
+
+         explosion.addComponent<EffectTag>();
+
+        //destroy the bullet
+         entityA->destroy();
     }
 }
 
 bool EventResponseSystem::getCollisionEntities(
     const CollisionEvent &e,
-    const char *otherTag,
-    Entity *&player,
-    Entity *&other
+    const char* ATag,
+    const char* BTag,
+    Entity *&entityA,
+    Entity *&entityB
 ) {
 
     if (e.entityA == nullptr || e.entityB == nullptr) return false;
@@ -93,14 +179,14 @@ bool EventResponseSystem::getCollisionEntities(
     auto& colliderA = e.entityA->getComponent<Collider>();
     auto& colliderB = e.entityB->getComponent<Collider>();
 
-    if (colliderA.tag == "player" && colliderB.tag == otherTag) {
-        player = e.entityA;
-        other = e.entityB;
-    } else if (colliderA.tag == otherTag && colliderB.tag == "player") {
-        player = e.entityB;
-        other = e.entityA;
+    if (colliderA.tag == ATag && colliderB.tag == BTag) {
+        entityA = e.entityA;
+        entityB = e.entityB;
+    } else if (colliderA.tag == BTag && colliderB.tag == ATag) {
+        entityA = e.entityB;
+        entityB = e.entityA;
     }
 
-    return player && other;
+    return entityA && entityB;
 
 }
