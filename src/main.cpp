@@ -44,6 +44,12 @@ int main() {
         game->render();
 
         actualFrameTime = SDL_GetTicks() - ticks; //elapsed time in ms it took the current frame
+
+        if (actualFrameTime != 0) {
+            SDL_SetWindowTitle(game->getWindow(),
+                ("8051 Tutorial Engine, FPS: " + std::to_string((int)(1.0f / deltaTime))
+                    + ", Actual: " + std::to_string((int)(1.0f / (actualFrameTime / 1000.f)))).c_str());
+        }
         // std::cout << actualFrameTime << " " << deltaTime << std::endl;
         //frame limiter
         //keeps the game running at the desirer frame rate

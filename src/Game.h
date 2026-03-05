@@ -30,6 +30,9 @@ public:
     void handleEvents(); //checks for inputs and system events
     void update(float deltaTime); //handles the game logic and changes to game state
     void render(); //handles the drawing of the current game state to the screen
+    SDL_Window* getWindow() {
+        return window;
+    }
 
     //used to free resources
     void destroy();
