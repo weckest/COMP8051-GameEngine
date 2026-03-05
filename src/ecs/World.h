@@ -23,6 +23,7 @@
 #include "Map.h"
 #include "MovementSystem.h"
 #include "RenderSystem.h"
+#include "SpawnerSystem.h"
 #include "SpawnTimerSystem.h"
 #include "scene/SceneType.h"
 
@@ -45,6 +46,7 @@ class World {
     EffectSystem effectSystem;
     EventResponseSystem eventResponseSystem{*this};
     MainMenuSystem mainMenuSystem;
+    SpawnerSystem spawnerSystem{*this};
 
 
 public:
@@ -102,7 +104,7 @@ public:
         return *deferredEntities.back();
     }
 
-    static Entity& createTempEntity() {
+    static Entity createTempEntity() {
         return *std::make_unique<Entity>();
     }
 

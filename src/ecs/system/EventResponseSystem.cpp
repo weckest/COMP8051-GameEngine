@@ -117,23 +117,9 @@ void EventResponseSystem::onCollision(
 
 
              if (eTag.health <= 0) {
-                 auto& bullet = world.createDeferredEntity();
-                 auto& t = entityB->getComponent<Transform>();
-                 bullet.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
-                 auto& c = bullet.addComponent<Collider>("item");
-                 c.rect.x = t.position.x;
-                 c.rect.y = t.position.y;
-                 c.rect.w = 32;
-                 c.rect.h = 32;
+                 world.getEventManager().emit(SpawnPrefabEvent{"coin", entityB->getComponent<Transform>()});
 
-                 //adding texture to the coins
-                 SDL_Texture* tex = TextureManager::load("../assets/coin.png");
-                 SDL_FRect tileSrc {0, 0, 32, 32};
-                 SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-                 bullet.addComponent<Sprite>(tex, tileSrc, tileDst);
-                 bullet.addComponent<ItemTag>();
-
-                 //destroy the enemey
+                 //destroy the enemy
                  entityB->destroy();
              }
          }

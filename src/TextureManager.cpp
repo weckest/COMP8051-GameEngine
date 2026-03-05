@@ -42,6 +42,7 @@ SDL_Texture* TextureManager::load(const char* path) {
     //store the new texture in the cache
     textures[path] = texture;
 
+
     return texture;
 }
 

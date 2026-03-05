@@ -4,13 +4,16 @@
 
 #ifndef INC_8051TUTORIAL_BASEEVENT_H
 #define INC_8051TUTORIAL_BASEEVENT_H
+#include "Component.h"
+#include "Vector2D.h"
 
 class Entity;
 
 enum class EventType {
     Collision,
     PlayerAction,
-    ToggleDebug
+    ToggleDebug,
+    SpawnEntity
 };
 
 struct BaseEvent {
@@ -49,6 +52,14 @@ struct PlayerActionEvent : BaseEvent {
 struct ToggleDebugEvent : BaseEvent {
     ToggleDebugEvent() : BaseEvent() {
         type = EventType::ToggleDebug;
+    }
+};
+
+struct SpawnPrefabEvent : BaseEvent {
+    const char*  name;
+    Transform transform;
+    SpawnPrefabEvent(const char* name, const Transform &transform) : name(name), transform(transform) {
+        type = EventType::SpawnEntity;
     }
 };
 

@@ -12,7 +12,6 @@
 
 #include "AnimationClip.h"
 #include "manager/AssetManager.h"
-#include "manager/PrefabManager.h"
 
 // GameObject* player = nullptr;
 
@@ -70,6 +69,8 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     } else {
         isRunning = false;
     }
+
+
 
     //load assets
     AssetManager::loadAnimation("player", "../assets/animations/bunny_animations.xml");
@@ -153,7 +154,6 @@ void Game::render() {
 
 void Game::destroy() {
     TextureManager::clean();
-    PrefabManager::clean();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

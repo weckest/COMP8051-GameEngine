@@ -35,7 +35,7 @@ struct Sprite {
 };
 
 struct Collider {
-    std::string tag;
+    std::string tag{};
     SDL_FRect rect{};
 };
 
