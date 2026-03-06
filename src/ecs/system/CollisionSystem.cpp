@@ -38,30 +38,30 @@ void CollisionSystem::update(World &world) {
         auto& colliderA = entityA->getComponent<Collider>();
         auto& transformA = entityA->getComponent<Transform>();
 
-        // int xIndex, yIndex;
-        //
+        int xIndex, yIndex;
+
         // GridSystem::getGridIndex(&transformA.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
-        // std::cout << xIndex << " " << yIndex << std::endl;
-        // if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) continue;
-        //
-        // auto& cell = grid[yIndex][xIndex];
-        //
+        // // std::cout << xIndex << " " << yIndex << std::endl;
+        // if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) {
+        //     auto& cell = grid[yIndex][xIndex];
 
-        //check for the collider collision
-        //inner loop
-        for (size_t j = 0; j < collidables.size(); j++) {
-            auto entityB = collidables[j];
-            auto& colliderB = entityB->getComponent<Collider>();
+            //check for the collider collision
+            //inner loop
+            // for (auto& entityB : cell) {
+            for (size_t j = 0; j < collidables.size(); j++) {
+                auto entityB = collidables[j];
+                auto& colliderB = entityB->getComponent<Collider>();
 
 
-            if (Collision::AABB(colliderA, colliderB)) {
-                CollisionKey key = makeKey(entityA, entityB);
-                currentCollisions.insert(key);
-                if (!activeCollisions.contains(key)) {
-                    world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
+                if (Collision::AABB(colliderA, colliderB)) {
+                    CollisionKey key = makeKey(entityA, entityB);
+                    currentCollisions.insert(key);
+                    if (!activeCollisions.contains(key)) {
+                        world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
+                    }
+                    world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
                 }
-                world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
-            }
+            // }
         }
     }
 

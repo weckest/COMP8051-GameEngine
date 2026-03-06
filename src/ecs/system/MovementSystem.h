@@ -32,7 +32,6 @@ public:
                 Vector2D velocityVec1 = directionVec * v.speed;
 
                 t.position += velocityVec1 * dt;
-
             }
         }
     }

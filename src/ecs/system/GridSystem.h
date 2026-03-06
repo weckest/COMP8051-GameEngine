@@ -16,6 +16,7 @@ class World;
 class GridSystem {
     World& world;
     SDL_Texture* tex;
+    std::unordered_map<int, std::unordered_map<int, bool>> deferredRemove;
 public:
     GridSystem(World& world);
     void update(
@@ -36,6 +37,9 @@ public:
         *xIndex = position->x / columnSize;
         *yIndex = position->y / rowSize;
     }
+
+private:
+    // void destroyDeferred();
 };
 
 #endif //INC_8051TUTORIAL_GRIDSYSTEM_H

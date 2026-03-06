@@ -8,7 +8,7 @@
 GridSystem::GridSystem(World &world) : world(world) {
     tex = TextureManager::load("../assets/colors.png");
     world.getEventManager().subscribe(
-        [&world](const BaseEvent& e) {
+        [this, &world](const BaseEvent& e) {
             if (e.type != EventType::Death) return;
 
             const auto& death = static_cast<const DeathEvent&>(e);
@@ -26,10 +26,21 @@ GridSystem::GridSystem(World &world) : world(world) {
 
                 getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
                 auto& cell = grid[yIndex][xIndex];
+                // std::cout << "before death: " << cell.size() << std::endl;
+                // deferredRemove[yIndex][xIndex] = true;
                 auto it = std::find(cell.begin(), cell.end(), entity);
                 if (it != cell.end()) {
                     *it = cell.back();
                     cell.pop_back();
+                }
+                // std::cout << "after death: " << cell.size() << std::endl;
+
+                //temp debug logging
+                if (cell.size() > 150) {
+                    std::cout << xIndex << ", " << yIndex << std::endl;
+                    for (auto& eT : cell) {
+                        std::cout << eT->getComponent<Collider>().tag << std::endl;
+                    }
                 }
             }
 
@@ -50,7 +61,7 @@ void GridSystem::update(
     int height = map.height * scale;
 
     for (auto& e: entities) {
-        if (e->hasComponent<Transform>() && e->hasComponent<Collider>() && e->hasComponent<PlayerTag>()) {
+        if (e->hasComponent<Transform>() && e->hasComponent<Collider>()) {
             auto& t = e->getComponent<Transform>();
 
             int oldXIndex, oldYIndex;
@@ -59,7 +70,7 @@ void GridSystem::update(
             getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &oldXIndex, &oldYIndex);
             getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
 
-            //only do this if the player is withing the world bounds
+            //only do this if the entity is with in the world bounds
             if ((xIndex < grid[0].size() && xIndex > 0) && (yIndex < grid.size() && yIndex > 0)) {
                 auto& newCell = grid[yIndex][xIndex];
                 auto& oldCell = grid[oldYIndex][oldXIndex];
@@ -67,13 +78,16 @@ void GridSystem::update(
 
                 //the entity has moved cells since the last update
                 if (oldXIndex != xIndex || oldYIndex != yIndex) {
-                    std::cout << "Player in new grid" << std::endl;
+                    std::cout << "entity " << e.get() << " is going to new cell, X: " << xIndex << ", Y:" << yIndex << std::endl;
                     newCell.push_back(e.get());
                     auto it = std::find(oldCell.begin(), oldCell.end(), e.get());
                     if (it != oldCell.end()) {
                         *it = oldCell.back();
                         oldCell.pop_back();
                     }
+                    std::cout << "New X: " << xIndex << ", Y: " << yIndex << std::endl;
+                    std::cout << "Old X: " << oldXIndex << ", Y: " << oldYIndex << std::endl;
+                    std::cout << "New Size: " << newCell.size() << ", Old Size: " << oldCell.size() << std::endl;
 
                 } else {
                     //add to the list of entities in the cell if it doesnt already exist
@@ -122,3 +136,11 @@ void GridSystem::draw(const Camera &cam) {
         TextureManager::draw(tex, src, dest);
     }
 }
+
+// void GridSystem::destroyDeferred() {
+//     for (int i = 0; i < deferredRemove.size(); i++) {
+//         for (int j = 0; j < deferredRemove[0].size(); j++) {
+//
+//         }
+//     }
+// }

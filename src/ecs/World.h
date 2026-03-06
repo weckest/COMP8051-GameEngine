@@ -35,7 +35,7 @@ class World {
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::vector<std::vector<Entity*>>> entityGrid;
     int rows = 3;
-    int cols = 4;
+    int cols = 5;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     EventManager eventManager;
     RenderSystem renderSystem{*this};
@@ -71,7 +71,7 @@ public:
             movementSystem.update(entities, dt);
             enemyMovementSystem.update(entities, dt);
             spawnTimerSystem.update(entities, dt);
-            gridSystem.update(entityGrid, entities, *this);
+            // gridSystem.update(entityGrid, entities, *this);
             collisionSystem.update(*this);
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);

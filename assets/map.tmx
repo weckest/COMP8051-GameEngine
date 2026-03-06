@@ -31,7 +31,7 @@
   <object id="3" x="1.3333" y="133.334" width="637.334" height="54.6667"/>
  </objectgroup>
  <objectgroup id="3" name="Item Layer">
-  <object id="6" x="241.333" y="97.3334">
+  <object id="6" x="275.333" y="99.3334">
    <point/>
   </object>
   <object id="7" x="377.333" y="100">
