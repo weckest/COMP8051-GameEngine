@@ -13,6 +13,7 @@ void CollisionSystem::update(World &world) {
 
     //get a list of entities that have colliders and transforms
     const std::vector<Entity*> collidables = queryCollidables(world.getEntities());
+    const std::vector<std::vector<std::vector<Entity*>>>& grid = world.getEntityGrid();
 
 
     //update all collider positions first
@@ -25,14 +26,30 @@ void CollisionSystem::update(World &world) {
 
     std::set<CollisionKey> currentCollisions;
 
+    auto& map = world.getMap();
+    int scale = map.scale;
+    int width = map.width * scale;
+    int height = map.height * scale;
+
+
     //outer loop
     for (size_t i = 0; i < collidables.size(); i++) {
         auto entityA = collidables[i];
         auto& colliderA = entityA->getComponent<Collider>();
+        auto& transformA = entityA->getComponent<Transform>();
+
+        // int xIndex, yIndex;
+        //
+        // GridSystem::getGridIndex(&transformA.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
+        // std::cout << xIndex << " " << yIndex << std::endl;
+        // if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) continue;
+        //
+        // auto& cell = grid[yIndex][xIndex];
+        //
 
         //check for the collider collision
         //inner loop
-        for (size_t j = i + 1; j < collidables.size(); j++) {
+        for (size_t j = 0; j < collidables.size(); j++) {
             auto entityB = collidables[j];
             auto& colliderB = entityB->getComponent<Collider>();
 

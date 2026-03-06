@@ -15,7 +15,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
             if (e.type != EventType::Collision) return;
             const auto& collision = static_cast<const CollisionEvent&>(e); //cast base type into collision type
 
-            onCollision(collision, "player", "item", world);
+            // onCollision(collision, "player", "item", world);
             onCollision(collision, "player", "wall", world);
             onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
@@ -50,6 +50,7 @@ void EventResponseSystem::onCollision(
     World &world) {
     Entity* entityA = nullptr;
     Entity* entityB = nullptr;
+    auto& em = world.getEventManager();
 
     if (!getCollisionEntities(e, ATag, BTag, entityA, entityB)) return;
 
@@ -67,8 +68,7 @@ void EventResponseSystem::onCollision(
 
         ///END OF TEST CODE
 
-        entityB->destroy();
-
+        em.emit(DeathEvent(entityB));
 
 
 
@@ -108,7 +108,7 @@ void EventResponseSystem::onCollision(
         bt.position += (bt.oldPosition - bt.position) * 2;
 
         if (health.currentHealth <= 0) {
-            entityA->destroy();
+            em.emit(DeathEvent(entityA));
             Game::onSceneChangeRequest("gameover");
         }
 
@@ -137,7 +137,7 @@ void EventResponseSystem::onCollision(
                  world.getEventManager().emit(SpawnPrefabEvent{"coin", entityB->getComponent<Transform>()});
 
                  //destroy the enemy
-                 entityB->destroy();
+                 em.emit(DeathEvent(entityB));
              }
          }
 
@@ -163,7 +163,7 @@ void EventResponseSystem::onCollision(
          explosion.addComponent<EffectTag>();
 
         //destroy the bullet
-         entityA->destroy();
+        em.emit(DeathEvent(entityA));
     }
 }
 

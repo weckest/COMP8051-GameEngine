@@ -13,7 +13,8 @@ enum class EventType {
     Collision,
     PlayerAction,
     ToggleDebug,
-    SpawnEntity
+    SpawnEntity,
+    Death
 };
 
 struct BaseEvent {
@@ -60,6 +61,13 @@ struct SpawnPrefabEvent : BaseEvent {
     Transform transform;
     SpawnPrefabEvent(const char* name, const Transform &transform) : name(name), transform(transform) {
         type = EventType::SpawnEntity;
+    }
+};
+
+struct DeathEvent : BaseEvent {
+    Entity* entity = nullptr;
+    DeathEvent(Entity* entity) : entity(entity) {
+        type = EventType::Death;
     }
 };
 

@@ -18,7 +18,7 @@ public:
     void draw(const Camera& cam);
 
     SDL_Texture *tileset = nullptr;
-    int width{}, height{};
+    int width{}, height{}, scale{32};
     std::vector<std::vector<int>> tileData;
     std::vector<Collider> colliders;
     std::vector<Collider> items;

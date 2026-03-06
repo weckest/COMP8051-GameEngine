@@ -17,6 +17,7 @@
 #include "EnemyMovementSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
+#include "GridSystem.h"
 #include "KeyboardInputSystem.h"
 #include "LevelUpSystem.hpp"
 #include "event/EventManager.h"
@@ -32,11 +33,15 @@
 class World {
     Map map;
     std::vector<std::unique_ptr<Entity>> entities;
+    std::vector<std::vector<std::vector<Entity*>>> entityGrid;
+    int rows = 3;
+    int cols = 4;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     EventManager eventManager;
     RenderSystem renderSystem{*this};
     MovementSystem movementSystem;
     KeyBoardInputSystem keyboardInputSystem;
+    GridSystem gridSystem{*this};
     CollisionSystem collisionSystem;
     AnimationSystem animationSystem;
     CameraSystem cameraSystem;
@@ -52,7 +57,9 @@ class World {
 
 
 public:
-    World() = default;
+    World() {
+        entityGrid.resize(rows, std::vector<std::vector<Entity*>>(cols));
+    }
     void update(float dt, SDL_Event& event, SceneType sceneType) {
 
         if (sceneType == SceneType::MainMenu) {
@@ -64,6 +71,7 @@ public:
             movementSystem.update(entities, dt);
             enemyMovementSystem.update(entities, dt);
             spawnTimerSystem.update(entities, dt);
+            gridSystem.update(entityGrid, entities, *this);
             collisionSystem.update(*this);
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);
@@ -80,6 +88,9 @@ public:
         for (auto& e : entities) {
             if (e->hasComponent<Camera>()) {
                 map.draw(e->getComponent<Camera>());
+                if (renderSystem.isDebug()) {
+                    gridSystem.draw(e->getComponent<Camera>());
+                }
             }
         }
 
@@ -113,6 +124,10 @@ public:
 
     std::vector<std::unique_ptr<Entity>>& getEntities() {
         return entities;
+    }
+
+    std::vector<std::vector<std::vector<Entity*>>>& getEntityGrid() {
+        return entityGrid;
     }
 
     void cleanup() {

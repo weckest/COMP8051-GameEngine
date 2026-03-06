@@ -68,6 +68,10 @@ public:
             }
         }
     }
+
+    bool isDebug() {
+        return debug;
+    }
 };
 
 #endif //INC_8051TUTORIAL_RENDERSYSTEM_H

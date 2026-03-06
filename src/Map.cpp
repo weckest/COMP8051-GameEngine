@@ -93,7 +93,7 @@ void Map::draw(const Camera& cam) {
 
     SDL_FRect src{}, dest{};
 
-    dest.w = dest.h = 32;
+    dest.w = dest.h = scale;
 
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
