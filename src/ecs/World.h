@@ -71,7 +71,7 @@ public:
             movementSystem.update(entities, dt);
             enemyMovementSystem.update(entities, dt);
             spawnTimerSystem.update(entities, dt);
-            // gridSystem.update(entityGrid, entities, *this);
+            gridSystem.update(entityGrid, entities, *this);
             collisionSystem.update(*this);
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);

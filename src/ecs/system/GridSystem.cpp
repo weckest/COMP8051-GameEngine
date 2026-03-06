@@ -26,14 +26,14 @@ GridSystem::GridSystem(World &world) : world(world) {
 
                 getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
                 auto& cell = grid[yIndex][xIndex];
-                // std::cout << "before death: " << cell.size() << std::endl;
+                std::cout << "before death: " << cell.size() << std::endl;
                 // deferredRemove[yIndex][xIndex] = true;
                 auto it = std::find(cell.begin(), cell.end(), entity);
                 if (it != cell.end()) {
                     *it = cell.back();
                     cell.pop_back();
                 }
-                // std::cout << "after death: " << cell.size() << std::endl;
+                std::cout << "after death: " << cell.size() << std::endl;
 
                 //temp debug logging
                 if (cell.size() > 150) {
