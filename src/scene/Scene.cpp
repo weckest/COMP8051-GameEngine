@@ -122,6 +122,7 @@ Scene::Scene(SceneType sceneType, const char *sceneName, const char *mapPath, in
 
     player.addComponent<Health>(Game::gameState.playerHealth);
 
+    // adjust this so it fires through weapon manager.
     //make the player shoot
     auto& playerGun = player.addComponent<TimedSpawner>(0.25f * 1 + (1 - pt.fireRateModifier),[this, &player, pt] {
         auto& e(world.createDeferredEntity());

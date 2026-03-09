@@ -13,7 +13,10 @@
 #include <unordered_map>
 
 #include "AnimationClip.h"
+#include "Entity.h"
 
+
+class World;
 
 struct Transform {
     Vector2D position{};
@@ -89,6 +92,19 @@ struct EnemyTag {
 };
 struct ItemTag {
     float time;
+};
+
+struct Weapon {
+    std::string name;
+    float fireRate{};
+    float damageModifier{};
+    float projectileSizeModifier{};
+    float aoeModifier{};
+    float critDamageModifier{};
+    float critChanceModifier{};
+    // a function that takes in the above modifiers and spawns a projectile with those modifiers applied
+    //  the entity representing the player so we can get the player's transform and direction to spawn the projectile in the right place and direction
+    std::function<void( Weapon&, Entity& , World&)> spawnFunction;
 };
 
 #endif //INC_8051TUTORIAL_COMPONENT_H

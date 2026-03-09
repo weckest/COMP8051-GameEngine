@@ -24,6 +24,8 @@ set(SRC_FILES
         src/ecs/system/LevelUpSystem.hpp
         src/ecs/system/GridSystem.cpp
         src/ecs/system/MovementSystem.cpp
+        src/manager/WeaponManager.cpp
+        src/behaviours/WeaponBehaviours.cpp
 )
 
 # ALWAYS create the executable first
@@ -93,4 +95,5 @@ target_include_directories(8051Tutorial PRIVATE
         ${PROJECT_SOURCE_DIR}/src/ecs
         ${PROJECT_SOURCE_DIR}/src/ecs/system
         ${PROJECT_SOURCE_DIR}/src/vendor
+        ${PROJECT_SOURCE_DIR}/src/behaviours
 )
