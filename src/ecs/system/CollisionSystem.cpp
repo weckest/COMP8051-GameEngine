@@ -36,7 +36,9 @@ void CollisionSystem::update(World &world) {
     for (size_t i = 0; i < collidables.size(); i++) {
         auto entityA = collidables[i];
 
+        //dont do collisions if the entity is dead
         if (!entityA->isActive()) continue;
+
         auto& colliderA = entityA->getComponent<Collider>();
         auto& transformA = entityA->getComponent<Transform>();
 
@@ -50,16 +52,17 @@ void CollisionSystem::update(World &world) {
             //check for the collider collision
             //inner loop
             // for (auto& entityB : cell) {
-            for (size_t j = 0; j < collidables.size(); j++) {
+            for (size_t j = i + 1; j < collidables.size(); j++) {
                 auto entityB = collidables[j];
                 auto& colliderB = entityB->getComponent<Collider>();
 
+                //dont do collisions if the entity is dead
                 if (!entityB->isActive()) continue;
 
                 if (Collision::AABB(colliderA, colliderB)) {
                     CollisionKey key = makeKey(entityA, entityB);
                     currentCollisions.insert(key);
-                    // std::cout << colliderA.tag << " " << colliderB.tag << std::endl;
+
                     if (!activeCollisions.contains(key)) {
                         world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
                     }
