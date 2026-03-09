@@ -35,6 +35,8 @@ void CollisionSystem::update(World &world) {
     //outer loop
     for (size_t i = 0; i < collidables.size(); i++) {
         auto entityA = collidables[i];
+
+        if (!entityA->isActive()) continue;
         auto& colliderA = entityA->getComponent<Collider>();
         auto& transformA = entityA->getComponent<Transform>();
 
@@ -52,10 +54,12 @@ void CollisionSystem::update(World &world) {
                 auto entityB = collidables[j];
                 auto& colliderB = entityB->getComponent<Collider>();
 
+                if (!entityB->isActive()) continue;
 
                 if (Collision::AABB(colliderA, colliderB)) {
                     CollisionKey key = makeKey(entityA, entityB);
                     currentCollisions.insert(key);
+                    // std::cout << colliderA.tag << " " << colliderB.tag << std::endl;
                     if (!activeCollisions.contains(key)) {
                         world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
                     }

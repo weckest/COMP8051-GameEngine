@@ -14,7 +14,8 @@ enum class EventType {
     PlayerAction,
     ToggleDebug,
     SpawnEntity,
-    Death
+    Death,
+    GridDebug
 };
 
 struct BaseEvent {
@@ -68,6 +69,13 @@ struct DeathEvent : BaseEvent {
     Entity* entity = nullptr;
     DeathEvent(Entity* entity) : entity(entity) {
         type = EventType::Death;
+    }
+};
+
+struct GridDebugEvent : BaseEvent {
+    Entity* entity = nullptr;
+    GridDebugEvent(Entity* entity) : entity(entity) {
+        type = EventType::GridDebug;
     }
 };
 

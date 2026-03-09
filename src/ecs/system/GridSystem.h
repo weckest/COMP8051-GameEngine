@@ -20,9 +20,9 @@ class GridSystem {
 public:
     GridSystem(World& world);
     void update(
-        std::vector<std::vector<std::vector<Entity*>>>& grid,
-        std::vector<std::unique_ptr<Entity>>& entities,
-        World& world
+        std::vector<std::vector<std::vector<Entity*>>> &grid,
+        std::vector<std::unique_ptr<Entity>> &entities,
+        World &world
     );
 
     void draw(const Camera& cam);
@@ -40,6 +40,8 @@ public:
 
 private:
     // void destroyDeferred();
+    void countGridSize();
+    void moveEntity(Entity* entity, int oldX, int oldY, int newX, int newY);
 };
 
 #endif //INC_8051TUTORIAL_GRIDSYSTEM_H

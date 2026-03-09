@@ -22,18 +22,18 @@ GridSystem::GridSystem(World &world) : world(world) {
             auto& entity = death.entity;
             if (entity->hasComponent<Collider>() && entity->hasComponent<Transform>()) {
                 auto& t = entity->getComponent<Transform>();
+                auto& c = entity->getComponent<Collider>();
                 int xIndex, yIndex;
 
                 getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
                 auto& cell = grid[yIndex][xIndex];
-                std::cout << "before death: " << cell.size() << std::endl;
+
+                // std::cout << "before death: " << cell.size() << std::endl;
                 // deferredRemove[yIndex][xIndex] = true;
-                auto it = std::find(cell.begin(), cell.end(), entity);
-                if (it != cell.end()) {
-                    *it = cell.back();
-                    cell.pop_back();
-                }
-                std::cout << "after death: " << cell.size() << std::endl;
+                auto newEnd = std::remove(cell.begin(), cell.end(), entity);
+                    cell.erase(newEnd, cell.end());
+
+                // std::cout << "after death: " << cell.size() << std::endl;
 
                 //temp debug logging
                 if (cell.size() > 150) {
@@ -48,6 +48,24 @@ GridSystem::GridSystem(World &world) : world(world) {
             entity->destroy();
         }
     );
+
+    //print the grid position of the entity
+    world.getEventManager().subscribe(
+        [this, &world](const BaseEvent& e) {
+            if (e.type != EventType::GridDebug) return;
+            const auto& debug = static_cast<const GridDebugEvent&>(e);
+
+            auto& map = world.getMap();
+            int scale = map.scale;
+            int width = map.width * scale;
+            int height = map.height * scale;
+            auto& grid = world.getEntityGrid();
+
+            int xIndex, yIndex;
+            getGridIndex(&debug.entity->getComponent<Transform>().position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
+            std::cout << "grid Debug: " << xIndex << ", " << yIndex << std::endl;
+
+    });
 }
 
 void GridSystem::update(
@@ -63,41 +81,58 @@ void GridSystem::update(
     for (auto& e: entities) {
         if (e->hasComponent<Transform>() && e->hasComponent<Collider>()) {
             auto& t = e->getComponent<Transform>();
+            auto& c = e->getComponent<Collider>();
 
             int oldXIndex, oldYIndex;
             int xIndex, yIndex;
-
             getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &oldXIndex, &oldYIndex);
             getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
 
             //only do this if the entity is with in the world bounds
-            if ((xIndex < grid[0].size() && xIndex > 0) && (yIndex < grid.size() && yIndex > 0)) {
+            if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) {
                 auto& newCell = grid[yIndex][xIndex];
+
+                //check if the old position is out of the grid positions
+                //insert into the grid if we know this to be true
+                if ((oldXIndex >= grid[0].size() || oldXIndex < 0) || (oldYIndex >= grid.size() || oldYIndex < 0)) {
+                    auto it = std::find(newCell.begin(), newCell.end(), e.get());
+
+                    if (it == newCell.end()) {
+                        newCell.push_back(e.get());
+                    }
+                    continue;
+                }
+
                 auto& oldCell = grid[oldYIndex][oldXIndex];
 
 
                 //the entity has moved cells since the last update
                 if (oldXIndex != xIndex || oldYIndex != yIndex) {
-                    std::cout << "entity " << e.get() << " is going to new cell, X: " << xIndex << ", Y:" << yIndex << std::endl;
-                    newCell.push_back(e.get());
-                    auto it = std::find(oldCell.begin(), oldCell.end(), e.get());
-                    if (it != oldCell.end()) {
-                        *it = oldCell.back();
-                        oldCell.pop_back();
+                    if (std::find(newCell.begin(), newCell.end(), e.get()) == newCell.end()) {
+                        newCell.push_back(e.get());
                     }
-                    std::cout << "New X: " << xIndex << ", Y: " << yIndex << std::endl;
-                    std::cout << "Old X: " << oldXIndex << ", Y: " << oldYIndex << std::endl;
-                    std::cout << "New Size: " << newCell.size() << ", Old Size: " << oldCell.size() << std::endl;
+
+                    auto it = std::find(oldCell.begin(), oldCell.end(), e.get());
+
+                    if (it != oldCell.end()) {
+                        oldCell.erase(it);
+                    }
 
                 } else {
                     //add to the list of entities in the cell if it doesnt already exist
-                    if (std::find(newCell.begin(), newCell.end(), e.get()) == newCell.end()) {
+                    auto it = std::find(newCell.begin(), newCell.end(), e.get());
+
+                    if (it == newCell.end()) {
                         newCell.push_back(e.get());
                     }
                 }
             }
         }
     }
+}
+
+void GridSystem::moveEntity(Entity *entity, int oldX, int oldY, int newX, int newY) {
+
 }
 
 void GridSystem::draw(const Camera &cam) {
@@ -136,6 +171,24 @@ void GridSystem::draw(const Camera &cam) {
         TextureManager::draw(tex, src, dest);
     }
 }
+
+
+
+
+void GridSystem::countGridSize() {
+    int sum = 0;
+    auto& grid = world.getEntityGrid();
+    for (int i = 0; i < grid.size(); i++) {
+        for (int j = 0; j < grid[0].size(); j++) {
+            sum += grid[i][j].size();
+        }
+    }
+
+    if (sum > world.getEntities().size()) {
+        std::cout << "SHITS FUCKED" << std::endl;
+    }
+}
+
 
 // void GridSystem::destroyDeferred() {
 //     for (int i = 0; i < deferredRemove.size(); i++) {

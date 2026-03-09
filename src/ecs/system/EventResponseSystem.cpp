@@ -15,7 +15,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
             if (e.type != EventType::Collision) return;
             const auto& collision = static_cast<const CollisionEvent&>(e); //cast base type into collision type
 
-            onCollision(collision, "player", "item", world);
+            // onCollision(collision, "player", "item", world);
             onCollision(collision, "player", "wall", world);
             onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
@@ -119,9 +119,8 @@ void EventResponseSystem::onCollision(
          auto& bTag = entityA->getComponent<ProjectileTag>();
          std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
          for (auto& e: entities) {
-             auto& eTag = entityB->getComponent<EnemyTag>();
 
-             auto& et = e->getComponent<Transform>();
+             auto& eTag = e->getComponent<EnemyTag>();
 
              if (e != entityB) {
                  float distanceToEnemy = (entityA->getComponent<Transform>().position - e->getComponent<Transform>().position).length();
@@ -137,7 +136,7 @@ void EventResponseSystem::onCollision(
                  world.getEventManager().emit(SpawnPrefabEvent{"coin", entityB->getComponent<Transform>()});
 
                  //destroy the enemy
-                 em.emit(DeathEvent(entityB));
+                 em.emit(DeathEvent(e));
              }
          }
 

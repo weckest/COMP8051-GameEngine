@@ -12,7 +12,8 @@ SpawnerSystem::SpawnerSystem(World &world) {
 
         spawners["coin"] = [&world](const Transform &t) {
                 auto& coin = world.createDeferredEntity();
-                coin.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
+                auto& cT = coin.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
+                cT.oldPosition = cT.position;
                 auto& c = coin.addComponent<Collider>("item");
                 c.rect.x = t.position.x;
                 c.rect.y = t.position.y;

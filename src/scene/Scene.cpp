@@ -48,23 +48,24 @@ Scene::Scene(SceneType sceneType, const char *sceneName, const char *mapPath, in
         // e.addComponent<Sprite>(tex, tileSrc, tileDst);
     }
 
-    for (auto& item: world.getMap().items) {
-        auto& e = world.createEntity();
-        e.addComponent<Transform>(Vector2D(item.rect.x, item.rect.y), 0.0f, 1.0f);
-        auto& c = e.addComponent<Collider>("item");
-        c.rect.x = item.rect.x;
-        c.rect.y = item.rect.y;
-        c.rect.w = item.rect.w;
-        c.rect.h = item.rect.h;
+    // for (auto& item: world.getMap().items) {
+    //     auto& e = world.createEntity();
+    //     e.addComponent<Transform>(Vector2D(item.rect.x, item.rect.y), 0.0f, 1.0f);
+    //     auto& c = e.addComponent<Collider>("item");
+    //     c.rect.x = item.rect.x;
+    //     c.rect.y = item.rect.y;
+    //     c.rect.w = item.rect.w;
+    //     c.rect.h = item.rect.h;
+    //
+    //     //adding texture to the coins
+    //     SDL_Texture* tex = TextureManager::load("../assets/coin.png");
+    //     SDL_FRect tileSrc {0, 0, 32, 32};
+    //     SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
+    //     e.addComponent<Sprite>(tex, tileSrc, tileDst);
+    //     e.addComponent<ItemTag>();
+    // }
 
-        //adding texture to the coins
-        SDL_Texture* tex = TextureManager::load("../assets/coin.png");
-        SDL_FRect tileSrc {0, 0, 32, 32};
-        SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-        e.addComponent<Sprite>(tex, tileSrc, tileDst);
-        e.addComponent<ItemTag>();
-    }
-
+    //add spawners
     for (auto& t: world.getMap().spawners) {
         auto& e(world.createEntity());
         e.addComponent<TimedSpawner>(4.0f, [this, t] {
@@ -141,8 +142,6 @@ Scene::Scene(SceneType sceneType, const char *sceneName, const char *mapPath, in
         } else {
             e.addComponent<Velocity>(v.direction, 200.0f);
         }
-
-
 
         auto& c = e.addComponent<Collider>("bullet");
         c.rect.w = dst.w;

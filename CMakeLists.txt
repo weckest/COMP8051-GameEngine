@@ -23,6 +23,7 @@ set(SRC_FILES
         src/ecs/system/SpawnerSystem.cpp
         src/ecs/system/LevelUpSystem.hpp
         src/ecs/system/GridSystem.cpp
+        src/ecs/system/MovementSystem.cpp
 )
 
 # ALWAYS create the executable first

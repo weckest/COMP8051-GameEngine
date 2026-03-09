@@ -39,7 +39,7 @@ class World {
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     EventManager eventManager;
     RenderSystem renderSystem{*this};
-    MovementSystem movementSystem;
+    MovementSystem movementSystem{*this};
     KeyBoardInputSystem keyboardInputSystem;
     GridSystem gridSystem{*this};
     CollisionSystem collisionSystem;
@@ -58,7 +58,10 @@ class World {
 
 public:
     World() {
-        entityGrid.resize(rows, std::vector<std::vector<Entity*>>(cols));
+        entityGrid = std::vector<std::vector<std::vector<Entity*>>>(
+            rows,
+            std::vector<std::vector<Entity*>>(cols)
+        );
     }
     void update(float dt, SDL_Event& event, SceneType sceneType) {
 
