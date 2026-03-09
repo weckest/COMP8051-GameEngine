@@ -20,32 +20,37 @@ GridSystem::GridSystem(World &world) : world(world) {
 
             //remove entity from the grid system
             auto& entity = death.entity;
+            // std::cout << entity << std::endl;
             if (entity->hasComponent<Collider>() && entity->hasComponent<Transform>()) {
                 auto& t = entity->getComponent<Transform>();
                 auto& c = entity->getComponent<Collider>();
+                // std::cout << c.tag << std::endl;
                 int xIndex, yIndex;
 
-                getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
-                auto& cell = grid[yIndex][xIndex];
 
+                getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
+                // std::cout << "Grid Position: " << xIndex << "," << yIndex << std::endl;
+
+
+                if (!(xIndex < grid[0].size() && xIndex >= 0) || !(yIndex < grid.size() && yIndex >= 0)) {
+                    //outside world. use the old position
+                    getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
+                    // std::cout << "Old Grid Position: " << xIndex << "," << yIndex << std::endl;
+                }
+
+                auto& cell = grid[yIndex][xIndex];
                 // std::cout << "before death: " << cell.size() << std::endl;
                 // deferredRemove[yIndex][xIndex] = true;
-                auto newEnd = std::remove(cell.begin(), cell.end(), entity);
-                    cell.erase(newEnd, cell.end());
+                auto it = std::find(cell.begin(), cell.end(), entity);
+
+                if (it != cell.end()) {
+                    auto newEnd = std::remove(cell.begin(), cell.end(), entity);
+                        cell.erase(newEnd, cell.end());
+                }
 
                 // std::cout << "after death: " << cell.size() << std::endl;
 
-                //temp debug logging
-                if (cell.size() > 150) {
-                    std::cout << xIndex << ", " << yIndex << std::endl;
-                    for (auto& eT : cell) {
-                        std::cout << eT->getComponent<Collider>().tag << std::endl;
-                    }
-                }
             }
-
-            //TEMP MOVE TO ANOTHER SUBSCRIBER
-            entity->destroy();
         }
     );
 

@@ -137,7 +137,11 @@ public:
         //use lambda predicate to remove all inactive entities
         std::erase_if(
             entities,
-            [](std::unique_ptr<Entity>& e) {
+            [this](std::unique_ptr<Entity>& e) {
+                if (!e->isActive()) {
+                    eventManager.emit(DeathEvent{&*e});
+                    return !e->isActive();
+                }
                     return !e->isActive();
             }
         );

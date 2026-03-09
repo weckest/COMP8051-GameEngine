@@ -138,7 +138,7 @@ Scene::Scene(SceneType sceneType, const char *sceneName, const char *mapPath, in
         //set the initial position of bullet
         e.addComponent<Transform>(Vector2D(t.position.x + s.dst.w / 2 - dst.w / 2, t.position.y + s.dst.h / 2 - dst.h / 2), 0.0f, 1.0f);
         if (v.direction == Vector2D(0.0f,0.0f)) {
-            e.addComponent<Velocity>(Vector2D(1.0f, 0.0f), 200.0f);
+            e.addComponent<Velocity>(Vector2D(0.0f, 1.0f), 200.0f);
         } else {
             e.addComponent<Velocity>(v.direction, 200.0f);
         }

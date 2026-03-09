@@ -15,7 +15,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
             if (e.type != EventType::Collision) return;
             const auto& collision = static_cast<const CollisionEvent&>(e); //cast base type into collision type
 
-            // onCollision(collision, "player", "item", world);
+            onCollision(collision, "player", "item", world);
             onCollision(collision, "player", "wall", world);
             onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
@@ -69,6 +69,7 @@ void EventResponseSystem::onCollision(
         ///END OF TEST CODE
 
         em.emit(DeathEvent(entityB));
+        entityB->destroy();
 
 
 
@@ -109,6 +110,7 @@ void EventResponseSystem::onCollision(
 
         if (health.currentHealth <= 0) {
             em.emit(DeathEvent(entityA));
+            entityA->destroy();
             Game::onSceneChangeRequest("gameover");
         }
 
@@ -137,6 +139,7 @@ void EventResponseSystem::onCollision(
 
                  //destroy the enemy
                  em.emit(DeathEvent(e));
+                 e->destroy();
              }
          }
 
@@ -163,6 +166,7 @@ void EventResponseSystem::onCollision(
 
         //destroy the bullet
         em.emit(DeathEvent(entityA));
+        entityA->destroy();
     }
 }
 

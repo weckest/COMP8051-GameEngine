@@ -5,29 +5,13 @@
 //global variable
 Game* game = nullptr;
 
-void test() {
-    Vector2D a(3, 4);
-    Vector2D b(1, 2);
-
-    a += b;
-    Vector2D c = a - b;
-    Vector2D d = a * 2;
-    Vector2D e = 2 * a;
-    Vector2D f = -a;
-    bool same = (a==b);
-    a *= 2;
-    b /= 2;
-    e -= a;
-    bool notSame = (a!=b);
-}
-
 int main() {
 
-    const int FPS = 60; //60 is the closest refresh rate of most our monitors,  30fps is the half the work
-    const int desiredFrameTime = 1000 / FPS; // 16ms per frame
+    const int FPS = 60;
+    const Uint64 desiredFrameTime = 1000000000ULL / FPS; // nanoseconds per frame
 
-    Uint64 ticks = SDL_GetTicks();
-    int actualFrameTime;
+    Uint64 ticks = SDL_GetTicksNS();
+    Uint64 actualFrameTime;
 
     game = new Game();
     game->init("8051 Tutorial Engine", 800, 600, false);
@@ -35,27 +19,28 @@ int main() {
     //game loop
     while (game->running()) {
 
-        float deltaTime = (SDL_GetTicks() - ticks) / 1000.0f;
-
-        ticks = SDL_GetTicks(); //time in milliseconds since we initialzed SDL
+        Uint64 now = SDL_GetTicksNS();
+        float deltaTime = (now - ticks) / 1000000000.0f; // convert ns → seconds
+        ticks = now;
 
         game->handleEvents();
         game->update(deltaTime);
         game->render();
 
-        actualFrameTime = SDL_GetTicks() - ticks; //elapsed time in ms it took the current frame
+        actualFrameTime = SDL_GetTicksNS() - now; // frame time in ns
 
         if (actualFrameTime != 0) {
-            SDL_SetWindowTitle(game->getWindow(),
-                ("8051 Tutorial Engine, FPS: " + std::to_string((int)(1.0f / deltaTime))
-                    + ", Actual: " + std::to_string((int)(1.0f / (actualFrameTime / 1000.f)))).c_str());
+            SDL_SetWindowTitle(
+                game->getWindow(),
+                ("8051 Tutorial Engine, FPS: " + std::to_string((int)(1.0f / deltaTime)) +
+                 ", Actual: " + std::to_string((int)(1000000000.0 / actualFrameTime)))
+                    .c_str()
+            );
         }
-        // std::cout << actualFrameTime << " " << deltaTime << std::endl;
-        //frame limiter
-        //keeps the game running at the desirer frame rate
-        //if the actual frame took less time that the desired frame, delay the difference
+
+        // frame limiter
         if (desiredFrameTime > actualFrameTime) {
-            SDL_Delay(desiredFrameTime - actualFrameTime);
+            SDL_Delay((desiredFrameTime - actualFrameTime) / 1000000); // ns → ms
         }
     }
 
