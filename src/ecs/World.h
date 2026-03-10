@@ -80,7 +80,7 @@ public:
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
             destructionSystem.update(entities);
-            levelUpSystem.update(entities);
+            levelUpSystem.update(entities, *this);
         }
         synchronizeEntities();
         cleanup();

@@ -93,6 +93,8 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
 
 
+
+
     std::cout << "Animations loaded..." << std::endl;
 
     //load scenes
