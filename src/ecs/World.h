@@ -27,11 +27,13 @@
 #include "RenderSystem.h"
 #include "SpawnerSystem.h"
 #include "SpawnTimerSystem.h"
+#include "Timer.h"
 #include "scene/SceneType.h"
 
 //could also be called EntityManager
 class World {
     Map map;
+    Timer timer;
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::vector<std::vector<Entity*>>> entityGrid;
     int rows = 3;
@@ -69,18 +71,24 @@ public:
             //main menu system
             mainMenuSystem.update(event);
         } else {
+            timer.startTimer("update");
             keyboardInputSystem.update(*this, entities, event);
             bobbingSystem.update(entities, dt);
             movementSystem.update(entities, dt);
             enemyMovementSystem.update(entities, dt);
             spawnTimerSystem.update(entities, dt);
+            timer.startTimer("grid");
             gridSystem.update(entityGrid, entities, *this);
+            timer.stopTimer("grid");
+            timer.startTimer("collision");
             collisionSystem.update(*this);
+            timer.stopTimer("collision");
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
             destructionSystem.update(entities);
             levelUpSystem.update(entities);
+            timer.stopTimer("update");
         }
         synchronizeEntities();
         cleanup();
@@ -98,6 +106,10 @@ public:
         }
 
         renderSystem.render(entities);
+
+        if (renderSystem.isDebug()) {
+            timer.printResults();
+        }
     }
 
     Entity& createEntity() {

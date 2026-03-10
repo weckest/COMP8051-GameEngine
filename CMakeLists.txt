@@ -26,6 +26,7 @@ set(SRC_FILES
         src/ecs/system/MovementSystem.cpp
         src/manager/WeaponManager.cpp
         src/behaviours/WeaponBehaviours.cpp
+        src/utils/Timer.cpp
 )
 
 # ALWAYS create the executable first
