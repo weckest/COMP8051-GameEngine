@@ -87,7 +87,7 @@ public:
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
             destructionSystem.update(entities);
-            levelUpSystem.update(entities);
+            levelUpSystem.update(entities, *this);
             timer.stopTimer("update");
         }
         synchronizeEntities();

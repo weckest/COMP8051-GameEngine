@@ -71,16 +71,7 @@ struct Health {
     int currentHealth{};
 };
 
-struct PlayerTag {
-    float damageModifier = 1;
-    float speedModifier = 1;
-    float fireRateModifier = 1;
-    float playerSizeModifier = 1;
-    float projectileSizeModifier = 1;
-    float aoeModifier = 1;
-    float xp = 0;
-    int level = 1;
-};
+
 struct EffectTag{};
 struct ProjectileTag {
     float damage{};
@@ -106,5 +97,30 @@ struct Weapon {
     //  the entity representing the player so we can get the player's transform and direction to spawn the projectile in the right place and direction
     std::function<void( Weapon&, Entity& , World&)> spawnFunction;
 };
+
+struct Item {
+    std::string name;
+    float damageModifier = 1;
+    float speedModifier=1;
+    float fireRateModifier=1;
+    float playerSizeModifier=1;
+    float projectileSizeModifier=1;
+    float aoeModifier=1;
+    float xpModifier = 1;
+
+};
+
+struct PlayerTag {
+    float damageModifier = 1;
+    float speedModifier = 1;
+    float fireRateModifier = 1;
+    float playerSizeModifier = 1;
+    float projectileSizeModifier = 1;
+    float aoeModifier = 1;
+    float xpModifier = 1;
+    float xp = 0;
+    int level = 1;
+    int health = 100;
+    std::vector<Item> itemList;};
 
 #endif //INC_8051TUTORIAL_COMPONENT_H

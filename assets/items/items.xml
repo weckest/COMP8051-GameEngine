@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<items>
+    <item name="The Art of (business) War" damageModifier="1.2"/>
+    <item name="Nose Candy" speedModifier="1.2"/>
+    <item name="Golden Deluxe Tie" fireRateModifier="1.2"/>
+    <item name="Packed Lunch" playerSizeModifier="1.2" damageModifier="1.4"/>
+    <item name="3 Ringed Binder" projectileSizeModifier="1.2"/>
+    <item name="No.2 Pencil" aoeModifier="1.2"/>
+    <item name="Briefcase of Knowledge" xpModifier="1.2"/>
+
+
+</items>
+
+<!--
+Weapon Ideas:
+    The Art of War (in business): Increases damage dealt
+    Golden Deluxe Tie: Increases Fire Rate
+    Briefcase of Knowledge: increases xp gain
+    Nose Candy: increases speed: Actual nose made out of candy
+
+
+!-->

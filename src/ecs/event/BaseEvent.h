@@ -15,7 +15,8 @@ enum class EventType {
     ToggleDebug,
     SpawnEntity,
     Death,
-    GridDebug
+    GridDebug,
+    Levelup
 };
 
 struct BaseEvent {
@@ -77,6 +78,12 @@ struct GridDebugEvent : BaseEvent {
     GridDebugEvent(Entity* entity) : entity(entity) {
         type = EventType::GridDebug;
     }
+};
+
+struct LevelUpEvent : BaseEvent {
+    int newLevel;
+    LevelUpEvent(int lvl) : newLevel(lvl) {}
+
 };
 
 #endif //INC_8051TUTORIAL_BASEEVENT_H
