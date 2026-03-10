@@ -78,8 +78,10 @@ struct PlayerTag {
     float playerSizeModifier = 1;
     float projectileSizeModifier = 1;
     float aoeModifier = 1;
+    float xpModifier = 1;
     float xp = 0;
     int level = 1;
+    int health = 100;
 };
 struct EffectTag{};
 struct ProjectileTag {
@@ -105,6 +107,18 @@ struct Weapon {
     // a function that takes in the above modifiers and spawns a projectile with those modifiers applied
     //  the entity representing the player so we can get the player's transform and direction to spawn the projectile in the right place and direction
     std::function<void( Weapon&, Entity& , World&)> spawnFunction;
+};
+
+struct Item {
+    std::string name;
+    float damageModifier = 1;
+    float speedModifier=1;
+    float fireRateModifier=1;
+    float playerSizeModifier=1;
+    float projectileSizeModifier=1;
+    float aoeModifier=1;
+    float xpModifier = 1;
+
 };
 
 #endif //INC_8051TUTORIAL_COMPONENT_H

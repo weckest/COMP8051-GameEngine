@@ -9,9 +9,11 @@
 #include <ostream>
 #include <random>
 #include <chrono>
+#include <manager/WeaponManager.h>
 
 #include "AnimationClip.h"
 #include "manager/AssetManager.h"
+#include "manager/ItemManager.hpp"
 
 // GameObject* player = nullptr;
 
@@ -76,6 +78,20 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     AssetManager::loadAnimation("player", "../assets/animations/bunny_animations.xml");
     AssetManager::loadAnimation("enemy", "../assets/animations/fox_animations.xml");
     AssetManager::loadAnimation("explosion", "../assets/animations/explosion_animation.xml");
+
+    ItemManager::loadAllItems("../assets/items/items.xml");
+
+    Item item = ItemManager::getRandItem();
+    std::cout << item.name << std::endl;
+    std::cout << item.aoeModifier << std::endl;
+
+    item = ItemManager::getRandItem();
+    std::cout << item.name << std::endl;
+    std::cout << item.aoeModifier << std::endl;
+
+
+
+
 
     std::cout << "Animations loaded..." << std::endl;
 
