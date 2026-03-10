@@ -27,21 +27,14 @@ public:
 
     void draw(const Camera& cam);
 
-    static void getGridIndex(Vector2D* position, int worldWidth, int worldHeight, int gridX, int gridY, int* xIndex, int* yIndex) {
-        //height of the rows as a float
-        float rowSize = worldHeight / (gridY * 1.0f);
-
-        //widths of the columns as a float
-        float columnSize = worldWidth / (gridX * 1.0f);
-
-        *xIndex = position->x / columnSize;
-        *yIndex = position->y / rowSize;
-    }
+    static void getGridIndex(Vector2D* position, int worldWidth, int worldHeight, int gridX, int gridY, int* xIndex, int* yIndex);
 
 private:
     // void destroyDeferred();
     void countGridSize();
-    void moveEntity(Entity* entity, int oldX, int oldY, int newX, int newY);
+    bool moveEntity(Entity* entity, int oldX, int oldY, int newX, int newY);
+    bool removeEntity(Entity* entity, int x, int y);
+    bool insertEntity(Entity* entity, int x, int y);
 };
 
 #endif //INC_8051TUTORIAL_GRIDSYSTEM_H
