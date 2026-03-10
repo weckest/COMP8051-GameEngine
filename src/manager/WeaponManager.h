@@ -8,10 +8,10 @@
 
 class WeaponManager {
 	static std::unordered_map<std::string,Weapon > weapons;
-	static Weapon loadWeaponFromXML(const char* path);
+
 
 public:
-	static void loadWeapon(const std::string& weaponName, const char* path);
+	static void loadWeaponFromXML(const char* path);
 	static const Weapon& getRandWeapon();
 };
 

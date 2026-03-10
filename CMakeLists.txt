@@ -30,6 +30,7 @@ set(SRC_FILES
         src/manager/ItemManager.hpp
         src/manager/ItemManager.cpp
         src/ecs/system/LevelUpSystem.cpp
+        src/ecs/system/WeaponFireSystem.cpp
 )
 
 # ALWAYS create the executable first

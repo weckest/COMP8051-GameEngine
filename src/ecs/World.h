@@ -27,6 +27,7 @@
 #include "RenderSystem.h"
 #include "SpawnerSystem.h"
 #include "SpawnTimerSystem.h"
+#include "WeaponFireSystem.h"
 #include "Timer.h"
 #include "scene/SceneType.h"
 
@@ -56,6 +57,7 @@ class World {
     MainMenuSystem mainMenuSystem;
     SpawnerSystem spawnerSystem{*this};
     LevelUpSystem levelUpSystem;
+    WeaponFireSystem weaponFireSystem;
 
 
 public:
@@ -88,6 +90,7 @@ public:
             cameraSystem.update(entities);
             destructionSystem.update(entities);
             levelUpSystem.update(entities, *this);
+            weaponFireSystem.update(*this, dt);
             timer.stopTimer("update");
         }
         synchronizeEntities();

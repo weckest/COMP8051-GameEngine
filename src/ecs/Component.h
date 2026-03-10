@@ -93,6 +93,7 @@ struct Weapon {
     float aoeModifier{};
     float critDamageModifier{};
     float critChanceModifier{};
+    float cooldown{};
     // a function that takes in the above modifiers and spawns a projectile with those modifiers applied
     //  the entity representing the player so we can get the player's transform and direction to spawn the projectile in the right place and direction
     std::function<void( Weapon&, Entity& , World&)> spawnFunction;
@@ -121,6 +122,8 @@ struct PlayerTag {
     float xp = 0;
     int level = 1;
     int health = 100;
-    std::vector<Item> itemList;};
+    std::vector<Item> itemList;
+    std::vector<Weapon> weaponList;
+};
 
 #endif //INC_8051TUTORIAL_COMPONENT_H
