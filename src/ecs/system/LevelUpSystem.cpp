@@ -27,6 +27,7 @@ void LevelUpSystem::update(const std::vector<std::unique_ptr<Entity>>& entities,
         stats.level++;
         stats.xp -= xpToLevelUp;
         world.getEventManager().emit(LevelUpEvent{stats.level});
+        std::cout << "LEVEL UP!" << std::endl;
 
     }
 }
