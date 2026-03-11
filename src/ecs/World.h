@@ -7,6 +7,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <manager/WeaponManager.h>
 
 #include "AnimationSystem.h"
 #include "BobbingSystem.h"
@@ -31,6 +32,7 @@
 #include "WeaponFireSystem.h"
 #include "Timer.h"
 #include "data/DebugState.h"
+#include "manager/ItemManager.hpp"
 #include "scene/SceneType.h"
 
 //could also be called EntityManager
@@ -44,6 +46,8 @@ class World {
     int cols = 5;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     EventManager eventManager;
+    ItemManager itemManager;
+    WeaponManager weaponManager;
     RenderSystem renderSystem{*this};
     MovementSystem movementSystem{*this};
     KeyBoardInputSystem keyboardInputSystem;
@@ -183,6 +187,14 @@ public:
     EventManager& getEventManager() {
         return eventManager;
     }
+
+    ItemManager& getItemManager() {
+        return itemManager;
+    }
+    WeaponManager& getWeaponManager() {
+        return weaponManager;
+    }
+
 
     Map& getMap() {return map;}
 

@@ -12,6 +12,7 @@ class World;
 class LevelUpHandler {
 
 public:
+    World& world;
     LevelUpHandler(World& world);
 
 private:

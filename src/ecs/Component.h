@@ -101,6 +101,7 @@ struct Weapon {
 
 struct Item {
     std::string name;
+    int itemLevel = 1;
     float damageModifier = 1;
     float speedModifier=1;
     float fireRateModifier=1;
