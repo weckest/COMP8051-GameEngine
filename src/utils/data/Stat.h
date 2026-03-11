@@ -5,4 +5,9 @@
 #ifndef INC_8051TUTORIAL_STAT_H
 #define INC_8051TUTORIAL_STAT_H
 
+
+struct Stat {
+
+};
+
 #endif //INC_8051TUTORIAL_STAT_H
