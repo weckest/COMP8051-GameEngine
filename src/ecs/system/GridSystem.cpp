@@ -21,7 +21,7 @@ GridSystem::GridSystem(World &world) : world(world) {
 
             //remove entity from the grid system
             auto& entity = death.entity;
-            // std::cout << entity << std::endl;
+
             if (entity->hasComponent<Collider>() && entity->hasComponent<Transform>()) {
                 auto& t = entity->getComponent<Transform>();
 
@@ -29,23 +29,12 @@ GridSystem::GridSystem(World &world) : world(world) {
 
                 getGridIndex(entity, width, height, grid[0].size(), grid.size(), &gridPosition);
 
-                // std::cout << "Before any checks" << std::endl;
-                // std::cout << entity << ", TLX: " << gridPosition.tl.x << ", TLY: " << gridPosition.tl.y << ", BRX: " << gridPosition.br.x << ", BRY: " << gridPosition.br.y << std::endl;
-
-
                 //check if the top left is outside the grid
                 if (!(gridPosition.tl.x < grid[0].size() && gridPosition.tl.x >= 0) || !(gridPosition.tl.y < grid.size() && gridPosition.tl.y >= 0)) {
                     //outside world. use the old position
-                    // getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
-                    // getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.br);
                     getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.tl);
 
-                    // std::cout << "Old Grid Position: " << xIndex << "," << yIndex << std::endl;
                 }
-
-                // std::cout << "Before BR Checking" << std::endl;
-                // std::cout << entity << ", TLX: " << gridPosition.tl.x << ", TLY: " << gridPosition.tl.y << ", BRX: " << gridPosition.br.x << ", BRY: " << gridPosition.br.y << std::endl;
-
 
                 //check if the bottom right is outside the grid
                 if (!(gridPosition.br.x < grid[0].size() && gridPosition.br.x >= 0) || !(gridPosition.br.y < grid.size() && gridPosition.br.y >= 0)) {
@@ -61,12 +50,8 @@ GridSystem::GridSystem(World &world) : world(world) {
                         oldPosition.y += c.rect.h;
                     }
 
-                    // std::cout << "using the old position" << std::endl;
-
                     getGridIndex(&oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.br);
                 }
-
-                // std::cout << entity << ", TLX: " << gridPosition.tl.x << ", TLY: " << gridPosition.tl.y << ", BRX: " << gridPosition.br.x << ", BRY: " << gridPosition.br.y << std::endl;
 
                 //remove the entity from all cells
                 for (int xIndex = (int)gridPosition.tl.x; xIndex <= gridPosition.br.x; xIndex++) {
@@ -140,25 +125,11 @@ void GridSystem::update(
             getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &gridPosition.tl);
             getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &oldGridPosition.tl);
 
-            //loop over each of the old position cells and remove the entity from that cell
-            for (int oldXIndex = oldGridPosition.tl.x; oldXIndex <= oldGridPosition.br.x; oldXIndex++) {
-                for (int oldYIndex = oldGridPosition.tl.y; oldYIndex <= oldGridPosition.br.y; oldYIndex++) {
-                    if ((oldXIndex < grid[0].size() && oldXIndex >= 0) && (oldYIndex < grid.size() && oldYIndex >= 0)) {
-                        removeEntity(&*e, oldXIndex, oldYIndex);
-                    }
-                }
-            }
+            //remove the entity from the cells
+            removeEntity(&*e, &oldGridPosition);
 
-            //loop over each position and insert into that cell
-            for (int xIndex = gridPosition.tl.x; xIndex <= gridPosition.br.x; xIndex++) {
-                for (int yIndex = gridPosition.tl.y; yIndex <= gridPosition.br.y; yIndex++) {
-                    //only do this if the entity is with in the world bounds
-                    if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) {
-                        //add to the list of entities in the cell if it doesnt already exist
-                        insertEntity(&*e, xIndex, yIndex);
-                    }
-                }
-            }
+            //inserts the entity into the cells
+            insertEntity(&*e, &gridPosition);
 
         }
     }
@@ -168,6 +139,18 @@ bool GridSystem::moveEntity(Entity *entity, int oldX, int oldY, int newX, int ne
     bool insert = insertEntity(entity, newX, newY);
     bool remove = removeEntity(entity, oldX, oldY);
     return insert && remove;
+}
+
+bool GridSystem::removeEntity(Entity *entity, GridPosition *gridPosition) {
+    auto& grid = world.getEntityGrid();
+    for (int oldXIndex = gridPosition->tl.x; oldXIndex <= gridPosition->br.x; oldXIndex++) {
+        for (int oldYIndex = gridPosition->tl.y; oldYIndex <= gridPosition->br.y; oldYIndex++) {
+            if ((oldXIndex < grid[0].size() && oldXIndex >= 0) && (oldYIndex < grid.size() && oldYIndex >= 0)) {
+                if (!removeEntity(&*entity, oldXIndex, oldYIndex)) return false;
+            }
+        }
+    }
+    return true;
 }
 
 bool GridSystem::removeEntity(Entity *entity, int x, int y) {
@@ -185,6 +168,20 @@ bool GridSystem::removeEntity(Entity *entity, int x, int y) {
         return false;
     }
 
+    return true;
+}
+
+bool GridSystem::insertEntity(Entity *entity, GridPosition *gridPosition) {
+    auto& grid = world.getEntityGrid();
+    for (int xIndex = gridPosition->tl.x; xIndex <= gridPosition->br.x; xIndex++) {
+        for (int yIndex = gridPosition->tl.y; yIndex <= gridPosition->br.y; yIndex++) {
+            //only do this if the entity is with in the world bounds
+            if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) {
+                //add to the list of entities in the cell if it doesnt already exist
+                if (!insertEntity(entity, xIndex, yIndex)) return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -287,6 +284,7 @@ void GridSystem::getGridIndex(Entity *entity, int worldWidth, int worldHeight, i
         getGridIndex(&entityWH, worldWidth, worldHeight, gridX, gridY, &index->br);
     }
 }
+
 
 
 void GridSystem::countGridSize() {

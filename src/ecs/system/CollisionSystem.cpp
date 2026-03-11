@@ -62,6 +62,7 @@ void CollisionSystem::update(World &world) {
 
                         if (Collision::AABB(colliderA, colliderB)) {
                             CollisionKey key = makeKey(entityA, entityB);
+                            if (currentCollisions.contains(key)) continue;
                             currentCollisions.insert(key);
 
                             if (!activeCollisions.contains(key)) {

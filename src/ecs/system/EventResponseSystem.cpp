@@ -18,7 +18,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
             onCollision(collision, "player", "item", world);
             onCollision(collision, "player", "wall", world);
             onCollision(collision, "player", "enemy", world);
-            onCollision(collision, "bullet", "enemy", world);
+            // onCollision(collision, "bullet", "enemy", world);
         }
     );
 
@@ -103,14 +103,15 @@ void EventResponseSystem::onCollision(
         health.currentHealth--;
 
 
-
-
         Game::gameState.playerHealth = health.currentHealth;
 
         std::cout << health.currentHealth << std::endl;
 
         auto& bt = entityB->getComponent<Transform>();
-        bt.position += (bt.oldPosition - bt.position) * 2;
+        Vector2D diff = bt.oldPosition - bt.position;
+
+        //could be scaled by knockback modifier
+        bt.position += diff * 2;
 
         if (health.currentHealth <= 0) {
             em.emit(DeathEvent(entityA));

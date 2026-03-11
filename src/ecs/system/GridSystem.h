@@ -36,7 +36,9 @@ private:
     // void destroyDeferred();
     void countGridSize();
     bool moveEntity(Entity* entity, int oldX, int oldY, int newX, int newY);
+    bool removeEntity(Entity* entity, GridPosition* gridPosition);
     bool removeEntity(Entity* entity, int x, int y);
+    bool insertEntity(Entity* entity, GridPosition* gridPosition);
     bool insertEntity(Entity* entity, int x, int y);
 };
 
