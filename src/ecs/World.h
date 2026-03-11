@@ -63,26 +63,7 @@ class World {
 
 
 public:
-    World() {
-        entityGrid = std::vector<std::vector<std::vector<Entity*>>>(
-            rows,
-            std::vector<std::vector<Entity*>>(cols)
-        );
-
-        eventManager.subscribe(
-            [this](const BaseEvent& e) {
-                if (e.type != EventType::KeyPress) return;
-                const auto& keyPress = static_cast<const KeyPressEvent&>(e);
-
-                switch (keyPress.keyCode) {
-                    case SDLK_T:
-                        debugState.timer = !debugState.timer;
-                        break;
-                    default:
-                        break;
-                }
-        });
-    }
+    World();
     void update(float dt, SDL_Event& event, SceneType sceneType) {
 
         if (sceneType == SceneType::MainMenu) {
@@ -120,7 +101,7 @@ public:
         for (auto& e : entities) {
             if (e->hasComponent<Camera>()) {
                 map.draw(e->getComponent<Camera>());
-                if (renderSystem.isDebug()) {
+                if (debugState.debug) {
                     gridSystem.draw(e->getComponent<Camera>());
                 }
             }
@@ -128,7 +109,7 @@ public:
 
         renderSystem.render(entities);
 
-        if (renderSystem.isDebug() && debugState.timer) {
+        if (debugState.debug && debugState.timer) {
             timer.printResults();
         }
     }
@@ -202,6 +183,8 @@ public:
     }
 
     Map& getMap() {return map;}
+
+    DebugState& getDebugState() {return debugState;}
 
 };
 

@@ -6,6 +6,7 @@
 #define INC_8051TUTORIAL_DEBUGSTATE_H
 
 struct DebugState {
+    bool debug = false;
     bool timer = false;
 };
 
