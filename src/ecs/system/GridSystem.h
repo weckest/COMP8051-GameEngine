@@ -10,6 +10,7 @@
 
 #include "Component.h"
 #include "Entity.h"
+#include "data/GridPosition.h"
 
 class World;
 
@@ -28,12 +29,16 @@ public:
     void draw(const Camera& cam);
 
     static void getGridIndex(Vector2D* position, int worldWidth, int worldHeight, int gridX, int gridY, int* xIndex, int* yIndex);
+    static void getGridIndex(Vector2D* position, int worldWidth, int worldHeight, int gridX, int gridY, Vector2D* index);
+    static void getGridIndex(Entity* entity, int worldWidth, int worldHeight, int gridX, int gridY, GridPosition* index);
 
 private:
     // void destroyDeferred();
     void countGridSize();
     bool moveEntity(Entity* entity, int oldX, int oldY, int newX, int newY);
+    bool removeEntity(Entity* entity, GridPosition* gridPosition);
     bool removeEntity(Entity* entity, int x, int y);
+    bool insertEntity(Entity* entity, GridPosition* gridPosition);
     bool insertEntity(Entity* entity, int x, int y);
 };
 

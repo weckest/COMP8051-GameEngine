@@ -9,6 +9,8 @@ void KeyBoardInputSystem::update(World& world, const std::vector<std::unique_ptr
     if (event.type == SDL_EVENT_KEY_DOWN) {
         if (event.key.key == SDLK_ESCAPE) {
             world.getEventManager().emit(ToggleDebugEvent{});
+        } else {
+            world.getEventManager().emit(KeyPressEvent{event.key.key});
         }
     }
 

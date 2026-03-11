@@ -123,11 +123,15 @@ Scene::Scene(SceneType sceneType, const char *sceneName, const char *mapPath, in
 
     player.addComponent<Health>(Game::gameState.playerHealth);
 
+    //Adds lists for items and weapons for player.
+    player.addComponent<ItemList>();
+    player.addComponent<WeaponList>();
+
 
     // adjust this so it fires through weapon manager.
     //make the player shoot
 
-    player.getComponent<PlayerTag>().weaponList.push_back(WeaponManager::getRandWeapon());
+    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon());
 
 
 

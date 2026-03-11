@@ -23,12 +23,15 @@ void LevelUpSystem::update(const std::vector<std::unique_ptr<Entity>>& entities,
     //Gets the stats. If xp is more than threshold, level up, subtract xp from player.
     auto& stats = playerEntity->getComponent<PlayerTag>();
 
+    if (world.getDebugState().debug && world.getDebugState().level) {
+        std::cout << "Debug Level" <<  stats.level << std::endl;
+    }
+
     if (stats.xp >= xpToLevelUp) {
         stats.level++;
         stats.xp -= xpToLevelUp;
         world.getEventManager().emit(LevelUpEvent{stats.level});
-        std::cout << "LEVEL UP!" << std::endl;
-
+        //std::cout << "LEVEL UP!" << std::endl;
     }
 }
 

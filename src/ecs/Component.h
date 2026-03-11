@@ -101,6 +101,7 @@ struct Weapon {
 
 struct Item {
     std::string name;
+    int itemLevel = 1;
     float damageModifier = 1;
     float speedModifier=1;
     float fireRateModifier=1;
@@ -122,8 +123,16 @@ struct PlayerTag {
     float xp = 0;
     int level = 1;
     int health = 100;
-    std::vector<Item> itemList;
-    std::vector<Weapon> weaponList;
+};
+
+
+
+struct ItemList {
+    std::vector<Item> items{};
+};
+
+struct WeaponList {
+    std::vector<Weapon> weapons{};
 };
 
 #endif //INC_8051TUTORIAL_COMPONENT_H

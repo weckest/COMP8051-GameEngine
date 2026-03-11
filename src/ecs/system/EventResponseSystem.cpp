@@ -52,6 +52,10 @@ void EventResponseSystem::onCollision(
     Entity* entityB = nullptr;
     auto& em = world.getEventManager();
 
+    // if (e.entityB->hasComponent<Collider>()) {
+    //     std::cout << e.entityB->getComponent<Collider>().tag << std::endl;
+    // }
+
     if (!getCollisionEntities(e, ATag, BTag, entityA, entityB)) return;
 
     if (checkTagsFor(ATag, BTag, "item") && checkTagsFor(ATag, BTag, "player")) {
@@ -73,15 +77,15 @@ void EventResponseSystem::onCollision(
 
 
 
-        for (auto& entity: world.getEntities()) {
-            if (!entity->hasComponent<SceneState>()) continue;
-
-            auto& sceneState = entity->getComponent<SceneState>();
-            sceneState.coinsCollected++;
-            if (sceneState.coinsCollected > 1) {
-                Game::onSceneChangeRequest("level2");
-            }
-        }
+        // for (auto& entity: world.getEntities()) {
+        //     if (!entity->hasComponent<SceneState>()) continue;
+        //
+        //     auto& sceneState = entity->getComponent<SceneState>();
+        //     sceneState.coinsCollected++;
+        //     if (sceneState.coinsCollected > 1) {
+        //         Game::onSceneChangeRequest("level2");
+        //     }
+        // }
     } else if (checkTagsFor(ATag, BTag, "wall") && checkTagsFor(ATag, BTag, "player")) {
 
         if (e.state != CollisionState::Stay) return;
@@ -99,14 +103,15 @@ void EventResponseSystem::onCollision(
         health.currentHealth--;
 
 
-
-
         Game::gameState.playerHealth = health.currentHealth;
 
         std::cout << health.currentHealth << std::endl;
 
         auto& bt = entityB->getComponent<Transform>();
-        bt.position += (bt.oldPosition - bt.position) * 2;
+        Vector2D diff = bt.oldPosition - bt.position;
+
+        //could be scaled by knockback modifier
+        bt.position += diff * 2;
 
         if (health.currentHealth <= 0) {
             em.emit(DeathEvent(entityA));

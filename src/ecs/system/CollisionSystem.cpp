@@ -42,31 +42,35 @@ void CollisionSystem::update(World &world) {
         auto& colliderA = entityA->getComponent<Collider>();
         auto& transformA = entityA->getComponent<Transform>();
 
-        int xIndex, yIndex;
+        GridPosition gridPosition{};
 
-        GridSystem::getGridIndex(&transformA.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
-        // std::cout << xIndex << " " << yIndex << std::endl;
-        if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) {
-            auto& cell = grid[yIndex][xIndex];
-            // std::cout << cell.size() << std::endl;
+        GridSystem::getGridIndex(entityA, width, height, grid[0].size(), grid.size(), &gridPosition);
 
-            //check for the collider collision
-            //inner loop
-            for (auto& entityB : cell) {
-            // for (size_t j = i + 1; j < collidables.size(); j++) {
-                // auto entityB = collidables[j];
-                auto& colliderB = entityB->getComponent<Collider>();
-                //dont do collisions if the entity is dead
-                if (entityA == entityB) continue;
+        for (int xIndex = gridPosition.tl.x; xIndex <= gridPosition.br.x; xIndex++) {
+            for (int yIndex = gridPosition.tl.y; yIndex <= gridPosition.br.y; yIndex++) {
+                if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) {
+                    auto& cell = grid[yIndex][xIndex];
 
-                if (Collision::AABB(colliderA, colliderB)) {
-                    CollisionKey key = makeKey(entityA, entityB);
-                    currentCollisions.insert(key);
+                    //check for the collider collision
+                    //inner loop
+                    for (auto& entityB : cell) {
+                        auto& colliderB = entityB->getComponent<Collider>();
 
-                    if (!activeCollisions.contains(key)) {
-                        world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
+                        if (entityA == entityB) continue;
+                        //dont do collisions if the entity is dead
+                        if (!entityB->isActive()) continue;
+
+                        if (Collision::AABB(colliderA, colliderB)) {
+                            CollisionKey key = makeKey(entityA, entityB);
+                            if (currentCollisions.contains(key)) continue;
+                            currentCollisions.insert(key);
+
+                            if (!activeCollisions.contains(key)) {
+                                world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
+                            }
+                            world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
+                        }
                     }
-                    world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
                 }
             }
         }

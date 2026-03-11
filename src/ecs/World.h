@@ -7,6 +7,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <manager/WeaponManager.h>
 
 #include "AnimationSystem.h"
 #include "BobbingSystem.h"
@@ -19,6 +20,7 @@
 #include "EventResponseSystem.h"
 #include "GridSystem.h"
 #include "KeyboardInputSystem.h"
+#include "LevelUpHandler.h"
 #include "LevelUpSystem.hpp"
 #include "event/EventManager.h"
 #include "MainMenuSystem.h"
@@ -29,18 +31,23 @@
 #include "SpawnTimerSystem.h"
 #include "WeaponFireSystem.h"
 #include "Timer.h"
+#include "data/DebugState.h"
+#include "manager/ItemManager.hpp"
 #include "scene/SceneType.h"
 
 //could also be called EntityManager
 class World {
     Map map;
     Timer timer;
+    DebugState debugState;
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::vector<std::vector<Entity*>>> entityGrid;
     int rows = 3;
     int cols = 5;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     EventManager eventManager;
+    ItemManager itemManager;
+    WeaponManager weaponManager;
     RenderSystem renderSystem{*this};
     MovementSystem movementSystem{*this};
     KeyBoardInputSystem keyboardInputSystem;
@@ -58,15 +65,11 @@ class World {
     SpawnerSystem spawnerSystem{*this};
     LevelUpSystem levelUpSystem;
     WeaponFireSystem weaponFireSystem;
+    LevelUpHandler levelUpHandler{*this};
 
 
 public:
-    World() {
-        entityGrid = std::vector<std::vector<std::vector<Entity*>>>(
-            rows,
-            std::vector<std::vector<Entity*>>(cols)
-        );
-    }
+    World();
     void update(float dt, SDL_Event& event, SceneType sceneType) {
 
         if (sceneType == SceneType::MainMenu) {
@@ -79,12 +82,14 @@ public:
             movementSystem.update(entities, dt);
             enemyMovementSystem.update(entities, dt);
             spawnTimerSystem.update(entities, dt);
+            timer.startTimer("colliders");
             timer.startTimer("grid");
             gridSystem.update(entityGrid, entities, *this);
             timer.stopTimer("grid");
             timer.startTimer("collision");
             collisionSystem.update(*this);
             timer.stopTimer("collision");
+            timer.stopTimer("colliders");
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
@@ -102,7 +107,7 @@ public:
         for (auto& e : entities) {
             if (e->hasComponent<Camera>()) {
                 map.draw(e->getComponent<Camera>());
-                if (renderSystem.isDebug()) {
+                if (debugState.debug) {
                     gridSystem.draw(e->getComponent<Camera>());
                 }
             }
@@ -110,7 +115,7 @@ public:
 
         renderSystem.render(entities);
 
-        if (renderSystem.isDebug()) {
+        if (debugState.debug && debugState.timer) {
             timer.printResults();
         }
     }
@@ -154,10 +159,13 @@ public:
             entities,
             [this](std::unique_ptr<Entity>& e) {
                 if (!e->isActive()) {
+                    //print the entity address we are cleaning up
+                    // std::cout << "Entity " << e << " destroyed" << std::endl;
+                    //remove the entity from the grid
                     eventManager.emit(DeathEvent{&*e});
                     return !e->isActive();
                 }
-                    return !e->isActive();
+                return !e->isActive();
             }
         );
     }
@@ -180,7 +188,17 @@ public:
         return eventManager;
     }
 
+    ItemManager& getItemManager() {
+        return itemManager;
+    }
+    WeaponManager& getWeaponManager() {
+        return weaponManager;
+    }
+
+
     Map& getMap() {return map;}
+
+    DebugState& getDebugState() {return debugState;}
 
 };
 
