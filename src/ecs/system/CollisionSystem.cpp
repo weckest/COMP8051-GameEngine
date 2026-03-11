@@ -58,6 +58,7 @@ void CollisionSystem::update(World &world) {
                 auto& colliderB = entityB->getComponent<Collider>();
                 //dont do collisions if the entity is dead
                 if (entityA == entityB) continue;
+                if (!entityB->isActive()) continue;
 
                 if (Collision::AABB(colliderA, colliderB)) {
                     CollisionKey key = makeKey(entityA, entityB);

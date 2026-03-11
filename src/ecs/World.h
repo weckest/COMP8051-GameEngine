@@ -151,10 +151,13 @@ public:
             entities,
             [this](std::unique_ptr<Entity>& e) {
                 if (!e->isActive()) {
+                    //print the entity address we are cleaning up
+                    // std::cout << "Entity " << e << " destroyed" << std::endl;
+                    //remove the entity from the grid
                     eventManager.emit(DeathEvent{&*e});
                     return !e->isActive();
                 }
-                    return !e->isActive();
+                return !e->isActive();
             }
         );
     }

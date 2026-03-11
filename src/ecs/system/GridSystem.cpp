@@ -4,6 +4,7 @@
 
 #include "GridSystem.h"
 #include "World.h"
+#include "utils/data/GridPosition.h"
 
 GridSystem::GridSystem(World &world) : world(world) {
     tex = TextureManager::load("../assets/colors.png");
@@ -24,19 +25,62 @@ GridSystem::GridSystem(World &world) : world(world) {
             if (entity->hasComponent<Collider>() && entity->hasComponent<Transform>()) {
                 auto& t = entity->getComponent<Transform>();
 
-                int xIndex, yIndex;
+                GridPosition gridPosition{};
 
-                getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
+                getGridIndex(entity, width, height, grid[0].size(), grid.size(), &gridPosition);
 
-                //checks if the entity is outside the world grid then uses the old position as the cell position to remove from
-                if (!(xIndex < grid[0].size() && xIndex >= 0) || !(yIndex < grid.size() && yIndex >= 0)) {
+                // std::cout << "Before any checks" << std::endl;
+                // std::cout << entity << ", TLX: " << gridPosition.tl.x << ", TLY: " << gridPosition.tl.y << ", BRX: " << gridPosition.br.x << ", BRY: " << gridPosition.br.y << std::endl;
+
+
+                //check if the top left is outside the grid
+                if (!(gridPosition.tl.x < grid[0].size() && gridPosition.tl.x >= 0) || !(gridPosition.tl.y < grid.size() && gridPosition.tl.y >= 0)) {
                     //outside world. use the old position
-                    getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
+                    // getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
+                    // getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.br);
+                    getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.tl);
+
                     // std::cout << "Old Grid Position: " << xIndex << "," << yIndex << std::endl;
                 }
 
-                //remove the entity
-                removeEntity(entity, xIndex, yIndex);
+                // std::cout << "Before BR Checking" << std::endl;
+                // std::cout << entity << ", TLX: " << gridPosition.tl.x << ", TLY: " << gridPosition.tl.y << ", BRX: " << gridPosition.br.x << ", BRY: " << gridPosition.br.y << std::endl;
+
+
+                //check if the bottom right is outside the grid
+                if (!(gridPosition.br.x < grid[0].size() && gridPosition.br.x >= 0) || !(gridPosition.br.y < grid.size() && gridPosition.br.y >= 0)) {
+
+                    Vector2D oldPosition = t.oldPosition;
+                    if (entity->hasComponent<Sprite>()) {
+                        auto& s = entity->getComponent<Sprite>();
+                        oldPosition.x += s.dst.w;
+                        oldPosition.y += s.dst.h;
+                    } else if (entity->hasComponent<Collider>()) {
+                        auto& c = entity->getComponent<Collider>();
+                        oldPosition.x += c.rect.w;
+                        oldPosition.y += c.rect.h;
+                    }
+
+                    // std::cout << "using the old position" << std::endl;
+
+                    getGridIndex(&oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.br);
+                }
+
+                // std::cout << entity << ", TLX: " << gridPosition.tl.x << ", TLY: " << gridPosition.tl.y << ", BRX: " << gridPosition.br.x << ", BRY: " << gridPosition.br.y << std::endl;
+
+                //remove the entity from all cells
+                for (int xIndex = (int)gridPosition.tl.x; xIndex <= gridPosition.br.x; xIndex++) {
+                    for (int yIndex = (int)gridPosition.tl.y; yIndex <= gridPosition.br.y; yIndex++) {
+                        // std::cout << xIndex << ", " << yIndex << std::endl;
+                        if (xIndex >= grid[0].size() || yIndex >= grid.size() || xIndex < 0 || yIndex < 0) {
+                            // std::cout << "skipping" << std::endl;
+                            continue;
+                        }
+                        // std::cout << grid[yIndex][xIndex].size() << std::endl;
+                        removeEntity(entity, xIndex, yIndex);
+                        // std::cout << grid[yIndex][xIndex].size() << std::endl;
+                    }
+                }
 
             }
         }
@@ -74,30 +118,52 @@ void GridSystem::update(
     for (auto& e: entities) {
         if (e->hasComponent<Transform>() && e->hasComponent<Collider>()) {
             auto& t = e->getComponent<Transform>();
+            auto& c = e->getComponent<Collider>();
 
-            int oldXIndex, oldYIndex;
-            int xIndex, yIndex;
-            getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &oldXIndex, &oldYIndex);
-            getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
+            Vector2D entityWH{t.position.x + c.rect.w, t.position.y + c.rect.h};
+            Vector2D oldEntityWH{t.oldPosition.x + c.rect.w, t.oldPosition.y + c.rect.h};
 
-            //only do this if the entity is with in the world bounds
-            if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) {
+            if (e->hasComponent<Sprite>()) {
+                auto& s = e->getComponent<Sprite>();
+                entityWH.x = t.position.x + s.dst.w;
+                entityWH.y = t.position.y + s.dst.h;
+                oldEntityWH.x = t.oldPosition.x + s.dst.w;
+                oldEntityWH.y = t.oldPosition.y + s.dst.h;
+            }
 
-                //check if the old position is out of the grid positions
-                //insert into the grid if we know this to be true
-                if ((oldXIndex >= grid[0].size() || oldXIndex < 0) || (oldYIndex >= grid.size() || oldYIndex < 0)) {
-                    insertEntity(&*e, xIndex, yIndex);
-                    continue;
-                }
+            GridPosition gridPosition{};
+            GridPosition oldGridPosition{};
 
-                //the entity has moved cells since the last update
-                if (oldXIndex != xIndex || oldYIndex != yIndex) {
-                    moveEntity(&*e, oldXIndex, oldYIndex, xIndex, yIndex);
-                } else {
-                    //add to the list of entities in the cell if it doesnt already exist
-                    insertEntity(&*e, xIndex, yIndex);
+            //want to get the grid position of the transform and then also the bottom right of the sprite
+            //then loop over each position and insert the entity into the cell
+            //this also has to be done for the old position
+            //then loop over each cell and remove the ones that arent overlapping
+
+            getGridIndex(&entityWH, width, height, grid[0].size(), grid.size(), &gridPosition.br);
+            getGridIndex(&oldEntityWH, width, height, grid[0].size(), grid.size(), &oldGridPosition.br);
+            getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &gridPosition.tl);
+            getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &oldGridPosition.tl);
+
+            //loop over each of the old position cells and remove the entity from that cell
+            for (int oldXIndex = oldGridPosition.tl.x; oldXIndex <= oldGridPosition.br.x; oldXIndex++) {
+                for (int oldYIndex = oldGridPosition.tl.y; oldYIndex <= oldGridPosition.br.y; oldYIndex++) {
+                    if ((oldXIndex < grid[0].size() && oldXIndex >= 0) && (oldYIndex < grid.size() && oldYIndex >= 0)) {
+                        removeEntity(&*e, oldXIndex, oldYIndex);
+                    }
                 }
             }
+
+            //loop over each position and insert into that cell
+            for (int xIndex = gridPosition.tl.x; xIndex <= gridPosition.br.x; xIndex++) {
+                for (int yIndex = gridPosition.tl.y; yIndex <= gridPosition.br.y; yIndex++) {
+                    //only do this if the entity is with in the world bounds
+                    if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) {
+                        //add to the list of entities in the cell if it doesnt already exist
+                        insertEntity(&*e, xIndex, yIndex);
+                    }
+                }
+            }
+
         }
     }
 }
@@ -189,8 +255,41 @@ void GridSystem::getGridIndex(
     //widths of the columns as a float
     float columnSize = worldWidth / (gridX * 1.0f);
 
-    *xIndex = position->x / columnSize;
-    *yIndex = position->y / rowSize;
+    *xIndex = (int)(position->x / columnSize);
+    *yIndex = (int)(position->y / rowSize);
+}
+
+void GridSystem::getGridIndex(Vector2D *position, int worldWidth, int worldHeight, int gridX, int gridY,
+    Vector2D *index) {
+    //height of the rows as a float
+    float rowSize = worldHeight / (gridY * 1.0f);
+
+    //widths of the columns as a float
+    float columnSize = worldWidth / (gridX * 1.0f);
+
+    index->x = (int)(position->x / columnSize);
+    index->y = (int)(position->y / rowSize);
+}
+
+void GridSystem::getGridIndex(Entity *entity, int worldWidth, int worldHeight, int gridX, int gridY,
+    GridPosition *index) {
+    if (entity->hasComponent<Transform>() && (entity->hasComponent<Collider>() || entity->hasComponent<Sprite>())) {
+        auto& t = entity->getComponent<Transform>();
+        Vector2D entityWH = t.position;
+
+        if (entity->hasComponent<Sprite>()) {
+            auto& s = entity->getComponent<Sprite>();
+            entityWH.x += s.dst.w;
+            entityWH.y += s.dst.h;
+        } else {
+            auto& c = entity->getComponent<Collider>();
+            entityWH.x += c.rect.w;
+            entityWH.y += c.rect.h;
+        }
+
+        getGridIndex(&t.position, worldWidth, worldHeight, gridX, gridY, &index->tl);
+        getGridIndex(&entityWH, worldWidth, worldHeight, gridX, gridY, &index->br);
+    }
 }
 
 

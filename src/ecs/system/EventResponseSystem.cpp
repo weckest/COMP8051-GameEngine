@@ -15,9 +15,9 @@ EventResponseSystem::EventResponseSystem(World &world) {
             if (e.type != EventType::Collision) return;
             const auto& collision = static_cast<const CollisionEvent&>(e); //cast base type into collision type
 
-            onCollision(collision, "player", "item", world);
+            // onCollision(collision, "player", "item", world);
             onCollision(collision, "player", "wall", world);
-            onCollision(collision, "player", "enemy", world);
+            // onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
         }
     );
@@ -51,6 +51,10 @@ void EventResponseSystem::onCollision(
     Entity* entityA = nullptr;
     Entity* entityB = nullptr;
     auto& em = world.getEventManager();
+
+    // if (e.entityB->hasComponent<Collider>()) {
+    //     std::cout << e.entityB->getComponent<Collider>().tag << std::endl;
+    // }
 
     if (!getCollisionEntities(e, ATag, BTag, entityA, entityB)) return;
 
