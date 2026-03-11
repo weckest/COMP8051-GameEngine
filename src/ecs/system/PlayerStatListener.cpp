@@ -34,28 +34,41 @@ void PlayerStatListener::applyChanges(const CalculateStatsEvent &e) {
 
     //Get Item list.
 
-    auto& stats = player->getComponent<PlayerTag>();
+    auto& stats = player->getComponent<Stats>();
     auto& itemList = player->getComponent<ItemList>().items;
 
-    //Formula for applying changes to player stats
 
-    //Reset Player stats as a baseline
+    //Reset values of each stat.
+    stats.damageModifier = 1.0f;
+    stats.speedModifier = 1.0f;
+    stats.fireRateModifier = 1.0f;
+    stats.playerSizeModifier = 1.0f;
+    stats.projectileSizeModifier = 1.0f;
+    stats.aoeModifier = 1.0f;
+    stats.xpModifier = 1.0f;
 
-
-
-    stats.damageModifier=1;
-    stats.aoeModifier = 1;
-    stats.speedModifier = 1;
-    stats.xpModifier = 1;
-    stats.fireRateModifier = 1;
-    stats.playerSizeModifier = 1;
-    stats.projectileSizeModifier = 1;
-
+    //For each item, apply its stats to the player
     for (const auto& item: itemList) {
-        int level = item.itemLevel;
-
-
+        float level = item.itemLevel;
+        stats.damageModifier        += (item.damageModifier - 1.0f) * level;
+        stats.speedModifier         += (item.speedModifier - 1.0f) * level;
+        stats.fireRateModifier      += (item.fireRateModifier - 1.0f) * level;
+        stats.playerSizeModifier    += (item.playerSizeModifier - 1.0f) * level;
+        stats.projectileSizeModifier+= (item.projectileSizeModifier - 1.0f) * level;
+        stats.aoeModifier           += (item.aoeModifier - 1.0f) * level;
+        stats.xpModifier            += (item.xpModifier - 1.0f) * level;
     }
+
+    std::cout << "Damage mod: " << stats.damageModifier << std::endl;
+    std::cout << "Speed mod: " << stats.speedModifier << std::endl;
+    std::cout << "fire Rate mod: " << stats.fireRateModifier << std::endl;
+    std::cout << "playerSize mod: " << stats.playerSizeModifier << std::endl;
+
+
+
+
+
+
 }
 
 

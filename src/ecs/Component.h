@@ -113,6 +113,13 @@ struct Item {
 };
 
 struct PlayerTag {
+
+    float xp = 0;
+    int level = 1;
+    int health = 100;
+};
+
+struct Stats {
     float damageModifier = 1;
     float speedModifier = 1;
     float fireRateModifier = 1;
@@ -120,13 +127,6 @@ struct PlayerTag {
     float projectileSizeModifier = 1;
     float aoeModifier = 1;
     float xpModifier = 1;
-    float xp = 0;
-    int level = 1;
-    int health = 100;
-};
-
-struct Stats {
-
 };
 
 

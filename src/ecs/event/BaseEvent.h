@@ -91,7 +91,7 @@ struct LevelUpEvent : BaseEvent {
 
 struct CalculateStatsEvent : BaseEvent {
     Entity* entity = nullptr;
-    CalculateStatsEvent(Entity* entity) : entity(entity) {
+    CalculateStatsEvent() {
         type = EventType::CalculateStats;
     }
 };

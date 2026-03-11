@@ -21,7 +21,7 @@ void MovementSystem::update(std::vector<std::unique_ptr<Entity>> &entities, floa
             directionVec.normalize();
 
             if (entity->hasComponent<PlayerTag>()) {
-                directionVec *= entity->getComponent<PlayerTag>().speedModifier;
+                directionVec *= entity->getComponent<Stats>().speedModifier;
             }
 
             Vector2D velocityVec1 = directionVec * v.speed;

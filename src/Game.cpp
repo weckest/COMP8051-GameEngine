@@ -82,13 +82,13 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
     ItemManager::loadAllItems("../assets/items/items.xml");
 
-    Item item = ItemManager::getRandItem();
-    std::cout << item.name << std::endl;
-    std::cout << item.aoeModifier << std::endl;
-
-    item = ItemManager::getRandItem();
-    std::cout << item.name << std::endl;
-    std::cout << item.aoeModifier << std::endl;
+    // Item item = ItemManager::getRandItem();
+    // std::cout << item.name << std::endl;
+    // std::cout << item.aoeModifier << std::endl;
+    //
+    // item = ItemManager::getRandItem();
+    // std::cout << item.name << std::endl;
+    // std::cout << item.aoeModifier << std::endl;
 
 
 

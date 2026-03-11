@@ -26,6 +26,7 @@
 #include "MainMenuSystem.h"
 #include "Map.h"
 #include "MovementSystem.h"
+#include "PlayerStatListener.h"
 #include "RenderSystem.h"
 #include "SpawnerSystem.h"
 #include "SpawnTimerSystem.h"
@@ -66,6 +67,7 @@ class World {
     LevelUpSystem levelUpSystem;
     WeaponFireSystem weaponFireSystem;
     LevelUpHandler levelUpHandler{*this};
+    PlayerStatListener playerStatListener{*this};
 
 
 public:
