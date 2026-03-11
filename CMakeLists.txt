@@ -34,6 +34,8 @@ set(SRC_FILES
         src/utils/data/Stat.h
         src/ecs/system/LevelUpHandler.h
         src/ecs/system/LevelUpHandler.cpp
+        src/ecs/system/PlayerStatListener.h
+        src/ecs/system/PlayerStatListener.cpp
 )
 
 # ALWAYS create the executable first

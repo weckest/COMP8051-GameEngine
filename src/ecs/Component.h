@@ -125,6 +125,10 @@ struct PlayerTag {
     int health = 100;
 };
 
+struct Stats {
+
+};
+
 
 
 struct ItemList {
