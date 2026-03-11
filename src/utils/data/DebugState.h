@@ -8,6 +8,10 @@
 struct DebugState {
     bool debug = false;
     bool timer = false;
+    bool level = false;
+    bool weapon = false;
+    bool item = false;
+    bool ui = false;
 };
 
 #endif //INC_8051TUTORIAL_DEBUGSTATE_H

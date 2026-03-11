@@ -77,15 +77,15 @@ void EventResponseSystem::onCollision(
 
 
 
-        for (auto& entity: world.getEntities()) {
-            if (!entity->hasComponent<SceneState>()) continue;
-
-            auto& sceneState = entity->getComponent<SceneState>();
-            sceneState.coinsCollected++;
-            if (sceneState.coinsCollected > 1) {
-                Game::onSceneChangeRequest("level2");
-            }
-        }
+        // for (auto& entity: world.getEntities()) {
+        //     if (!entity->hasComponent<SceneState>()) continue;
+        //
+        //     auto& sceneState = entity->getComponent<SceneState>();
+        //     sceneState.coinsCollected++;
+        //     if (sceneState.coinsCollected > 1) {
+        //         Game::onSceneChangeRequest("level2");
+        //     }
+        // }
     } else if (checkTagsFor(ATag, BTag, "wall") && checkTagsFor(ATag, BTag, "player")) {
 
         if (e.state != CollisionState::Stay) return;

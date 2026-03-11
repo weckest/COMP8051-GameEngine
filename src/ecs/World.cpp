@@ -27,6 +27,9 @@ World::World() {
                 case SDLK_T:
                     debugState.timer = !debugState.timer;
                     break;
+                case SDLK_L:
+                    debugState.level = !debugState.level;
+                    break;
                 default:
                     break;
             }

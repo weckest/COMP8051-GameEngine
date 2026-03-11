@@ -71,14 +71,10 @@ GridSystem::GridSystem(World &world) : world(world) {
                 //remove the entity from all cells
                 for (int xIndex = (int)gridPosition.tl.x; xIndex <= gridPosition.br.x; xIndex++) {
                     for (int yIndex = (int)gridPosition.tl.y; yIndex <= gridPosition.br.y; yIndex++) {
-                        // std::cout << xIndex << ", " << yIndex << std::endl;
                         if (xIndex >= grid[0].size() || yIndex >= grid.size() || xIndex < 0 || yIndex < 0) {
-                            // std::cout << "skipping" << std::endl;
                             continue;
                         }
-                        // std::cout << grid[yIndex][xIndex].size() << std::endl;
                         removeEntity(entity, xIndex, yIndex);
-                        // std::cout << grid[yIndex][xIndex].size() << std::endl;
                     }
                 }
 
