@@ -78,6 +78,7 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     AssetManager::loadAnimation("player", "../assets/animations/bunny_animations.xml");
     AssetManager::loadAnimation("enemy", "../assets/animations/fox_animations.xml");
     AssetManager::loadAnimation("explosion", "../assets/animations/explosion_animation.xml");
+    WeaponManager::loadWeaponFromXML("../assets/weapons/weapon.xml");
 
     ItemManager::loadAllItems("../assets/items/items.xml");
 

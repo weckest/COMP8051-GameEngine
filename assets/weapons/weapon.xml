@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<weapon
+        name="bubblegun"
+        fireRate="0.75"
+        damageModifier="1.2"
+        projectileSizeModifier="1.0"
+        aoeModifier="1.3"
+        critDamageModifier="2.0"
+        critChanceModifier="0.15"
+        cooldown="0.5">
+</weapon>

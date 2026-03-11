@@ -6,6 +6,7 @@
 
 #include "../manager/AssetManager.h"
 #include "Game.h"
+#include "manager/WeaponManager.h"
 
 Scene::Scene(SceneType sceneType, const char *sceneName, const char *mapPath, int windowWidth, int windowHeight)
 : name(sceneName), type(sceneType) {
@@ -122,33 +123,11 @@ Scene::Scene(SceneType sceneType, const char *sceneName, const char *mapPath, in
 
     player.addComponent<Health>(Game::gameState.playerHealth);
 
+
     // adjust this so it fires through weapon manager.
     //make the player shoot
-    auto& playerGun = player.addComponent<TimedSpawner>(0.25f * 1 + (1 - pt.fireRateModifier),[this, &player, pt] {
-        auto& e(world.createDeferredEntity());
 
-        auto& t = player.getComponent<Transform>();
-        auto& v = player.getComponent<Velocity>();
-        auto& s = player.getComponent<Sprite>();
-
-        SDL_Texture* tex = TextureManager::load("../assets/bubble.png");
-        SDL_FRect src = {0, 0, 32, 32};
-        SDL_FRect dst = {t.position.x, t.position.y, src.w * pt.projectileSizeModifier, src.h * pt.projectileSizeModifier};
-        e.addComponent<Sprite>(tex, src, dst);
-
-        //set the initial position of bullet
-        e.addComponent<Transform>(Vector2D(t.position.x + s.dst.w / 2 - dst.w / 2, t.position.y + s.dst.h / 2 - dst.h / 2), 0.0f, 1.0f);
-        if (v.direction == Vector2D(0.0f,0.0f)) {
-            e.addComponent<Velocity>(Vector2D(0.0f, 1.0f), 200.0f);
-        } else {
-            e.addComponent<Velocity>(v.direction, 200.0f);
-        }
-
-        auto& c = e.addComponent<Collider>("bullet");
-        c.rect.w = dst.w;
-        c.rect.h = dst.h;
-        e.addComponent<ProjectileTag>(50.0f * pt.damageModifier, 100.0f * pt.aoeModifier);
-    });
+    player.getComponent<PlayerTag>().weaponList.push_back(WeaponManager::getRandWeapon());
 
 
 

@@ -15,4 +15,6 @@ class World;
 
 extern std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> weaponBehaviours;
 
+std::function<void(Weapon&, Entity&, World&)> getWeaponBehaviour(const std::string& name);
+
 #endif //INC_8051TUTORIAL_WEAPONBEHAVIOURS_H
