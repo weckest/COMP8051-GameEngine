@@ -16,7 +16,8 @@ void WeaponFireSystem::update(World &world, float dt) {
 			continue;
 
 		auto& player = entity->getComponent<PlayerTag>();
-		auto& weaponComp = player.weaponList;
+		auto& weaponList = entity->getComponent<WeaponList>();
+		auto& weaponComp = weaponList.weapons;
 
 		for (auto& weapon : weaponComp) {
 

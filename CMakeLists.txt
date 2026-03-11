@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.5)
 project(8051Tutorial)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -31,6 +31,7 @@ set(SRC_FILES
         src/manager/ItemManager.cpp
         src/ecs/system/LevelUpSystem.cpp
         src/ecs/system/WeaponFireSystem.cpp
+        src/utils/data/Stat.h
 )
 
 # ALWAYS create the executable first
