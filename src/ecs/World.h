@@ -19,6 +19,7 @@
 #include "EventResponseSystem.h"
 #include "GridSystem.h"
 #include "KeyboardInputSystem.h"
+#include "LevelUpHandler.h"
 #include "LevelUpSystem.hpp"
 #include "event/EventManager.h"
 #include "MainMenuSystem.h"
@@ -60,6 +61,7 @@ class World {
     SpawnerSystem spawnerSystem{*this};
     LevelUpSystem levelUpSystem;
     WeaponFireSystem weaponFireSystem;
+    LevelUpHandler levelUpHandler{*this};
 
 
 public:

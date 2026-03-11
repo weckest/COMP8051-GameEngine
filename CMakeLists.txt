@@ -32,6 +32,8 @@ set(SRC_FILES
         src/ecs/system/LevelUpSystem.cpp
         src/ecs/system/WeaponFireSystem.cpp
         src/utils/data/Stat.h
+        src/ecs/system/LevelUpHandler.h
+        src/ecs/system/LevelUpHandler.cpp
 )
 
 # ALWAYS create the executable first
