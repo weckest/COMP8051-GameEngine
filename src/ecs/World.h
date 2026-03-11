@@ -29,12 +29,14 @@
 #include "SpawnTimerSystem.h"
 #include "WeaponFireSystem.h"
 #include "Timer.h"
+#include "data/DebugState.h"
 #include "scene/SceneType.h"
 
 //could also be called EntityManager
 class World {
     Map map;
     Timer timer;
+    DebugState debugState;
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::vector<std::vector<Entity*>>> entityGrid;
     int rows = 3;
@@ -66,6 +68,20 @@ public:
             rows,
             std::vector<std::vector<Entity*>>(cols)
         );
+
+        eventManager.subscribe(
+            [this](const BaseEvent& e) {
+                if (e.type != EventType::KeyPress) return;
+                const auto& keyPress = static_cast<const KeyPressEvent&>(e);
+
+                switch (keyPress.keyCode) {
+                    case SDLK_T:
+                        debugState.timer = !debugState.timer;
+                        break;
+                    default:
+                        break;
+                }
+        });
     }
     void update(float dt, SDL_Event& event, SceneType sceneType) {
 
@@ -79,12 +95,14 @@ public:
             movementSystem.update(entities, dt);
             enemyMovementSystem.update(entities, dt);
             spawnTimerSystem.update(entities, dt);
+            timer.startTimer("colliders");
             timer.startTimer("grid");
             gridSystem.update(entityGrid, entities, *this);
             timer.stopTimer("grid");
             timer.startTimer("collision");
             collisionSystem.update(*this);
             timer.stopTimer("collision");
+            timer.stopTimer("colliders");
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
@@ -110,7 +128,7 @@ public:
 
         renderSystem.render(entities);
 
-        if (renderSystem.isDebug()) {
+        if (renderSystem.isDebug() && debugState.timer) {
             timer.printResults();
         }
     }

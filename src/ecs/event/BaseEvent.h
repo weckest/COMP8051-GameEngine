@@ -16,7 +16,8 @@ enum class EventType {
     SpawnEntity,
     Death,
     GridDebug,
-    Levelup
+    LevelUp,
+    KeyPress
 };
 
 struct BaseEvent {
@@ -82,8 +83,16 @@ struct GridDebugEvent : BaseEvent {
 
 struct LevelUpEvent : BaseEvent {
     int newLevel;
-    LevelUpEvent(int lvl) : newLevel(lvl) {}
+    LevelUpEvent(int lvl) : newLevel(lvl) {
+        type = EventType::LevelUp;
+    }
+};
 
+struct KeyPressEvent : BaseEvent {
+    SDL_Keycode keyCode;
+    KeyPressEvent(SDL_Keycode keyCode) : keyCode(keyCode) {
+        type = EventType::KeyPress;
+    }
 };
 
 #endif //INC_8051TUTORIAL_BASEEVENT_H
