@@ -61,6 +61,9 @@ void LevelUpHandler::onLevelUp(const LevelUpEvent& e) {
         std::cout << item.name << ": " << item.itemLevel << std::endl;
     }
 
+    world.getEventManager().emit(CalculateStatsEvent());
+
+
 
 
 

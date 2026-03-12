@@ -118,16 +118,17 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
     auto& player(world.createEntity());
     auto& pt = player.addComponent<PlayerTag>();
+    auto& playerStats = player.addComponent<Stats>();
     auto& playerTransform = player.addComponent<Transform>(Vector2D(world.getMap().width * 32 / 2,world.getMap().height * 32 / 2), 0.0f, 0.0f);
 
-    auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0.0f,0.0f), 120.0f * pt.speedModifier);
+    auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0.0f,0.0f), 120.0f * playerStats.speedModifier);
 
     Animation anim = AssetManager::getAnimation("player");
     player.addComponent<Animation>(anim);
 
     SDL_Texture* tex = TextureManager::load("../assets/animations/spritesheet.png");
     SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
-    SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64 * pt.playerSizeModifier, 64 * pt.playerSizeModifier};
+    SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64 * playerStats.playerSizeModifier, 64 * playerStats.playerSizeModifier};
     player.addComponent<Sprite>(tex, playerSrc, playerDst, RenderLayer::World);
 
     auto& playerCollider = player.addComponent<Collider>("player");

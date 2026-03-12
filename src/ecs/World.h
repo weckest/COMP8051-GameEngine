@@ -27,6 +27,7 @@
 #include "Map.h"
 #include "MouseInputSystem.h"
 #include "MovementSystem.h"
+#include "PlayerStatListener.h"
 #include "RenderSystem.h"
 #include "SpawnerSystem.h"
 #include "SpawnTimerSystem.h"
@@ -70,6 +71,7 @@ class World {
     LevelUpHandler levelUpHandler{*this};
     UIRenderSystem uiRenderSystem;
     MouseInputSystem mouseInputSystem;
+    PlayerStatListener playerStatListener{*this};
 
 
 public:

@@ -18,6 +18,7 @@ enum class EventType {
     GridDebug,
     LevelUp,
     KeyPress,
+    CalculateStats,
     MouseInteraction
 };
 
@@ -86,6 +87,13 @@ struct LevelUpEvent : BaseEvent {
     int newLevel;
     LevelUpEvent(int lvl) : newLevel(lvl) {
         type = EventType::LevelUp;
+    }
+};
+
+struct CalculateStatsEvent : BaseEvent {
+    Entity* entity = nullptr;
+    CalculateStatsEvent() {
+        type = EventType::CalculateStats;
     }
 };
 
