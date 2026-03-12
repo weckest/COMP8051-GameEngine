@@ -24,6 +24,8 @@ void RenderSystem::render(const std::vector<std::unique_ptr<Entity> > &entities)
             auto& t = entity->getComponent<Transform>();
             auto& sprite = entity->getComponent<Sprite>();
 
+            if (sprite.renderLayer != RenderLayer::World) continue;
+
             //we are converting from world space to screen space
             sprite.dst.x = t.position.x - cam.view.x;
             sprite.dst.y = t.position.y - cam.view.y;

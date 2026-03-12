@@ -8,9 +8,6 @@
 #include "manager/WeaponManager.h"
 
 void WeaponFireSystem::update(World &world, float dt) {
-
-	  // or however your engine exposes it
-
 	for (const auto& entity : world.getEntities()) {
 		if (!entity->hasComponent<PlayerTag>())
 			continue;
@@ -27,7 +24,7 @@ void WeaponFireSystem::update(World &world, float dt) {
 
 				weapon.spawnFunction(weapon, *entity, world);
 
-				weapon.cooldown = weapon.fireRate; // reset timer
+				weapon.cooldown = weapon.fireRate;
 			}
 		}
 	}

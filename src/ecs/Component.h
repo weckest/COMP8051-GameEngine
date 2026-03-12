@@ -25,6 +25,11 @@ struct Transform {
     Vector2D oldPosition{};
 };
 
+enum class RenderLayer {
+    World,
+    UI
+};
+
 //direction and speed
 struct Velocity {
     Vector2D direction{};
@@ -35,11 +40,29 @@ struct Sprite {
     SDL_Texture* texture = nullptr;
     SDL_FRect src{};
     SDL_FRect dst{};
+    RenderLayer renderLayer = RenderLayer::World;
+    bool visible = true;
+};
+
+struct Clickable {
+    std::function<void()> onPressed{};
+    std::function<void()> onReleased{};
+    std::function<void()> onCancel{};
+    bool pressed = false;
+};
+
+struct Parent {
+    Entity* parent = nullptr;
+};
+
+struct Children {
+    std::vector<Entity*> children{};
 };
 
 struct Collider {
     std::string tag{};
     SDL_FRect rect{};
+    bool enabled = true;
 };
 
 struct Animation {
@@ -93,6 +116,9 @@ struct Weapon {
     float aoeModifier{};
     float critDamageModifier{};
     float critChanceModifier{};
+    float rangeModifier{};
+    float spreadModifier{};
+    float projectileModifier{};
     float cooldown{};
     // a function that takes in the above modifiers and spawns a projectile with those modifiers applied
     //  the entity representing the player so we can get the player's transform and direction to spawn the projectile in the right place and direction

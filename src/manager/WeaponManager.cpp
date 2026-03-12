@@ -45,6 +45,9 @@ void WeaponManager::loadWeaponFromXML(const char *path) {
 		root->QueryFloatAttribute("aoeModifier", &weapon.aoeModifier);
 		root->QueryFloatAttribute("critDamageModifier", &weapon.critDamageModifier);
 		root->QueryFloatAttribute("critChanceModifier", &weapon.critChanceModifier);
+		root->QueryFloatAttribute("rangeModifier", &weapon.rangeModifier);
+		root->QueryFloatAttribute("spreadModifier", &weapon.spreadModifier);
+		root->QueryFloatAttribute("projectileModifier", &weapon.projectileModifier);
 		root->QueryFloatAttribute("cooldown", &weapon.cooldown);
 
 		weapon.spawnFunction = getWeaponBehaviour(weapon.name);

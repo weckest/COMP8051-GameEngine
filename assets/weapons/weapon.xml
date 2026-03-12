@@ -2,11 +2,12 @@
 
 <weapon
         name="bubblegun"
-        fireRate="0.75"
+        fireRate="0.5"
         damageModifier="1.2"
         projectileSizeModifier="1.0"
         aoeModifier="1.3"
         critDamageModifier="2.0"
         critChanceModifier="0.15"
+        projectileModifier="1.0"
         cooldown="0.5">
 </weapon>

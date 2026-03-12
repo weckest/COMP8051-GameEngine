@@ -25,12 +25,14 @@
 #include "event/EventManager.h"
 #include "MainMenuSystem.h"
 #include "Map.h"
+#include "MouseInputSystem.h"
 #include "MovementSystem.h"
 #include "RenderSystem.h"
 #include "SpawnerSystem.h"
 #include "SpawnTimerSystem.h"
 #include "WeaponFireSystem.h"
 #include "Timer.h"
+#include "UIRenderSystem.h"
 #include "data/DebugState.h"
 #include "manager/ItemManager.hpp"
 #include "scene/SceneType.h"
@@ -66,6 +68,8 @@ class World {
     LevelUpSystem levelUpSystem;
     WeaponFireSystem weaponFireSystem;
     LevelUpHandler levelUpHandler{*this};
+    UIRenderSystem uiRenderSystem;
+    MouseInputSystem mouseInputSystem;
 
 
 public:
@@ -98,6 +102,7 @@ public:
             weaponFireSystem.update(*this, dt);
             timer.stopTimer("update");
         }
+        mouseInputSystem.update(*this, event);
         synchronizeEntities();
         cleanup();
     }
@@ -114,6 +119,7 @@ public:
         }
 
         renderSystem.render(entities);
+        uiRenderSystem.render(entities);
 
         if (debugState.debug && debugState.timer) {
             timer.printResults();

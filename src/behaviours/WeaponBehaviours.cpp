@@ -54,6 +54,12 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 }
             );
         }
+    } ,
+    { "shotgun",
+        [](Weapon &weapon, Entity &entity, World &world) {
+
+        }
+
     }
 };
 

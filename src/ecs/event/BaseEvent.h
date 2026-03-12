@@ -17,7 +17,8 @@ enum class EventType {
     Death,
     GridDebug,
     LevelUp,
-    KeyPress
+    KeyPress,
+    MouseInteraction
 };
 
 struct BaseEvent {
@@ -94,5 +95,19 @@ struct KeyPressEvent : BaseEvent {
         type = EventType::KeyPress;
     }
 };
+
+enum class MouseInteractionState {
+    Pressed, Released, Cancel
+};
+
+struct MouseInteractionEvent : BaseEvent {
+    Entity* entity = nullptr;
+    MouseInteractionState state{};
+    MouseInteractionEvent(Entity* entity, MouseInteractionState state) : entity(entity), state(state) {
+        type = EventType::MouseInteraction;
+    }
+};
+
+
 
 #endif //INC_8051TUTORIAL_BASEEVENT_H

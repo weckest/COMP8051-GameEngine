@@ -32,6 +32,18 @@ EventResponseSystem::EventResponseSystem(World &world) {
 
        }
    );
+
+    world.getEventManager().subscribe(
+       [this, &world](const BaseEvent& e) {
+
+           if (e.type != EventType::MouseInteraction) return;
+           const auto& mouseEvent = static_cast<const MouseInteractionEvent&>(e);
+
+              onMouseInteraction(mouseEvent);
+
+       }
+   );
+
 }
 
 bool EventResponseSystem::checkTagsFor(const char *ATag, const char *BTag, std::string tag) {
@@ -200,4 +212,24 @@ bool EventResponseSystem::getCollisionEntities(
 
     return entityA && entityB;
 
+}
+
+void EventResponseSystem::onMouseInteraction(const MouseInteractionEvent& e) {
+    if (!e.entity->hasComponent<Clickable>()) return;
+
+    auto& clickable = e.entity->getComponent<Clickable>();
+
+    switch (e.state) {
+        case MouseInteractionState::Pressed:
+            clickable.onPressed();
+            break;
+        case MouseInteractionState::Released:
+            clickable.onReleased();
+            break;
+        case MouseInteractionState::Cancel:
+           clickable.onCancel();
+            break;
+        default:
+            break;
+    }
 }
