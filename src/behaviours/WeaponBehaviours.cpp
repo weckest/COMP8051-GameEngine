@@ -29,7 +29,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
                     bullet.addComponent<Sprite>(tex, src, dst);
 
-                    bullet.addComponent<Transform>(
+                    auto& bT = bullet.addComponent<Transform>(
                         Vector2D(
                             t.position.x + s.dst.w/2 - dst.w/2,
                             t.position.y + s.dst.h/2 - dst.h/2
@@ -38,7 +38,14 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                         1.0f
                     );
 
-                    Vector2D bulletDir = (v.direction == Vector2D(0,0)) ? Vector2D(1,0) : v.direction;
+                    Entity* closestEntity = CollisionSystem::getClosestEntity(world, entity, 200);
+                    if (closestEntity == nullptr) {
+                        bullet.destroy();
+                        return;
+                    }
+                    auto& eT = closestEntity->getComponent<Transform>();
+                    Vector2D bulletDir = eT.position - bT.position;
+                    // Vector2D bulletDir = (v.direction == Vector2D(0,0)) ? Vector2D(1,0) : v.direction;
                     bullet.addComponent<Velocity>(bulletDir, 200.0f);
 
                     auto &c = bullet.addComponent<Collider>("bullet");

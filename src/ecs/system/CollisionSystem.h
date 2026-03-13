@@ -22,6 +22,7 @@ public:
     void update(World& world);
     std::set<CollisionKey> activeCollisions;
     static std::vector<Entity*> getAllWithin(World& world, Entity& entity, float distance);
+    static Entity* getClosestEntity(World &world, Entity &entity, float distance);
 private:
     std::vector<Entity*> queryCollidables(const std::vector<std::unique_ptr<Entity>>& entities);
     CollisionKey makeKey(Entity* entityA, Entity* entityB) {
