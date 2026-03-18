@@ -135,6 +135,7 @@ struct Item {
     float projectileSizeModifier=1;
     float aoeModifier=1;
     float xpModifier = 1;
+    std::string path = "";
 
 };
 

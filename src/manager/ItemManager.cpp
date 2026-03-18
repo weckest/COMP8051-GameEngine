@@ -3,6 +3,10 @@
 //
 
 #include "ItemManager.hpp"
+
+#include <iostream>
+#include <ostream>
+
 #include "tinyxml2.h"
 
  std::unordered_map<std::string,Item > ItemManager::items;
@@ -29,6 +33,11 @@ void ItemManager::loadAllItems(const char* path) {
             item.name = nameAttr;
         }
 
+        if (auto* itemPath = elem->Attribute("path")) {
+            //std::cout << itemPath << std::endl;
+            item.path = itemPath;
+        }
+
         //check to make sure value exists before adding
         float value;
         if (elem->QueryFloatAttribute("damageModifier", &value) == tinyxml2::XML_SUCCESS)
@@ -43,6 +52,9 @@ void ItemManager::loadAllItems(const char* path) {
             item.projectileSizeModifier = value;
         if (elem->QueryFloatAttribute("aoeModifier", &value) == tinyxml2::XML_SUCCESS)
             item.aoeModifier = value;
+
+
+
 
         items[item.name] = item;
     }
