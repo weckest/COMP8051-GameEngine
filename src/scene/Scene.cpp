@@ -47,7 +47,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
 
     //load our map
-    if (std::strcmp(mapPath, "gameplay") == 0) {
+    if (std::strcmp(mapPath, "../assets/map-tlc/TLC-MapUpdated.tmx") == 0) {
         world.getMap().load(mapPath, TextureManager::load("../assets/map-tlc/TLC-Tilesheet.png"));
     } else {
         world.getMap().load(mapPath, TextureManager::load("../assets/spritesheet.png"));
