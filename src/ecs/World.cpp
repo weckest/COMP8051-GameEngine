@@ -30,8 +30,13 @@ World::World() {
                 case SDLK_L:
                     debugState.level = !debugState.level;
                     break;
+                case SDLK_P:
+                    isPaused = !isPaused;
+
                 default:
                     break;
             }
     });
+
+
 }
