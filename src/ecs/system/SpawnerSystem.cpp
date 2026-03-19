@@ -14,19 +14,27 @@ SpawnerSystem::SpawnerSystem(World &world) {
                 auto& coin = world.createDeferredEntity();
                 auto& cT = coin.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
                 cT.oldPosition = cT.position;
-                auto& c = coin.addComponent<Collider>("item");
+
+                //adding texture to the coins
+                SDL_Texture* tex = TextureManager::load("../assets/coin.png");
+                SDL_FRect tileSrc {0, 0, 32, 32};
+                SDL_FRect tileDst {cT.position.x, cT.position.y, tileSrc.w, tileSrc.h};
+                coin.addComponent<Sprite>(tex, tileSrc, tileDst);
+                coin.addComponent<ItemTag>();
+        };
+
+        spawners["magnet"] = [&world](const Transform &t) {
+                auto& magnet = world.createDeferredEntity();
+                auto& mT = magnet.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
+                mT.oldPosition = mT.position;
+                auto& c = magnet.addComponent<Collider>("item");
                 c.rect.x = t.position.x;
                 c.rect.y = t.position.y;
                 c.rect.w = 32;
                 c.rect.h = 32;
 
-                //adding texture to the coins
-                SDL_Texture* tex = TextureManager::load("../assets/coin.png");
-                SDL_FRect tileSrc {0, 0, 32, 32};
-                SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-                coin.addComponent<Sprite>(tex, tileSrc, tileDst);
-                coin.addComponent<ItemTag>();
-                std::cout << coin.hasComponent<ItemTag>() << std::endl;
+
+                magnet.addComponent<ItemTag>();
         };
 
         world.getEventManager().subscribe([this, &world](const BaseEvent& e) {

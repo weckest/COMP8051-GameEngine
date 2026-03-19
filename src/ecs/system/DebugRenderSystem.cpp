@@ -38,14 +38,22 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
 
             //collider debugs
             //only show if debug mode is on
-            if (e->hasComponent<Collider>()) {
-                auto& collider = e->getComponent<Collider>();
-                // std::cout << collider.tag << " " << collider.rect.x << " " << collider.rect.y << " " << collider.rect.w << " " << collider.rect.h << std::endl;
-                SDL_Texture* tex = TextureManager::load("../assets/spritesheet.png");
-                SDL_FRect src {0,32,32,32};
-                SDL_FRect dst {collider.rect.x - cam.view.x,collider.rect.y - cam.view.y,collider.rect.w,collider.rect.h};
+            if (debugState.colliders) {
+                if (e->hasComponent<Collider>()) {
+                    auto& collider = e->getComponent<Collider>();
+                    // std::cout << collider.tag << " " << collider.rect.x << " " << collider.rect.y << " " << collider.rect.w << " " << collider.rect.h << std::endl;
+                    SDL_Texture* tex = TextureManager::load("../assets/spritesheet.png");
+                    SDL_FRect src {0,32,32,32};
+                    SDL_FRect dst {collider.rect.x - cam.view.x,collider.rect.y - cam.view.y,collider.rect.w,collider.rect.h};
 
-                TextureManager::draw(tex, src, dst);
+                    TextureManager::draw(tex, src, dst);
+                } else if (!e->hasComponent<EffectTag>()) {
+                    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+                    SDL_FRect src {0,32,32,32};
+                    SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, 32, 32};
+
+                    TextureManager::draw(tex, src, dst);
+                }
             }
         }
     }

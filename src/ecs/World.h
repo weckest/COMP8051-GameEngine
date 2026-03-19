@@ -126,7 +126,7 @@ public:
         for (auto& e : entities) {
             if (e->hasComponent<Camera>()) {
                 map.draw(e->getComponent<Camera>());
-                if (debugState.debug) {
+                if (debugState.debug && debugState.grid) {
                     gridSystem.draw(e->getComponent<Camera>());
                 }
             }
