@@ -27,17 +27,17 @@ SpawnerSystem::SpawnerSystem(World &world) {
                 auto& magnet = world.createDeferredEntity();
                 auto& mT = magnet.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
                 mT.oldPosition = mT.position;
-                auto& c = magnet.addComponent<Collider>("item");
-                c.rect.x = t.position.x;
-                c.rect.y = t.position.y;
-                c.rect.w = 32;
-                c.rect.h = 32;
 
+                SDL_Texture* tex = TextureManager::load("../assets/mario.png");
+                SDL_FRect tileSrc {0, 0, 32, 44};
+                SDL_FRect tileDst {mT.position.x, mT.position.y, tileSrc.w, tileSrc.h};
+                magnet.addComponent<Sprite>(tex, tileSrc, tileDst);
 
+                magnet.addComponent<MagnetTag>();
                 magnet.addComponent<ItemTag>();
         };
 
-        world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
+        world.getEventManager().subscribe([this](const BaseEvent& e) {
                 if (e.type != EventType::SpawnEntity) return;
                 const auto& spawn = static_cast<const SpawnPrefabEvent&>(e);
                 spawners[spawn.name](spawn.transform);

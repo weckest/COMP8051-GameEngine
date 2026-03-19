@@ -19,7 +19,8 @@ enum class EventType {
     LevelUp,
     KeyPress,
     CalculateStats,
-    MouseInteraction
+    MouseInteraction,
+    Magnet
 };
 
 struct BaseEvent {
@@ -113,6 +114,12 @@ struct MouseInteractionEvent : BaseEvent {
     MouseInteractionState state{};
     MouseInteractionEvent(Entity* entity, MouseInteractionState state) : entity(entity), state(state) {
         type = EventType::MouseInteraction;
+    }
+};
+
+struct MagnetEvent : BaseEvent {
+    MagnetEvent() {
+        type = EventType::Magnet;
     }
 };
 

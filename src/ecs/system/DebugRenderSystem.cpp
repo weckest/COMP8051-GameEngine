@@ -50,7 +50,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
                 } else if (!e->hasComponent<EffectTag>()) {
                     SDL_Texture* tex = TextureManager::load("../assets/colors.png");
                     SDL_FRect src {0,32,32,32};
-                    SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, 32, 32};
+                    SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, sprite.dst.w, sprite.dst.h};
 
                     TextureManager::draw(tex, src, dst);
                 }
@@ -66,7 +66,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
 
                 if (e->hasComponent<ItemTag>()) {
                     Vector2D aCenter = t.position + Vector2D{(sprite.dst.w / 2), (sprite.dst.h / 2)};
-                    float aoe = stats.aoeModifier * 128;
+                    float aoe = stats.aoeModifier * 64;
                     aCenter.x -= cam.view.x;
                     aCenter.y -= cam.view.y;
 

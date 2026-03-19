@@ -96,6 +96,7 @@ struct Health {
 
 
 struct EffectTag{};
+struct MagnetTag{};
 struct ProjectileTag {
     float damage{};
     float aoe{};

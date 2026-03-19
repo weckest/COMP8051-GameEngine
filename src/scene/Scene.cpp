@@ -149,6 +149,9 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon());
 
 
+    world.getEventManager().emit(SpawnPrefabEvent{"magnet", Transform{Vector2D{200, 500}}});
+
+
 
     //add scene state
     auto& state(world.createEntity());
