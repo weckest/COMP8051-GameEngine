@@ -31,7 +31,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
     playerCenter.y -= cam.view.y;
 
     if (debugState.range) {
-        TextureManager::drawCircle(playerCenter, 200.0f, 0, 255, 127);
+        TextureManager::drawCircle(playerCenter, 200.0f, 0, 255, 200);
     }
 
 
@@ -76,8 +76,8 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
 
                     Vector2D difference = playerCenter - aCenter;
 
-                    TextureManager::drawLine(aCenter, playerCenter);
-                    TextureManager::drawLine(playerCenter - difference.normalize() * aoe, playerCenter, 0, 127, 255);
+                    TextureManager::drawLine(aCenter, playerCenter - difference.normalize() * aoe);
+                    TextureManager::drawLine(playerCenter - difference.normalize() * aoe, playerCenter, 127, 0, 255);
 
                 }
             }

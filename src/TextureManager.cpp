@@ -67,17 +67,32 @@ void TextureManager::drawCircle(Vector2D& center, float radius, Uint8 r, Uint8 g
     Uint8 oldR, oldG, oldB, oldA;
     float buffer = 1.0f;
     float thickness = 5.0f;
-    float stepSize = 2.5f;
+    float stepSize = 1.0f;
+    std::vector<SDL_FPoint> points;
+    points.resize(points.size() + 1);
     SDL_GetRenderDrawColor(game->renderer, &oldR, &oldG, &oldB, &oldA);
     SDL_SetRenderDrawColor(game->renderer, r, g, b, 255);
-    for (float i = center.x - radius; i <= center.x + radius; i+=stepSize) {
-        for (float j = center.y - radius; j <= center.y + radius; j+=stepSize) {
-            if ((Vector2D{i,j} - center).length() - (radius - 5) >= buffer && (Vector2D{i,j} - center).length() - (radius - 5) <= thickness) {
-                SDL_FRect src {i ,j , 1, 1};
-                SDL_RenderFillRect(game->renderer, &src);
+    float inner = radius - 5 + buffer;
+    float outer = radius - 5 + thickness;
+
+    float innerSq = inner * inner;
+    float outerSq = outer * outer;
+    for (float i = center.x - radius; i <= center.x + radius; i += stepSize) {
+        float dx = i - center.x;
+
+        float maxY = sqrt(radius * radius - dx * dx);
+
+        for (float j = center.y - maxY; j <= center.y + maxY; j += stepSize) {
+            float dy = j - center.y;
+            float distSq = dx * dx + dy * dy;
+
+            if (distSq >= innerSq && distSq <= outerSq) {
+                points.push_back({i, j});
             }
         }
     }
+
+    SDL_RenderPoints(game->renderer, points.data(), points.size());
     SDL_SetRenderDrawColor(game->renderer, oldR, oldG, oldB, oldA);
 }
 
