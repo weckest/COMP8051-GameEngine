@@ -117,6 +117,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 
     auto& player(world.createEntity());
+    world.setPlayer(&player);
     auto& pt = player.addComponent<PlayerTag>();
     auto& playerStats = player.addComponent<Stats>();
     auto& playerTransform = player.addComponent<Transform>(Vector2D(world.getMap().width * 32 / 2,world.getMap().height * 32 / 2), 0.0f, 0.0f);

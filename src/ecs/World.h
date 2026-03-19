@@ -13,6 +13,7 @@
 #include "BobbingSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
+#include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
 #include "EffectSystem.h"
 #include "EnemyMovementSystem.h"
@@ -27,6 +28,7 @@
 #include "Map.h"
 #include "MouseInputSystem.h"
 #include "MovementSystem.h"
+#include "PickUpSystem.h"
 #include "PlayerStatListener.h"
 #include "RenderSystem.h"
 #include "SpawnerSystem.h"
@@ -43,6 +45,7 @@ class World {
     Map map;
     Timer timer;
     DebugState debugState;
+    Entity* player;
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::vector<std::vector<Entity*>>> entityGrid;
     int rows = 3;
@@ -72,6 +75,8 @@ class World {
     UIRenderSystem uiRenderSystem;
     MouseInputSystem mouseInputSystem;
     PlayerStatListener playerStatListener{*this};
+    PickUpSystem pickUpSystem;
+    DebugRenderSystem debugRenderSystem{*this};
 
 
 public:
@@ -88,6 +93,7 @@ public:
             movementSystem.update(entities, dt);
             enemyMovementSystem.update(entities, dt);
             spawnTimerSystem.update(entities, dt);
+            pickUpSystem.update(entities, *this);
             timer.startTimer("colliders");
             timer.startTimer("grid");
             gridSystem.update(entityGrid, entities, *this);
@@ -121,6 +127,9 @@ public:
         }
 
         renderSystem.render(entities);
+        if (debugState.debug) {
+            debugRenderSystem.render(entities, debugState);
+        }
         uiRenderSystem.render(entities);
 
         if (debugState.debug && debugState.timer) {
@@ -207,6 +216,14 @@ public:
     Map& getMap() {return map;}
 
     DebugState& getDebugState() {return debugState;}
+
+    Entity* getPlayer() {
+        return player;
+    }
+
+    void setPlayer(Entity* player) {
+        this->player = player;
+    }
 
 };
 

@@ -1,0 +1,23 @@
+//
+// Created by Weckest on 2026-03-18.
+//
+
+#ifndef INC_8051TUTORIAL_DEBUGRENDERSYSTEM_H
+#define INC_8051TUTORIAL_DEBUGRENDERSYSTEM_H
+#include <memory>
+#include <vector>
+
+#include "data/DebugState.h"
+
+class Entity;
+class World;
+
+class DebugRenderSystem {
+    World& world;
+public:
+    DebugRenderSystem(World& world): world(world) {}
+
+    void render(const std::vector<std::unique_ptr<Entity>>& entities, DebugState debugState);
+};
+
+#endif //INC_8051TUTORIAL_DEBUGRENDERSYSTEM_H

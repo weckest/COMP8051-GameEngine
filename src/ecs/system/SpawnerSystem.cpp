@@ -26,6 +26,7 @@ SpawnerSystem::SpawnerSystem(World &world) {
                 SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
                 coin.addComponent<Sprite>(tex, tileSrc, tileDst);
                 coin.addComponent<ItemTag>();
+                std::cout << coin.hasComponent<ItemTag>() << std::endl;
         };
 
         world.getEventManager().subscribe([this, &world](const BaseEvent& e) {

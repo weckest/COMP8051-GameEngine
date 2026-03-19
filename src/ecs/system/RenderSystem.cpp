@@ -5,7 +5,7 @@
 #include "RenderSystem.h"
 #include "World.h"
 
-void RenderSystem::render(const std::vector<std::unique_ptr<Entity> > &entities) {
+void RenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entities) {
     Entity* cameraEntity = nullptr;
 
     //Find camera
@@ -17,6 +17,7 @@ void RenderSystem::render(const std::vector<std::unique_ptr<Entity> > &entities)
     }
 
     if (!cameraEntity) return; //no camera
+
     auto& cam = cameraEntity->getComponent<Camera>();
 
     for (auto& entity : entities) {
@@ -36,20 +37,7 @@ void RenderSystem::render(const std::vector<std::unique_ptr<Entity> > &entities)
                 sprite.src = anim.clips[anim.currentClip].frameIndices[anim.currentFrame];
             }
 
-
             TextureManager::draw(sprite.texture, sprite.src, sprite.dst);
-
-            //collider debugs
-            //only show if debug mode is on
-            if (entity->hasComponent<Collider>() && world.getDebugState().debug) {
-                auto& collider = entity->getComponent<Collider>();
-                // std::cout << collider.tag << " " << collider.rect.x << " " << collider.rect.y << " " << collider.rect.w << " " << collider.rect.h << std::endl;
-                SDL_Texture* tex = TextureManager::load("../assets/spritesheet.png");
-                SDL_FRect src {0,32,32,32};
-                SDL_FRect dst {collider.rect.x - cam.view.x,collider.rect.y - cam.view.y,collider.rect.w,collider.rect.h};
-
-                TextureManager::draw(tex, src, dst);
-            }
         }
     }
 }

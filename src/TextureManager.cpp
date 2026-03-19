@@ -51,6 +51,19 @@ void TextureManager::draw(SDL_Texture *texture, SDL_FRect src, SDL_FRect dst) {
     SDL_RenderTexture(game->renderer, texture, &src, &dst);
 }
 
+void TextureManager::drawLine(Vector2D start, Vector2D end) {
+    SDL_RenderLine(game->renderer, start.x, start.y, end.x, end.y);
+}
+
+void TextureManager::drawLine(Vector2D start, Vector2D end, Uint8 r, Uint8 g, Uint8 b) {
+    Uint8 oldR, oldG, oldB, oldA;
+    SDL_GetRenderDrawColor(game->renderer, &oldR, &oldG, &oldB, &oldA);
+    SDL_SetRenderDrawColor(game->renderer, r, g, b, 255);
+    drawLine(start, end);
+    SDL_SetRenderDrawColor(game->renderer, oldR, oldG, oldB, oldA);
+
+}
+
 void TextureManager::clean() {
     for (auto& texture : textures) {
         SDL_DestroyTexture(texture.second);
