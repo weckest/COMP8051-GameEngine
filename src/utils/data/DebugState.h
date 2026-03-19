@@ -12,6 +12,7 @@ struct DebugState {
     bool weapon = false;
     bool item = false;
     bool ui = false;
+    bool lines = false;
 };
 
 #endif //INC_8051TUTORIAL_DEBUGSTATE_H

@@ -27,7 +27,7 @@ void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World&
             auto& eT = e->getComponent<Transform>();
             Vector2D eCenter = eT.position + Vector2D{eS.dst.w / 2, eS.dst.h / 2};
             // std::cout << (pCenter - eCenter).length() << ", " << pStats.aoeModifier * 64 << std::endl;
-            if ((pCenter - eCenter).length() <= pStats.aoeModifier * 64) {
+            if ((pCenter - eCenter).length() <= pStats.aoeModifier * 128) {
 
 
                 ///TEST CODE. NEED TO REMOVE LATER

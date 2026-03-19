@@ -32,6 +32,9 @@ World::World() {
                     break;
                 case SDLK_P:
                     isPaused = !isPaused;
+                    break;
+                case SDLK_J:
+                    debugState.lines = !debugState.lines;
 
                 default:
                     break;

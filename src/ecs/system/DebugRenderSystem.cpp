@@ -50,26 +50,24 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
         }
     }
 
-    for (auto& e : entities) {
-        if (e->hasComponent<Transform>() && e->hasComponent<Sprite>()) {
-            auto& t = e->getComponent<Transform>();
-            auto& sprite = e->getComponent<Sprite>();
+    if (debugState.lines) {
+        for (auto& e : entities) {
+            if (e->hasComponent<Transform>() && e->hasComponent<Sprite>()) {
+                auto& t = e->getComponent<Transform>();
+                auto& sprite = e->getComponent<Sprite>();
 
-            if (e->hasComponent<ItemTag>()) {
-                Vector2D aCenter = t.position + Vector2D{(sprite.dst.w / 2), (sprite.dst.h / 2)};
-                float aoe = stats.aoeModifier * 64;
-                float change = aoe / (playerCenter - aCenter).length();
-                std::cout << "Player: " << playerCenter.x << ' ' << playerCenter.y << std::endl;
-                std::cout << "Entity: " << aCenter.x << ' ' << aCenter.y << std::endl;
-                std::cout << "Change: " << change << std::endl;
-                aCenter.x -= cam.view.x;
-                aCenter.y -= cam.view.y;
+                if (e->hasComponent<ItemTag>()) {
+                    Vector2D aCenter = t.position + Vector2D{(sprite.dst.w / 2), (sprite.dst.h / 2)};
+                    float aoe = stats.aoeModifier * 128;
+                    aCenter.x -= cam.view.x;
+                    aCenter.y -= cam.view.y;
 
+                    Vector2D difference = playerCenter - aCenter;
 
-                TextureManager::drawLine(aCenter, playerCenter);
-                TextureManager::drawLine(playerCenter - (playerCenter - aCenter) * change, playerCenter, 0, 127, 255);
+                    TextureManager::drawLine(aCenter, playerCenter);
+                    TextureManager::drawLine(playerCenter - difference.normalize() * aoe, playerCenter, 0, 127, 255);
 
-
+                }
             }
         }
     }
