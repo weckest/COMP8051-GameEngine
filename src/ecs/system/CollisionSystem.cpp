@@ -170,6 +170,8 @@ Entity * CollisionSystem::getClosestEntity(World& world, Entity &entity, float r
                                 bCenterPoint.y -= c.rect.h / 2;
                             }
 
+                            if ((bCenterPoint - centerPoint).length() > radius) continue;
+
                             if (closestEntity == nullptr) {
                                 closestEntity = entityB;
                                 distance = (centerPoint - bCenterPoint).length();
