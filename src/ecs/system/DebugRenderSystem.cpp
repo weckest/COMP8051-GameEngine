@@ -30,15 +30,19 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
     playerCenter.x -= cam.view.x;
     playerCenter.y -= cam.view.y;
 
+    if (debugState.range) {
+        TextureManager::drawCircle(playerCenter, 200.0f, 0, 255, 127);
+    }
 
-    for (auto& e : entities) {
-        if (e->hasComponent<Transform>() && e->hasComponent<Sprite>()) {
-            auto& t = e->getComponent<Transform>();
-            auto& sprite = e->getComponent<Sprite>();
 
-            //collider debugs
-            //only show if debug mode is on
-            if (debugState.colliders) {
+    if (debugState.colliders) {
+        for (auto& e : entities) {
+            if (e->hasComponent<Transform>() && e->hasComponent<Sprite>()) {
+                auto& t = e->getComponent<Transform>();
+                auto& sprite = e->getComponent<Sprite>();
+
+                //collider debugs
+                //only show if debug mode is on
                 if (e->hasComponent<Collider>()) {
                     auto& collider = e->getComponent<Collider>();
                     // std::cout << collider.tag << " " << collider.rect.x << " " << collider.rect.y << " " << collider.rect.w << " " << collider.rect.h << std::endl;

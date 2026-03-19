@@ -132,6 +132,7 @@ public:
             }
         }
 
+
         renderSystem.render(entities);
         if (debugState.debug) {
             debugRenderSystem.render(entities, debugState);

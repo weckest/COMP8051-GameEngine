@@ -61,8 +61,26 @@ void TextureManager::drawLine(Vector2D start, Vector2D end, Uint8 r, Uint8 g, Ui
     SDL_SetRenderDrawColor(game->renderer, r, g, b, 255);
     drawLine(start, end);
     SDL_SetRenderDrawColor(game->renderer, oldR, oldG, oldB, oldA);
-
 }
+
+void TextureManager::drawCircle(Vector2D& center, float radius, Uint8 r, Uint8 g, Uint8 b) {
+    Uint8 oldR, oldG, oldB, oldA;
+    float buffer = 1.0f;
+    float thickness = 5.0f;
+    float stepSize = 2.5f;
+    SDL_GetRenderDrawColor(game->renderer, &oldR, &oldG, &oldB, &oldA);
+    SDL_SetRenderDrawColor(game->renderer, r, g, b, 255);
+    for (float i = center.x - radius; i <= center.x + radius; i+=stepSize) {
+        for (float j = center.y - radius; j <= center.y + radius; j+=stepSize) {
+            if ((Vector2D{i,j} - center).length() - (radius - 5) >= buffer && (Vector2D{i,j} - center).length() - (radius - 5) <= thickness) {
+                SDL_FRect src {i ,j , 1, 1};
+                SDL_RenderFillRect(game->renderer, &src);
+            }
+        }
+    }
+    SDL_SetRenderDrawColor(game->renderer, oldR, oldG, oldB, oldA);
+}
+
 
 void TextureManager::clean() {
     for (auto& texture : textures) {

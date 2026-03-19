@@ -45,6 +45,10 @@ World::World() {
                         debugState.grid = !debugState.grid;
                         std::cout << "Debug Grid: " << debugState.grid << std::endl;
                         break;
+                    case SDLK_R:
+                        debugState.range = !debugState.range;
+                        std::cout << "Debug Range: " << debugState.range << std::endl;
+                        break;
                     default:
                         break;
                 }
