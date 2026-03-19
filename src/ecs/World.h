@@ -42,6 +42,7 @@
 
 //could also be called EntityManager
 class World {
+    bool isPaused = false;
     Map map;
     Timer timer;
     DebugState debugState;
@@ -87,28 +88,33 @@ public:
             //main menu system
             mainMenuSystem.update(event);
         } else {
-            timer.startTimer("update");
+
             keyboardInputSystem.update(*this, entities, event);
-            bobbingSystem.update(entities, dt);
-            movementSystem.update(entities, dt);
-            enemyMovementSystem.update(entities, dt);
-            spawnTimerSystem.update(entities, dt);
-            pickUpSystem.update(entities, *this);
-            timer.startTimer("colliders");
-            timer.startTimer("grid");
-            gridSystem.update(entityGrid, entities, *this);
-            timer.stopTimer("grid");
-            timer.startTimer("collision");
-            collisionSystem.update(*this);
-            timer.stopTimer("collision");
-            timer.stopTimer("colliders");
-            effectSystem.update(entities, dt);
-            animationSystem.update(entities, dt);
-            cameraSystem.update(entities);
-            destructionSystem.update(entities);
-            levelUpSystem.update(entities, *this);
-            weaponFireSystem.update(*this, dt);
-            timer.stopTimer("update");
+
+            if (!isPaused) {
+                timer.startTimer("update");
+                bobbingSystem.update(entities, dt);
+                movementSystem.update(entities, dt);
+                enemyMovementSystem.update(entities, dt);
+                spawnTimerSystem.update(entities, dt);
+                pickUpSystem.update(entities, *this);
+                timer.startTimer("colliders");
+                timer.startTimer("grid");
+                gridSystem.update(entityGrid, entities, *this);
+                timer.stopTimer("grid");
+                timer.startTimer("collision");
+                collisionSystem.update(*this);
+                timer.stopTimer("collision");
+                timer.stopTimer("colliders");
+                effectSystem.update(entities, dt);
+                animationSystem.update(entities, dt);
+                cameraSystem.update(entities);
+                destructionSystem.update(entities);
+                levelUpSystem.update(entities, *this);
+                weaponFireSystem.update(*this, dt);
+                timer.stopTimer("update");
+            }
+
         }
         mouseInputSystem.update(*this, event);
         synchronizeEntities();
