@@ -37,6 +37,20 @@ SpawnerSystem::SpawnerSystem(World &world) {
                 magnet.addComponent<ItemTag>();
         };
 
+        spawners["food"] = [&world](const Transform &t) {
+                auto& magnet = world.createDeferredEntity();
+                auto& mT = magnet.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
+                mT.oldPosition = mT.position;
+
+                SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+                SDL_FRect tileSrc {32, 0, 32, 32};
+                SDL_FRect tileDst {mT.position.x, mT.position.y, tileSrc.w, tileSrc.h};
+                magnet.addComponent<Sprite>(tex, tileSrc, tileDst);
+
+                magnet.addComponent<FoodTag>(30.0f);
+                magnet.addComponent<ItemTag>();
+        };
+
         world.getEventManager().subscribe([this](const BaseEvent& e) {
                 if (e.type != EventType::SpawnEntity) return;
                 const auto& spawn = static_cast<const SpawnPrefabEvent&>(e);

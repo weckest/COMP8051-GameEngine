@@ -3,19 +3,12 @@
 //
 
 #include "PickUpSystem.h"
+
+#include "Game.h"
 #include "World.h"
 
 void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World& world) {
-    Entity* player = nullptr;
-
-    for (auto& entity : entities) {
-        if (entity->hasComponent<PlayerTag>()) {
-            player = entity.get();
-        }
-    }
-
-    if (!player) return;
-    if (!player->hasComponent<Transform>() && !player->hasComponent<Sprite>() && !player->hasComponent<Stats>()) return;
+    Entity* player = world.getPlayer();
     auto& pT = player->getComponent<Transform>();
     auto& pS = player->getComponent<Sprite>();
     auto& pStats = player->getComponent<Stats>();
@@ -31,6 +24,14 @@ void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World&
 
                 if (e->hasComponent<MagnetTag>()) {
                     world.getEventManager().emit(MagnetEvent{});
+                    world.getEventManager().emit(DeathEvent(e.get()));
+                    e->destroy();
+                    continue;
+                }
+
+                if (e->hasComponent<FoodTag>()) {
+                    player->getComponent<Health>().currentHealth += e->getComponent<FoodTag>().heal;
+                    Game::gameState.playerHealth = player->getComponent<Health>().currentHealth;
                     world.getEventManager().emit(DeathEvent(e.get()));
                     e->destroy();
                     continue;

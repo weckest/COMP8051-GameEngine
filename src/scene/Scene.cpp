@@ -150,6 +150,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 
     world.getEventManager().emit(SpawnPrefabEvent{"magnet", Transform{Vector2D{200, 500}}});
+    world.getEventManager().emit(SpawnPrefabEvent{"food", Transform{Vector2D{300, 500}}});
 
 
 
