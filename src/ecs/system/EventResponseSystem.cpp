@@ -152,7 +152,13 @@ void EventResponseSystem::onCollision(
 
 
              if (eTag.health <= 0) {
-                 world.getEventManager().emit(SpawnPrefabEvent{"coin", entityB->getComponent<Transform>()});
+                 //replace with spawinging in a random object
+                 auto& entityT = e->getComponent<Transform>();
+                 auto& entityS = e->getComponent<Sprite>();
+                 Vector2D center = entityT.position;
+                 center.x += entityS.dst.w / 2;
+                 center.y += entityS.dst.h / 2;
+                 world.getEventManager().emit(SpawnPrefabEvent{"coin", center});
 
                  //destroy the enemy
                  em.emit(DeathEvent(e));

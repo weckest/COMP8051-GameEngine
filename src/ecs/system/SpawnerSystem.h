@@ -15,9 +15,10 @@ class World;
 class SpawnerSystem {
 public:
     SpawnerSystem(World& world);
+    void SpawnRandomItem(const Vector2D &position);
 
 private:
-    std::unordered_map<std::string, std::function<void(Transform)>> spawners;
+    std::unordered_map<std::string, std::function<void(Vector2D)>> spawners;
 
 };
 

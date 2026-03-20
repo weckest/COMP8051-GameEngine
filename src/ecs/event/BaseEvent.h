@@ -64,8 +64,9 @@ struct ToggleDebugEvent : BaseEvent {
 
 struct SpawnPrefabEvent : BaseEvent {
     const char*  name;
-    Transform transform;
-    SpawnPrefabEvent(const char* name, const Transform &transform) : name(name), transform(transform) {
+    Vector2D position;
+    bool rand = false;
+    SpawnPrefabEvent(const char* name, const Vector2D &position, const bool rand = false) : name(name), position(position), rand(rand) {
         type = EventType::SpawnEntity;
     }
 };
