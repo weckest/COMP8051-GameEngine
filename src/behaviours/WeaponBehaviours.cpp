@@ -72,8 +72,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 int count = std::max(1, (int)(weapon.projectileModifier * 3));
 
                 float baseAngle = weapon.spreadModifier; // total spread in radians
-                float minStep = 5.0f * (M_PI / 180.0f);
-                float step = (count > 1) ? std::max(baseAngle / (count - 1), minStep) : 0.0f;
+
+                float step = (count > 1) ? (baseAngle / (count - 1)) : 0.0f;
 
                 auto &t = entity.getComponent<Transform>();
                 auto &s = entity.getComponent<Sprite>();
