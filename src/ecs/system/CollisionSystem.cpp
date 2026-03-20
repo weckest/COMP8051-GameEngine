@@ -22,6 +22,14 @@ void CollisionSystem::update(World &world) {
         auto& c = entity->getComponent<Collider>();
         c.rect.x = t.position.x;
         c.rect.y = t.position.y;
+
+        //FOR THE GAME
+        //TODO: this needs to be a calculation for when we dynamically change the player size
+        if (entity->hasComponent<PlayerTag>()) {
+            c.rect.x += 16;
+            c.rect.y += 16;
+        }
+
     }
 
     std::set<CollisionKey> currentCollisions;

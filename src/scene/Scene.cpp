@@ -4,6 +4,8 @@
 
 #include "../scene/Scene.h"
 
+#include <cstring>
+
 #include "../manager/AssetManager.h"
 #include "Game.h"
 #include "manager/WeaponManager.h"
@@ -45,7 +47,13 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
 
     //load our map
-    world.getMap().load(mapPath, TextureManager::load("../assets/spritesheet.png"));
+    if (std::strcmp(mapPath, "../assets/map-tlc/TLC-MapUpdated.tmx") == 0) {
+        world.getMap().load(mapPath, TextureManager::load("../assets/map-tlc/TLC-Tilesheet.png"));
+    } else {
+        world.getMap().load(mapPath, TextureManager::load("../assets/spritesheet.png"));
+    }
+
+
     for (auto& collider: world.getMap().colliders) {
         auto& e = world.createEntity();
         e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
@@ -120,7 +128,13 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     world.setPlayer(&player);
     auto& pt = player.addComponent<PlayerTag>();
     auto& playerStats = player.addComponent<Stats>();
-    auto& playerTransform = player.addComponent<Transform>(Vector2D(world.getMap().width * 32 / 2,world.getMap().height * 32 / 2), 0.0f, 0.0f);
+
+    //LECTURE
+    //auto& playerTransform = player.addComponent<Transform>(Vector2D(world.getMap().width * 32 / 2,world.getMap().height * 32 / 2), 0.0f, 0.0f);
+
+    //GAME
+    //direct position of middle of intersection
+    auto& playerTransform = player.addComponent<Transform>(Vector2D((14 * 32) - 16,(25 * 32) + 16), 0.0f, 0.0f);
 
     auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0.0f,0.0f), 120.0f * playerStats.speedModifier);
 
@@ -132,9 +146,15 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64 * playerStats.playerSizeModifier, 64 * playerStats.playerSizeModifier};
     player.addComponent<Sprite>(tex, playerSrc, playerDst, RenderLayer::World);
 
+    // auto& playerCollider = player.addComponent<Collider>("player");
+    // playerCollider.rect.w = playerDst.w;
+    // playerCollider.rect.h = playerDst.h;
+
+    // GAME: Reduce hitbox size
+    //TODO: This will need to change when we configure the new sprite
     auto& playerCollider = player.addComponent<Collider>("player");
-    playerCollider.rect.w = playerDst.w;
-    playerCollider.rect.h = playerDst.h;
+    playerCollider.rect.w = playerDst.w / 2;
+    playerCollider.rect.h = playerDst.h / 2;
 
     player.addComponent<Health>(Game::gameState.playerHealth);
 
