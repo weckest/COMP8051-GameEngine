@@ -32,8 +32,8 @@ int main() {
         if (actualFrameTime != 0) {
             SDL_SetWindowTitle(
                 game->getWindow(),
-                ("8051 Tutorial Engine, FPS: " + std::to_string((int)(1.0f / deltaTime)) +
-                 ", Actual: " + std::to_string((int)(1000000000.0 / actualFrameTime)))
+                ("The Final Corpse [FPS: " + std::to_string((int)(1.0f / deltaTime)) +
+                 " A: " + std::to_string((int)(1000000000.0 / actualFrameTime)) + "]")
                     .c_str()
             );
         }
