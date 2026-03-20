@@ -52,11 +52,11 @@ void Map::load(const char *path, SDL_Texture *ts) {
         buildingTileData = std::vector(height, std::vector<int>(width));
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                std::string val;
+                std::string building_val;
                 //read chars from ss into val until it hits a comma,, or is at the end of the stream
 
-                if (!std::getline(ss, val, ',')) break;
-                buildingTileData[i][j] = std::stoi(val); //string to int converter
+                if (!std::getline(building_ss, building_val, ',')) break;
+                buildingTileData[i][j] = std::stoi(building_val); //string to int converter
             }
         }
     }
@@ -169,6 +169,40 @@ void Map::draw(const Camera& cam) {
             //     default:
             //         break;
             // }
+
+            TextureManager::draw(tileset, src, dest);
+        }
+    }
+
+    //comment out if using lecture slides
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            int type = buildingTileData[row][col];
+            if (type == 0) continue;
+
+            float worldX = static_cast<float>(col) * dest.w;
+            float worldY = static_cast<float>(row) * dest.h;
+
+            //move the tiles or map relative to the camera
+            //convert from world space to screen space
+            dest.x = std::round(worldX - cam.view.x);
+            dest.y = std::round(worldY - cam.view.y);
+
+
+            //FOR THE GAME
+            int tileX = (type-1) % 20; // -1 because TMX start from 1 but pixels are 0
+            // if (tileX == 0) {
+            //     tileX = 20;
+            // }
+            int tileY = type / 20;
+            if (tileX == 19) { //handle tileX -1
+                tileY -= 1;
+            }
+
+            src.x = tileX * scale;
+            src.y = tileY * scale;
+            src.w = scale;
+            src.h = scale;
 
             TextureManager::draw(tileset, src, dest);
         }
