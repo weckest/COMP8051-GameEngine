@@ -18,8 +18,11 @@ const Weapon& WeaponManager::getRandWeapon() {
 	if (weapons.empty())
 		throw std::runtime_error("WeaponManager: no weapons loaded");
 
+	// int index = rand() % weapons.size();
+	int index = 0;
 	auto it = weapons.begin();
-	std::advance(it, rand() % weapons.size());
+	std::advance(it, index);
+	std::cout<< it->second.name << std::endl;
 	return it->second;
 }
 
@@ -28,7 +31,9 @@ void WeaponManager::loadWeaponFromXML(const char *path) {
 	tinyxml2::XMLDocument doc;
 	doc.LoadFile(path);
 
-	for (auto* root = doc.FirstChildElement("weapon");
+	auto* weaponsRoot = doc.FirstChildElement("weapons");
+
+	for (auto* root = weaponsRoot->FirstChildElement("weapon");
 	     root != nullptr;
 	     root = root->NextSiblingElement("weapon")) {
 
@@ -38,6 +43,8 @@ void WeaponManager::loadWeaponFromXML(const char *path) {
 		if (nameAttr) {
 			weapon.name = nameAttr;
 		}
+
+		std::cout<< "weapon loaded" << weapon.name << std::endl;
 
 		root->QueryFloatAttribute("fireRate", &weapon.fireRate);
 		root->QueryFloatAttribute("damageModifier", &weapon.damageModifier);
