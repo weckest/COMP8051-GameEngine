@@ -10,7 +10,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 return;
 
             entity.addComponent<TimedSpawner>(
-                1/weapon.fireRate,
+                1/weapon.fireRate + (1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier),
                 [&entity, &world, weapon] {
                     auto &bullet = world.createDeferredEntity();
                     auto &t = entity.getComponent<Transform>();
@@ -53,7 +53,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     c.rect.h = dst.h;
 
                     bullet.addComponent<ProjectileTag>(
-                        50.0f * weapon.damageModifier,
+                        50.0f * weapon.damageModifier + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
                         100.0f * weapon.aoeModifier
                     );
 
@@ -67,64 +67,64 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
             if (!entity.hasComponent<Collider>())
                 return;
            entity.addComponent<TimedSpawner>(
-    1.0f / weapon.fireRate,
+    1.0f / weapon.fireRate + (1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier),
     [&entity, &world, weapon] {
+                int count = std::max(1, (int)(weapon.projectileModifier * 3));
 
-        int count = static_cast<int>(weapon.projectileModifier * 3);
-        float minStep = 5.0f * (M_PI / 180.0f); // 5 degrees in radians
-        float step = std::max(weapon.spreadModifier, minStep);
+                float baseAngle = weapon.spreadModifier; // total spread in radians
+                float minStep = 5.0f * (M_PI / 180.0f);
+                float step = (count > 1) ? std::max(baseAngle / (count - 1), minStep) : 0.0f;
 
-        // Use the entity's facing direction (forward)
-        auto &v = entity.getComponent<Velocity>();
-        Vector2D forward = v.direction;
-        if (forward.length() == 0) forward = Vector2D(1, 0); // default right
-        forward = forward.normalize();
+                auto &t = entity.getComponent<Transform>();
+                auto &s = entity.getComponent<Sprite>();
+                auto &v = entity.getComponent<Velocity>();
 
-        for (int i = 0; i < count; i++) {
-            auto &bullet = world.createDeferredEntity();
+                Vector2D forward = v.direction;
+                if (forward.length() == 0) forward = Vector2D(1, 0);
+                forward = forward.normalize();
 
-            auto &t = entity.getComponent<Transform>();
-            auto &s = entity.getComponent<Sprite>();
+                SDL_Texture *tex = TextureManager::load("../assets/bullet.png");
+                SDL_FRect src = {0, 0, 32, 32};
 
-            SDL_Texture *tex = TextureManager::load("../assets/bullet.png");
+                for (int i = 0; i < count; i++) {
+                auto &bullet = world.createDeferredEntity();
 
-            SDL_FRect src = {0,0,32,32};
-            SDL_FRect dst = {
+                SDL_FRect dst = {
                 t.position.x,
                 t.position.y,
                 src.w * weapon.projectileSizeModifier,
                 src.h * weapon.projectileSizeModifier
-            };
+                };
 
-            bullet.addComponent<Sprite>(tex, src, dst);
+                bullet.addComponent<Sprite>(tex, src, dst);
 
-            auto& bT = bullet.addComponent<Transform>(
+                auto &bT = bullet.addComponent<Transform>(
                 Vector2D(
-                    t.position.x + s.dst.w / 2 - dst.w / 2,
-                    t.position.y + s.dst.h / 2 - dst.h / 2
+                    t.position.x + s.dst.w/2 - dst.w/2,
+                    t.position.y + s.dst.h/2 - dst.h/2
                 ),
                 0.0f,
                 1.0f
-            );
+                );
 
-            // Spiral angle: each bullet is rotated by step * i
-            float angle = i * step;
-            Vector2D dir(
+                float angle = step * ((count - 1) / 2.0f - i);
+
+                Vector2D dir(
                 forward.x * cos(angle) - forward.y * sin(angle),
                 forward.x * sin(angle) + forward.y * cos(angle)
-            );
+                );
 
-            bullet.addComponent<Velocity>(dir, 300.0f);
+                bullet.addComponent<Velocity>(dir, 300.0f);
 
-            auto &c = bullet.addComponent<Collider>("bullet");
-            c.rect.w = dst.w;
-            c.rect.h = dst.h;
+                auto &c = bullet.addComponent<Collider>("bullet");
+                c.rect.w = dst.w;
+                c.rect.h = dst.h;
 
-            bullet.addComponent<ProjectileTag>(
-                50.0f * weapon.damageModifier,
+                bullet.addComponent<ProjectileTag>(
+                50.0f * weapon.damageModifier + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
                 100.0f * weapon.aoeModifier
-            );
-        }
+                );
+                }
     }
 );
         }
