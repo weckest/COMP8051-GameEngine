@@ -37,6 +37,8 @@ set(SRC_FILES
         src/ecs/system/MouseInputSystem.cpp
         src/ecs/system/PlayerStatListener.h
         src/ecs/system/PlayerStatListener.cpp
+        src/ecs/system/PickUpSystem.cpp
+        src/ecs/system/DebugRenderSystem.cpp
 )
 
 # ALWAYS create the executable first

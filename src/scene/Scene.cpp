@@ -125,6 +125,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 
     auto& player(world.createEntity());
+    world.setPlayer(&player);
     auto& pt = player.addComponent<PlayerTag>();
     auto& playerStats = player.addComponent<Stats>();
 
@@ -166,6 +167,10 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     //make the player shoot
 
     player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon());
+
+
+    world.getEventManager().emit(SpawnPrefabEvent{"magnet", Transform{Vector2D{200, 500}}});
+    world.getEventManager().emit(SpawnPrefabEvent{"food", Transform{Vector2D{300, 500}}});
 
 
 

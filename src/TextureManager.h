@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "Vector2D.h"
 #include "SDL3_Image/SDL_image.h"
 
 class TextureManager {
@@ -16,6 +17,12 @@ public:
 
     //floating point Rect = FRect
     static void draw(SDL_Texture* texture, SDL_FRect src, SDL_FRect dst);
+
+    static void drawLine(Vector2D start, Vector2D end);
+
+    static void drawLine(Vector2D start, Vector2D end, Uint8 r, Uint8 g, Uint8 b);
+
+    static void drawCircle(Vector2D& center, float radius, Uint8 r, Uint8 g, Uint8 b);
 
     static void clean();
 

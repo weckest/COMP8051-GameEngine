@@ -17,6 +17,10 @@ LevelUpHandler::LevelUpHandler(World &world) : world(world) {
             const auto& lvlEvent = static_cast<const LevelUpEvent&>(e);
             onLevelUp(lvlEvent);
         }
+
+
+
+
     });
 }
 
@@ -27,12 +31,25 @@ void LevelUpHandler::onLevelUp(const LevelUpEvent& e) {
     Weapon w = WeaponManager::getRandWeapon();
     Item i = ItemManager::getRandItem();
 
+    bool isWeapon = false;
     //Code for Player Choice: Connect with Menu UI
 
     //Something like Calling a Menu() function and passing in the weapon/item choices.
+    //Return True or False for boolean called isWeapon.
 
 
-    //Gets player entity, applies item to players items.
+
+    if (isWeapon) {
+
+    } else {
+        itemAdd(i);
+    }
+
+    world.getEventManager().emit(CalculateStatsEvent());
+
+}
+
+void LevelUpHandler::itemAdd(const Item& i) {
     Entity* player = nullptr;
 
     // find player
@@ -42,6 +59,8 @@ void LevelUpHandler::onLevelUp(const LevelUpEvent& e) {
             break;
         }
     }
+
+    //Gets player entity, applies item to players items.
 
     auto& itemListComponent = player->getComponent<ItemList>();
 
@@ -60,12 +79,11 @@ void LevelUpHandler::onLevelUp(const LevelUpEvent& e) {
     for (Item item : itemListComponent.items) {
         std::cout << item.name << ": " << item.itemLevel << std::endl;
     }
-
-    world.getEventManager().emit(CalculateStatsEvent());
-
+}
 
 
-
-
+//TODO Brian add how you handle getting a weapon
+void LevelUpHandler::weaponAdd(const Weapon &weapon) {
 
 }
+

@@ -13,6 +13,7 @@
 #include "BobbingSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
+#include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
 #include "EffectSystem.h"
 #include "EnemyMovementSystem.h"
@@ -27,6 +28,7 @@
 #include "Map.h"
 #include "MouseInputSystem.h"
 #include "MovementSystem.h"
+#include "PickUpSystem.h"
 #include "PlayerStatListener.h"
 #include "RenderSystem.h"
 #include "SpawnerSystem.h"
@@ -40,9 +42,11 @@
 
 //could also be called EntityManager
 class World {
+    bool isPaused = false;
     Map map;
     Timer timer;
     DebugState debugState;
+    Entity* player;
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::vector<std::vector<Entity*>>> entityGrid;
     int rows = 3;
@@ -72,6 +76,8 @@ class World {
     UIRenderSystem uiRenderSystem;
     MouseInputSystem mouseInputSystem;
     PlayerStatListener playerStatListener{*this};
+    PickUpSystem pickUpSystem;
+    DebugRenderSystem debugRenderSystem{*this};
 
 
 public:
@@ -82,27 +88,33 @@ public:
             //main menu system
             mainMenuSystem.update(event);
         } else {
-            timer.startTimer("update");
+
             keyboardInputSystem.update(*this, entities, event);
-            bobbingSystem.update(entities, dt);
-            movementSystem.update(entities, dt);
-            enemyMovementSystem.update(entities, dt);
-            spawnTimerSystem.update(entities, dt);
-            timer.startTimer("colliders");
-            timer.startTimer("grid");
-            gridSystem.update(entityGrid, entities, *this);
-            timer.stopTimer("grid");
-            timer.startTimer("collision");
-            collisionSystem.update(*this);
-            timer.stopTimer("collision");
-            timer.stopTimer("colliders");
-            effectSystem.update(entities, dt);
-            animationSystem.update(entities, dt);
-            cameraSystem.update(entities);
-            destructionSystem.update(entities);
-            levelUpSystem.update(entities, *this);
-            weaponFireSystem.update(*this, dt);
-            timer.stopTimer("update");
+
+            if (!isPaused) {
+                timer.startTimer("update");
+                bobbingSystem.update(entities, dt);
+                movementSystem.update(entities, dt);
+                enemyMovementSystem.update(entities, dt);
+                spawnTimerSystem.update(entities, dt);
+                pickUpSystem.update(entities, *this);
+                timer.startTimer("colliders");
+                timer.startTimer("grid");
+                gridSystem.update(entityGrid, entities, *this);
+                timer.stopTimer("grid");
+                timer.startTimer("collision");
+                collisionSystem.update(*this);
+                timer.stopTimer("collision");
+                timer.stopTimer("colliders");
+                effectSystem.update(entities, dt);
+                animationSystem.update(entities, dt);
+                cameraSystem.update(entities);
+                destructionSystem.update(entities);
+                levelUpSystem.update(entities, *this);
+                weaponFireSystem.update(*this, dt);
+                timer.stopTimer("update");
+            }
+
         }
         mouseInputSystem.update(*this, event);
         synchronizeEntities();
@@ -114,13 +126,17 @@ public:
         for (auto& e : entities) {
             if (e->hasComponent<Camera>()) {
                 map.draw(e->getComponent<Camera>());
-                if (debugState.debug) {
+                if (debugState.debug && debugState.grid) {
                     gridSystem.draw(e->getComponent<Camera>());
                 }
             }
         }
 
+
         renderSystem.render(entities);
+        if (debugState.debug) {
+            debugRenderSystem.render(entities, debugState);
+        }
         uiRenderSystem.render(entities);
 
         if (debugState.debug && debugState.timer) {
@@ -207,6 +223,14 @@ public:
     Map& getMap() {return map;}
 
     DebugState& getDebugState() {return debugState;}
+
+    Entity* getPlayer() {
+        return player;
+    }
+
+    void setPlayer(Entity* player) {
+        this->player = player;
+    }
 
 };
 
