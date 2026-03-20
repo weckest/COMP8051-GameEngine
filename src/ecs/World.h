@@ -49,8 +49,8 @@ class World {
     Entity* player;
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::vector<std::vector<Entity*>>> entityGrid;
-    int rows = 3;
-    int cols = 5;
+    int rows = 10;
+    int cols = 10;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     EventManager eventManager;
     ItemManager itemManager;

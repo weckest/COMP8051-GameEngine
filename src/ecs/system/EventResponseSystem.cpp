@@ -19,6 +19,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
             onCollision(collision, "player", "wall", world);
             onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
+            onCollision(collision, "enemy", "wall", world);
         }
     );
 
@@ -98,7 +99,7 @@ void EventResponseSystem::onCollision(
         //         Game::onSceneChangeRequest("level2");
         //     }
         // }
-    } else if (checkTagsFor(ATag, BTag, "wall") && checkTagsFor(ATag, BTag, "player")) {
+    } else if ((checkTagsFor(ATag, BTag, "player") || checkTagsFor(ATag, BTag, "enemy")) && checkTagsFor(ATag, BTag, "wall")) {
 
         if (e.state != CollisionState::Stay) return;
 
