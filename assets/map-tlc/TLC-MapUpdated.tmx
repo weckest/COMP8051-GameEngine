@@ -86,11 +86,11 @@
 </data>
  </layer>
  <objectgroup id="3" name="Collision Layer" locked="1">
-  <object id="1" x="641.176" y="611.919" width="382.5" height="153.5"/>
+  <object id="1" x="641.176" y="625.5" width="382.5" height="138.5"/>
   <object id="2" x="2.67591" y="322.586" width="348" height="412.333"/>
-  <object id="3" x="641.426" y="388.836" width="382.5" height="150.833"/>
+  <object id="3" x="641.426" y="400" width="382.5" height="138.5"/>
   <object id="4" x="641.426" y="4.83546" width="382.5" height="87"/>
-  <object id="5" x="641.093" y="163.169" width="382.5" height="153.5"/>
+  <object id="5" x="641.093" y="175.169" width="382.5" height="141.5"/>
   <object id="6" x="33.3426" y="65.9188" width="126.667" height="127"/>
   <object id="7" x="225.343" y="65.4188" width="126.667" height="127"/>
   <object id="8" x="1121.67" y="13.0855" width="158" height="115.5"/>

@@ -145,9 +145,15 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64 * playerStats.playerSizeModifier, 64 * playerStats.playerSizeModifier};
     player.addComponent<Sprite>(tex, playerSrc, playerDst, RenderLayer::World);
 
+    // auto& playerCollider = player.addComponent<Collider>("player");
+    // playerCollider.rect.w = playerDst.w;
+    // playerCollider.rect.h = playerDst.h;
+
+    // GAME: Reduce hitbox size
+    //TODO: This will need to change when we configure the new sprite
     auto& playerCollider = player.addComponent<Collider>("player");
-    playerCollider.rect.w = playerDst.w;
-    playerCollider.rect.h = playerDst.h;
+    playerCollider.rect.w = playerDst.w / 2;
+    playerCollider.rect.h = playerDst.h / 2;
 
     player.addComponent<Health>(Game::gameState.playerHealth);
 

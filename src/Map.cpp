@@ -73,8 +73,7 @@ void Map::load(const char *path, SDL_Texture *ts) {
                 c.rect.y = obj->FloatAttribute("y");
                 c.rect.w = obj->FloatAttribute("width");
                 c.rect.h = obj->FloatAttribute("height");
-                //TODO: UNDO SO THAT WE HAVE THE MAP COLLIDERS AGAIN
-                //colliders.push_back(c);
+                colliders.push_back(c);
                 }
         }
 
