@@ -18,8 +18,7 @@ const Weapon& WeaponManager::getRandWeapon() {
 	if (weapons.empty())
 		throw std::runtime_error("WeaponManager: no weapons loaded");
 
-	// int index = rand() % weapons.size();
-	int index = 0;
+	int index = rand() % weapons.size();
 	auto it = weapons.begin();
 	std::advance(it, index);
 	std::cout<< it->second.name << std::endl;
