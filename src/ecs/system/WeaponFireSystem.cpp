@@ -18,13 +18,13 @@ void WeaponFireSystem::update(World &world, float dt) {
 
 		for (auto& weapon : weaponComp) {
 
-			weapon.cooldown -= dt;
+			weapon.weaponStats["cooldown"] -= dt;
 
-			if (weapon.cooldown <= 0.0f) {
+			if (weapon.weaponStats["cooldown"] <= 0.0f) {
 
 				weapon.spawnFunction(weapon, *entity, world);
 
-				weapon.cooldown = weapon.fireRate;
+				weapon.weaponStats["cooldown"]  = weapon.weaponStats["fireRate"] ;
 			}
 		}
 	}

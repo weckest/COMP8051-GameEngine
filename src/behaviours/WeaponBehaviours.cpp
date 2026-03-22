@@ -10,7 +10,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 return;
 
             entity.addComponent<TimedSpawner>(
-                1/weapon.fireRate + (1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier),
+                1/weapon.weaponStats["fireRate"] + (1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier),
                 [&entity, &world, weapon] {
                     auto &bullet = world.createDeferredEntity();
                     auto &t = entity.getComponent<Transform>();
@@ -23,8 +23,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     SDL_FRect dst = {
                         t.position.x,
                         t.position.y,
-                        src.w * weapon.projectileSizeModifier,
-                        src.h * weapon.projectileSizeModifier
+                        src.w * weapon.weaponStats.at("projectileSizeModifier"),
+                        src.h * weapon.weaponStats.at("projectileSizeModifier"),
                     };
 
                     bullet.addComponent<Sprite>(tex, src, dst);
@@ -53,9 +53,9 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     c.rect.h = dst.h;
 
                     bullet.addComponent<ProjectileTag>(
-                        50.0f * weapon.damageModifier + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
-                        100.0f * weapon.aoeModifier
-                    );
+                        50.0f * weapon.weaponStats.at("damageModifier") + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
+                        100.0f * weapon.weaponStats.at("aoeModifier"
+                    ));
 
 
                 }
@@ -67,11 +67,11 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
             if (!entity.hasComponent<Collider>())
                 return;
            entity.addComponent<TimedSpawner>(
-    1.0f / weapon.fireRate + (1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier),
+    1.0f / weapon.weaponStats.at("fireRate") + (1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier),
     [&entity, &world, weapon] {
-                int count = std::max(1, (int)(weapon.projectileModifier * 3));
+                int count = std::max(1, (int)(weapon.weaponStats.at("projectileModifier") * 3));
 
-                float baseAngle = weapon.spreadModifier; // total spread in radians
+                float baseAngle = weapon.weaponStats.at("aoeModifier"); // total spread in radians
 
                 float step = (count > 1) ? (baseAngle / (count - 1)) : 0.0f;
 
@@ -92,8 +92,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 SDL_FRect dst = {
                 t.position.x,
                 t.position.y,
-                src.w * weapon.projectileSizeModifier,
-                src.h * weapon.projectileSizeModifier
+                src.w * weapon.weaponStats.at("projectileSizeModifier"),
+                src.h * weapon.weaponStats.at("projectileSizeModifier"),
                 };
 
                 bullet.addComponent<Sprite>(tex, src, dst);
@@ -121,8 +121,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 c.rect.h = dst.h;
 
                 bullet.addComponent<ProjectileTag>(
-                50.0f * weapon.damageModifier + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
-                100.0f * weapon.aoeModifier
+                50.0f * weapon.weaponStats.at("damageModifier") + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
+                100.0f * weapon.weaponStats.at("aoeModifier")
                 );
                 }
     }

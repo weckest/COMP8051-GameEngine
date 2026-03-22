@@ -40,18 +40,28 @@ void WeaponManager::loadWeaponFromXML(const char *path) {
 			weapon.name = nameAttr;
 		}
 
-		std::cout<< "weapon loaded" << weapon.name << std::endl;
+		for (const tinyxml2::XMLAttribute* attr = root->FirstAttribute();
+				     attr != nullptr;
+				     attr = attr->Next())
+		{
+			std::string key = attr->Name();
+			std::string valueStr = attr->Value();
 
-		root->QueryFloatAttribute("fireRate", &weapon.fireRate);
-		root->QueryFloatAttribute("damageModifier", &weapon.damageModifier);
-		root->QueryFloatAttribute("projectileSizeModifier", &weapon.projectileSizeModifier);
-		root->QueryFloatAttribute("aoeModifier", &weapon.aoeModifier);
-		root->QueryFloatAttribute("critDamageModifier", &weapon.critDamageModifier);
-		root->QueryFloatAttribute("critChanceModifier", &weapon.critChanceModifier);
-		root->QueryFloatAttribute("rangeModifier", &weapon.rangeModifier);
-		root->QueryFloatAttribute("spreadModifier", &weapon.spreadModifier);
-		root->QueryFloatAttribute("projectileModifier", &weapon.projectileModifier);
-		root->QueryFloatAttribute("cooldown", &weapon.cooldown);
+			// skip name attribute
+			if (key == "name") continue;
+
+			try {
+				float value = std::stof(valueStr);
+
+				// give weapon stat name
+				weapon.weaponStats[key] = value;
+
+			} catch (...) {
+				std::cout << "Invalid value for " << key << std::endl;
+			}
+		}
+
+		std::cout<< "weapon loaded" << weapon.name << std::endl;
 
 		weapon.spawnFunction = getWeaponBehaviour(weapon.name);
 

@@ -114,16 +114,17 @@ struct ItemTag {
 
 struct Weapon {
     std::string name;
-    float fireRate{};
-    float damageModifier{};
-    float projectileSizeModifier{};
-    float aoeModifier{};
-    float critDamageModifier{};
-    float critChanceModifier{};
-    float rangeModifier{};
-    float spreadModifier{};
-    float projectileModifier{};
-    float cooldown{};
+    // float fireRate{};
+    // float damageModifier{};
+    // float projectileSizeModifier{};
+    // float aoeModifier{};
+    // float critDamageModifier{};
+    // float critChanceModifier{};
+    // float rangeModifier{};
+    // float spreadModifier{};
+    // float projectileModifier{};
+    // float cooldown{};
+    std::unordered_map<std::string, float> weaponStats{};
     // a function that takes in the above modifiers and spawns a projectile with those modifiers applied
     //  the entity representing the player so we can get the player's transform and direction to spawn the projectile in the right place and direction
     std::function<void( Weapon&, Entity& , World&)> spawnFunction;
