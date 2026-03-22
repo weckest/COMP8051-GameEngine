@@ -58,6 +58,9 @@ World::World() {
                 case SDLK_P:
                     isPaused = !isPaused;
                     break;
+                case SDLK_Q:
+                    weaponManager.switchWeapon(*player);
+                    break;
                 default:
                     break;
             }

@@ -7,12 +7,12 @@
 #include "Component.h"
 
 class WeaponManager {
-	static std::unordered_map<std::string,Weapon > weapons;
-
+	static std::vector<Weapon> weapons;
 
 public:
 	static void loadWeaponFromXML(const char* path);
 	static const Weapon& getRandWeapon();
+	 void switchWeapon(Entity& entity);
 };
 
 #endif //INC_8051TUTORIAL_WEAPONMANAGER_H
