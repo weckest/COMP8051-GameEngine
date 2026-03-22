@@ -5,6 +5,7 @@
 #include "WeaponManager.h"
 
 #include <iostream>
+#include <random>
 
 #include "./WeaponBehaviours.h"
 
@@ -55,6 +56,7 @@ void WeaponManager::loadWeaponFromXML(const char *path) {
 
 				// give weapon stat name
 				weapon.weaponStats[key] = value;
+				weapon.statNames.push_back(key);
 
 			} catch (...) {
 				std::cout << "Invalid value for " << key << std::endl;
@@ -98,5 +100,34 @@ void WeaponManager::loadWeaponFromXML(const char *path) {
 			weaponList[0] = weapons[0];
 		}
 
+	}
+}
+
+void WeaponManager::upgradeRandStat(Entity& entity, Weapon& weapon) {
+	//get weapon name that needs to upgrade
+	auto name = weapon.name;
+
+	//find the weapon in the player's list (entity)
+	auto& weaponList = entity.getComponent<WeaponList>().weapons;
+
+	for (auto & i : weaponList) {
+
+		if (i.name == name) {
+			// if we find the weapon upgrade a random stat
+			auto& targ = i;
+			auto& statNames = targ.statNames;
+
+			// randomly pick a stat to upgrade
+			std::random_device rd;
+			std::mt19937 gen(rd());
+			std::uniform_int_distribution<> dist(0, statNames.size() - 1);
+
+			int randomIndex = dist(gen);
+			std::string randomStat = statNames[randomIndex];
+
+			// upgrade the stat
+			targ.weaponStats[randomStat] *= 1.1f;         // +10%
+			break;
+		}
 	}
 }

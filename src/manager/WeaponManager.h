@@ -13,6 +13,7 @@ public:
 	static void loadWeaponFromXML(const char* path);
 	static const Weapon& getRandWeapon();
 	 void switchWeapon(Entity& entity);
+	static void upgradeRandStat(Entity& entity, Weapon& weapon);
 };
 
 #endif //INC_8051TUTORIAL_WEAPONMANAGER_H
