@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "Entity.h"
+#include "Timer.h"
 
 using CollisionKey = std::pair<Entity*, Entity*>;
 
@@ -19,7 +20,8 @@ class World;
 
 class CollisionSystem {
 public:
-    void update(World& world);
+    void update(World &world, Timer &timer);
+
     std::set<CollisionKey> activeCollisions;
     static std::vector<Entity*> getAllWithin(World& world, Entity& entity, float distance);
     static Entity* getClosestEntity(World &world, Entity &entity, float distance);

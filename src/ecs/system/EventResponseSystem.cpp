@@ -17,7 +17,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
 
             // onCollision(collision, "player", "item", world);
             onCollision(collision, "player", "wall", world);
-            onCollision(collision, "player", "enemy", world);
+            // onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
             onCollision(collision, "enemy", "wall", world);
         }

@@ -87,35 +87,37 @@ public:
         if (sceneType == SceneType::MainMenu) {
             //main menu system
             mainMenuSystem.update(event);
-        } else {
-
+        } else if (isPaused) {
             keyboardInputSystem.update(*this, entities, event);
-
-            if (!isPaused) {
-                timer.startTimer("update");
-                bobbingSystem.update(entities, dt);
-                movementSystem.update(entities, dt);
-                enemyMovementSystem.update(entities, dt);
-                spawnTimerSystem.update(entities, dt);
-                pickUpSystem.update(entities, *this);
-                timer.startTimer("colliders");
-                timer.startTimer("grid");
-                gridSystem.update(entityGrid, entities, *this);
-                timer.stopTimer("grid");
-                timer.startTimer("collision");
-                collisionSystem.update(*this);
-                timer.stopTimer("collision");
-                timer.stopTimer("colliders");
-                effectSystem.update(entities, dt);
-                animationSystem.update(entities, dt);
-                cameraSystem.update(entities);
-                destructionSystem.update(entities);
-                levelUpSystem.update(entities, *this);
-                weaponFireSystem.update(*this, dt);
-                timer.stopTimer("update");
-            }
-
+        } else {
+            timer.startTimer("update");
+            keyboardInputSystem.update(*this, entities, event);
+            bobbingSystem.update(entities, dt);
+            timer.startTimer("movement");
+            movementSystem.update(entities, dt);
+            timer.stopTimer("movement");
+            enemyMovementSystem.update(entities, dt);
+            spawnTimerSystem.update(entities, dt);
+            timer.startTimer("pickUp");
+            pickUpSystem.update(entities, *this);
+            timer.stopTimer("pickUp");
+            timer.startTimer("colliders");
+            timer.startTimer("grid");
+            gridSystem.update(entityGrid, entities, *this);
+            timer.stopTimer("grid");
+            timer.startTimer("collision");
+            collisionSystem.update(*this, timer);
+            timer.stopTimer("collision");
+            timer.stopTimer("colliders");
+            effectSystem.update(entities, dt);
+            animationSystem.update(entities, dt);
+            cameraSystem.update(entities);
+            destructionSystem.update(entities);
+            levelUpSystem.update(entities, *this);
+            weaponFireSystem.update(*this, dt);
+            timer.stopTimer("update");
         }
+
         mouseInputSystem.update(*this, event);
         synchronizeEntities();
         cleanup();
@@ -132,15 +134,17 @@ public:
             }
         }
 
-
+        timer.startTimer("render");
         renderSystem.render(entities);
+        timer.stopTimer("render");
         if (debugState.debug) {
             debugRenderSystem.render(entities, debugState);
         }
         uiRenderSystem.render(entities);
 
-        if (debugState.debug && debugState.timer) {
+        if (debugState.debug && debugState.timer && !isPaused) {
             timer.printResults();
+            std::cout << "Entity#: " <<  entities.size() << "\n" << std::endl;
         }
     }
 

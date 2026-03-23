@@ -24,6 +24,8 @@ public:
 
     static void drawCircle(Vector2D& center, float radius, Uint8 r, Uint8 g, Uint8 b);
 
+    static void drawRect(Vector2D& tl, Vector2D& br, Uint8 r, Uint8 g, Uint8 b);
+
     static void clean();
 
 private:

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <weapons>
-    <weapon
-            name="bubblegun"
-            fireRate="1.25"
-            damageModifier="1.2"
-            projectileSizeModifier="1.0"
-            aoeModifier="1.3"
-            critDamageModifier="2.0"
-            critChanceModifier="0.15"
-            projectileSpeedModifier="1.0"/>
+<!--    <weapon-->
+<!--            name="bubblegun"-->
+<!--            fireRate="1.25"-->
+<!--            damageModifier="1.2"-->
+<!--            projectileSizeModifier="1.0"-->
+<!--            aoeModifier="1.3"-->
+<!--            critDamageModifier="2.0"-->
+<!--            critChanceModifier="0.15"-->
+<!--            projectileSpeedModifier="1.0"/>-->
     <weapon
             name="shotgun"
             fireRate="1.0"
@@ -17,7 +17,7 @@
             aoeModifier="1.0"
             critDamageModifier="2.0"
             critChanceModifier="0.1"
-            spreadModifier="0.8"
+            spreadModifier="1.0"
             projectileModifier="1.0"
             projectileSpeedModifier="1.0"/>
 </weapons>

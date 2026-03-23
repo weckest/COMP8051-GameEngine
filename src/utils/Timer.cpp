@@ -10,7 +10,7 @@
 #include "SDL3/SDL.h"
 
 float Timer::nstoms(float ns) {
-    return ns * 1e-7f;
+    return ns * 1e-6f;
 }
 
 Timer::Timer() {

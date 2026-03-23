@@ -45,12 +45,10 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
                 //only show if debug mode is on
                 if (e->hasComponent<Collider>()) {
                     auto& collider = e->getComponent<Collider>();
-                    // std::cout << collider.tag << " " << collider.rect.x << " " << collider.rect.y << " " << collider.rect.w << " " << collider.rect.h << std::endl;
-                    SDL_Texture* tex = TextureManager::load("../assets/spritesheet.png");
-                    SDL_FRect src {0,32,32,32};
-                    SDL_FRect dst {collider.rect.x - cam.view.x,collider.rect.y - cam.view.y,collider.rect.w,collider.rect.h};
+                    Vector2D tl{collider.rect.x - cam.view.x, collider.rect.y - cam.view.y};
+                    Vector2D br{collider.rect.x + collider.rect.w - cam.view.x, collider.rect.y + collider.rect.h - cam.view.y};
 
-                    TextureManager::draw(tex, src, dst);
+                    TextureManager::drawRect(tl, br, collider.r, collider.g, collider.b);
                 } else if (!e->hasComponent<EffectTag>()) {
                     SDL_Texture* tex = TextureManager::load("../assets/colors.png");
                     SDL_FRect src {0,32,32,32};

@@ -9,12 +9,19 @@
 #include "Collision.h"
 #include "World.h"
 
-void CollisionSystem::update(World &world) {
+void CollisionSystem::update(World &world, Timer& timer) {
+    timer.startTimer("innerCollisions");
 
     //get a list of entities that have colliders and transforms
     const std::vector<Entity*> collidables = queryCollidables(world.getEntities());
     const std::vector<std::vector<std::vector<Entity*>>>& grid = world.getEntityGrid();
 
+    auto& map = world.getMap();
+    int scale = map.scale;
+    int width = map.width * scale;
+    int height = map.height * scale;
+
+    std::set<CollisionKey> currentCollisions;
 
     //update all collider positions first
     for (auto entity: collidables) {
@@ -32,16 +39,13 @@ void CollisionSystem::update(World &world) {
 
     }
 
-    std::set<CollisionKey> currentCollisions;
 
-    auto& map = world.getMap();
-    int scale = map.scale;
-    int width = map.width * scale;
-    int height = map.height * scale;
 
 
     //outer loop
+    timer.startTimer("outerLoop");
     for (size_t i = 0; i < collidables.size(); i++) {
+
         auto entityA = collidables[i];
 
         //dont do collisions if the entity is dead
@@ -51,7 +55,6 @@ void CollisionSystem::update(World &world) {
         auto& transformA = entityA->getComponent<Transform>();
 
         GridPosition gridPosition{};
-
         GridSystem::getGridIndex(entityA, width, height, grid[0].size(), grid.size(), &gridPosition);
 
         for (int xIndex = gridPosition.tl.x; xIndex <= gridPosition.br.x; xIndex++) {
@@ -61,6 +64,7 @@ void CollisionSystem::update(World &world) {
 
                     //check for the collider collision
                     //inner loop
+                    timer.startTimer("innerLoop");
                     for (auto& entityB : cell) {
                         auto& colliderB = entityB->getComponent<Collider>();
 
@@ -74,23 +78,34 @@ void CollisionSystem::update(World &world) {
                             currentCollisions.insert(key);
 
                             if (!activeCollisions.contains(key)) {
+                                timer.startTimer("enterCollision");
                                 world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
+                                timer.stopTimer("enterCollision");
                             }
+                            timer.startTimer("stayCollision");
                             world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
+                            timer.stopTimer("stayCollision");
                         }
                     }
+                    timer.stopTimer("innerLoop");
                 }
             }
         }
     }
+    timer.stopTimer("outerLoop");
 
+    timer.startTimer("activeCollisions");
     for (auto& key: activeCollisions) {
         if (!currentCollisions.contains(key)) {
             world.getEventManager().emit(CollisionEvent{key.first, key.second, CollisionState::Exit});
         }
     }
+    timer.stopTimer("activeCollisions");
 
+    timer.startTimer("moveCollisions");
     activeCollisions = std::move(currentCollisions); //update with current collisions
+    timer.stopTimer("moveCollisions");
+    timer.stopTimer("innerCollisions");
 }
 
 std::vector<Entity*> CollisionSystem::getAllWithin(World &world, Entity &entity, float distance) {
