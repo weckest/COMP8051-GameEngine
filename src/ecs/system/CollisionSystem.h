@@ -20,6 +20,7 @@ class World;
 
 class CollisionSystem {
 public:
+    CollisionSystem(World& world);
     void update(World &world, Timer &timer);
 
     std::set<CollisionKey> activeCollisions;

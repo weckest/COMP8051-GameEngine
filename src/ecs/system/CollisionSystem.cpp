@@ -9,8 +9,21 @@
 #include "Collision.h"
 #include "World.h"
 
+CollisionSystem::CollisionSystem(World &world) {
+    world.getEventManager().subscribe(
+        [this](const BaseEvent& e) {
+            if (e.type != EventType::Death) return;
+
+            const auto& death = static_cast<const DeathEvent&>(e);
+            for (CollisionKey key: activeCollisions) {
+                if (key.first == death.entity || key.second == death.entity) {
+                    activeCollisions.erase(key);
+                }
+            }
+        });
+}
+
 void CollisionSystem::update(World &world, Timer& timer) {
-    timer.startTimer("innerCollisions");
 
     //get a list of entities that have colliders and transforms
     const std::vector<Entity*> collidables = queryCollidables(world.getEntities());
@@ -97,7 +110,9 @@ void CollisionSystem::update(World &world, Timer& timer) {
     timer.startTimer("activeCollisions");
     for (auto& key: activeCollisions) {
         if (!currentCollisions.contains(key)) {
-            world.getEventManager().emit(CollisionEvent{key.first, key.second, CollisionState::Exit});
+            if (key.first->isActive() && key.second->isActive()) {
+                world.getEventManager().emit(CollisionEvent{key.first, key.second, CollisionState::Exit});
+            }
         }
     }
     timer.stopTimer("activeCollisions");
@@ -105,7 +120,6 @@ void CollisionSystem::update(World &world, Timer& timer) {
     timer.startTimer("moveCollisions");
     activeCollisions = std::move(currentCollisions); //update with current collisions
     timer.stopTimer("moveCollisions");
-    timer.stopTimer("innerCollisions");
 }
 
 std::vector<Entity*> CollisionSystem::getAllWithin(World &world, Entity &entity, float distance) {

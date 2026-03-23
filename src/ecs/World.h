@@ -61,7 +61,7 @@ class World {
     MovementSystem movementSystem{*this};
     KeyBoardInputSystem keyboardInputSystem;
     GridSystem gridSystem{*this};
-    CollisionSystem collisionSystem;
+    CollisionSystem collisionSystem{*this};
     AnimationSystem animationSystem;
     CameraSystem cameraSystem;
     SpawnTimerSystem spawnTimerSystem;

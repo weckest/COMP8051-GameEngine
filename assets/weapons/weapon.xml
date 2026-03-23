@@ -18,6 +18,6 @@
             critDamageModifier="2.0"
             critChanceModifier="0.1"
             spreadModifier="1.0"
-            projectileModifier="1.0"
+            projectileModifier="5.0"
             projectileSpeedModifier="1.0"/>
 </weapons>

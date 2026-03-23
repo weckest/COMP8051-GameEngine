@@ -132,7 +132,7 @@ void GridSystem::update(
             insertEntity(&*e, &gridPosition);
             float rangeY = 255.0f / grid.size();
             float rangeX = 255.0f / grid[0].size();
-            std::cout << rangeX << " " << rangeY << std::endl;
+            // std::cout << rangeX << " " << rangeY << std::endl;
             c.r = rangeX * gridPosition.tl.x;
             c.g = rangeY * gridPosition.tl.y;
             // c.b = range * gridPosition.br.x;
