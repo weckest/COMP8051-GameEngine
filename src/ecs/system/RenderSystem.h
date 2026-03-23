@@ -9,7 +9,7 @@
 
 #include "Component.h"
 #include "Entity.h"
-#include "TextureManager.h"
+#include "../../manager/TextureManager.h"
 #include <iostream>
 
 #include "SDL3/SDL_render.h"

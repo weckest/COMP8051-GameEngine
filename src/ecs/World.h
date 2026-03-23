@@ -20,6 +20,7 @@
 #include "Entity.h"
 #include "EventResponseSystem.h"
 #include "GridSystem.h"
+#include "HUDSystem.h"
 #include "KeyboardInputSystem.h"
 #include "LevelUpHandler.h"
 #include "LevelUpSystem.hpp"
@@ -30,6 +31,7 @@
 #include "MovementSystem.h"
 #include "PickUpSystem.h"
 #include "PlayerStatListener.h"
+#include "PreRenderSystem.h"
 #include "RenderSystem.h"
 #include "SpawnerSystem.h"
 #include "SpawnTimerSystem.h"
@@ -78,6 +80,8 @@ class World {
     PlayerStatListener playerStatListener{*this};
     PickUpSystem pickUpSystem;
     DebugRenderSystem debugRenderSystem{*this};
+    HUDSystem hudSystem;
+    PreRenderSystem preRenderSystem;
 
 
 public:
@@ -115,10 +119,13 @@ public:
             destructionSystem.update(entities);
             levelUpSystem.update(entities, *this);
             weaponFireSystem.update(*this, dt);
+            hudSystem.update(entities);
             timer.stopTimer("update");
         }
-
         mouseInputSystem.update(*this, event);
+        preRenderSystem.update(entities);
+
+
         synchronizeEntities();
         cleanup();
     }

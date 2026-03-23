@@ -4,6 +4,7 @@
 
 #ifndef INC_8051TUTORIAL_VECTOR2D_H
 #define INC_8051TUTORIAL_VECTOR2D_H
+#include <iostream>
 
 class Vector2D {
 public:
@@ -52,7 +53,13 @@ public:
     //friends makes it a non member function
     friend Vector2D operator*(float scalar, Vector2D& vec);
 
-
 };
+
+inline std::ostream& operator<<(std::ostream& os, const Vector2D& vec) {
+
+    os << "(" << static_cast<int>(vec.x) << ", " << static_cast<int>(vec.y) << ")";
+    return os;
+
+}
 
 #endif //INC_8051TUTORIAL_VECTOR2D_H

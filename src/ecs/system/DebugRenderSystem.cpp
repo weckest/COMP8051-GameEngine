@@ -54,7 +54,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
                     SDL_FRect src {0,32,32,32};
                     SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, sprite.dst.w, sprite.dst.h};
 
-                    TextureManager::draw(tex, src, dst);
+                    TextureManager::draw(tex, &src, &dst);
                 }
             }
         }
