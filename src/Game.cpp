@@ -67,12 +67,17 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
             std::cout << "Renderer could not be created..." << std::endl;
         }
 
+        if (TTF_Init() != 1) {
+            std::cout << "TTF_Init Failed." << std::endl;
+        }
+
         isRunning = true;
     } else {
         isRunning = false;
     }
 
-
+    //load fonts
+    AssetManager::loadFont("arial", "../assets/fonts/arial.ttf", 16);
 
     //load assets
     AssetManager::loadAnimation("player", "../assets/animations/bunny_animations.xml");
@@ -89,12 +94,6 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     // item = ItemManager::getRandItem();
     // std::cout << item.name << std::endl;
     // std::cout << item.aoeModifier << std::endl;
-
-
-
-
-
-
 
     std::cout << "Animations loaded..." << std::endl;
 

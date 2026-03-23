@@ -178,7 +178,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     auto& state(world.createEntity());
     state.addComponent<SceneState>();
 
-    //subscribe to events
+    createPlayerPosLabel();
 
 }
 
@@ -310,4 +310,19 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 
         }
     }
+}
+
+Entity& Scene::createPlayerPosLabel() {
+    auto& playerPosLabel(world.createEntity());
+    Label label = {
+        "Test String",
+        AssetManager::getFont("arial"),
+        {255,255,255,255},
+        LabelType::PlayerPosition,
+        "playerPos"
+    };
+    TextureManager::loadLabel(label);
+    playerPosLabel.addComponent<Label>(label);
+    playerPosLabel.addComponent<Transform>(Vector2D(10, 10), 0.0f, 1.0f);
+    return playerPosLabel;
 }

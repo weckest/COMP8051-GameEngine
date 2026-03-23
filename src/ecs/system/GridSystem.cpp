@@ -223,7 +223,7 @@ void GridSystem::draw(const Camera &cam) {
         dest.h = stripeWidth;
         dest.w = width;
 
-        TextureManager::draw(tex, src, dest);
+        TextureManager::draw(tex, &src, &dest);
     }
 
     for (int x = 0; x < grid[0].size(); x++) {
@@ -236,7 +236,7 @@ void GridSystem::draw(const Camera &cam) {
         dest.w = stripeWidth;
         dest.h = height;
 
-        TextureManager::draw(tex, src, dest);
+        TextureManager::draw(tex, &src, &dest);
     }
 }
 

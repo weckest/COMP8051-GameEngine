@@ -8,7 +8,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "TextureManager.h"
+#include "manager/TextureManager.h"
 #include <sstream>
 #include <tinyxml2.h>
 
@@ -169,7 +169,7 @@ void Map::draw(const Camera& cam) {
             //         break;
             // }
 
-            TextureManager::draw(tileset, src, dest);
+            TextureManager::draw(tileset, &src, &dest);
         }
     }
 
@@ -203,7 +203,7 @@ void Map::draw(const Camera& cam) {
             src.w = scale;
             src.h = scale;
 
-            TextureManager::draw(tileset, src, dest);
+            TextureManager::draw(tileset, &src, &dest);
         }
     }
 }

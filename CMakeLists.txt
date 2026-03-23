@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(SRC_FILES
         src/main.cpp
         src/Game.cpp
-        src/TextureManager.cpp
+        src/manager/TextureManager.cpp
         src/Map.cpp
         src/GameObject.cpp
         src/utils/Vector2D.cpp
@@ -51,15 +51,18 @@ if (WIN32)
 
     set(SDL3_SDK_ROOT "${CMAKE_SOURCE_DIR}/SDL3_SDK_WIN32")
     set(SDL3_IMAGE_PATH "${CMAKE_SOURCE_DIR}/SDL3_Image")
+    set(SDL3_TTF_PATH "${CMAKE_SOURCE_DIR}/SDL3_TTF")
 
     target_include_directories(8051Tutorial PRIVATE
             ${SDL3_SDK_ROOT}/include
             ${SDL3_IMAGE_PATH}/include
+            ${SDL3_TTF_PATH}/include
     )
 
     target_link_directories(8051Tutorial PRIVATE
             ${SDL3_SDK_ROOT}/lib
             ${SDL3_IMAGE_PATH}/lib
+            ${SDL3_TTF_PATH}/lib
     )
 
     file(GLOB SDL3_DLLS "${SDL3_SDK_ROOT}/bin/.dll")

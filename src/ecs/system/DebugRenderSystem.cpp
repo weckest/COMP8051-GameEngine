@@ -50,13 +50,13 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
                     SDL_FRect src {0,32,32,32};
                     SDL_FRect dst {collider.rect.x - cam.view.x,collider.rect.y - cam.view.y,collider.rect.w,collider.rect.h};
 
-                    TextureManager::draw(tex, src, dst);
+                    TextureManager::draw(tex, &src, &dst);
                 } else if (!e->hasComponent<EffectTag>()) {
                     SDL_Texture* tex = TextureManager::load("../assets/colors.png");
                     SDL_FRect src {0,32,32,32};
                     SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, sprite.dst.w, sprite.dst.h};
 
-                    TextureManager::draw(tex, src, dst);
+                    TextureManager::draw(tex, &src, &dst);
                 }
             }
         }

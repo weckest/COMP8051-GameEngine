@@ -1,6 +1,6 @@
 #include "WeaponBehaviours.h"
 #include "World.h"
-#include "TextureManager.h"
+#include "../manager/TextureManager.h"
 
 std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> weaponBehaviours {
     {
