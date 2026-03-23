@@ -20,7 +20,9 @@ enum class EventType {
     KeyPress,
     CalculateStats,
     MouseInteraction,
-    Magnet
+    Magnet,
+    LevelUpChoice,
+    ShowLevelUpMenu
 };
 
 struct BaseEvent {
@@ -124,6 +126,22 @@ struct MagnetEvent : BaseEvent {
     }
 };
 
+struct LevelUpChoiceEvent : BaseEvent {
+    bool choseWeapon;
+    Weapon weapon;
+    Item item;
+    LevelUpChoiceEvent(bool choseWeapon, Weapon weapon, Item item) : choseWeapon(choseWeapon), weapon(weapon), item(item) {
+        type = EventType::LevelUpChoice;
+    }
+};
+
+struct ShowLevelUpMenuEvent :BaseEvent {
+    Weapon weapon;
+    Item item;
+    ShowLevelUpMenuEvent(Weapon weapon, Item item): weapon(weapon), item(item) {
+        type = EventType::ShowLevelUpMenu;
+    }
+};
 
 
 #endif //INC_8051TUTORIAL_BASEEVENT_H

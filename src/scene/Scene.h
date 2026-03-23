@@ -41,6 +41,8 @@ private:
     void toggleSettingsOverlayVisibility(Entity& overlay);
 
     Entity& createPlayerPosLabel();
+
+    Entity& createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, Item i);
 };
 
 #endif //INC_8051TUTORIAL_SCENE_H

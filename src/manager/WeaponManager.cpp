@@ -41,6 +41,11 @@ void WeaponManager::loadWeaponFromXML(const char *path) {
 			weapon.name = nameAttr;
 		}
 
+		auto* pathAttr = root->Attribute("path");
+		if (pathAttr) {
+			weapon.path = pathAttr;
+		}
+
 		for (const tinyxml2::XMLAttribute* attr = root->FirstAttribute();
 				     attr != nullptr;
 				     attr = attr->Next())
@@ -49,7 +54,7 @@ void WeaponManager::loadWeaponFromXML(const char *path) {
 			std::string valueStr = attr->Value();
 
 			// skip name attribute
-			if (key == "name") continue;
+			if (key == "name" || key == "path") continue;
 
 			try {
 				float value = std::stof(valueStr);

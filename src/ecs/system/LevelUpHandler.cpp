@@ -18,35 +18,45 @@ LevelUpHandler::LevelUpHandler(World &world) : world(world) {
             onLevelUp(lvlEvent);
         }
 
+    });
 
+    world.getEventManager().subscribe([this](const BaseEvent& e) {
 
+        if (e.type!= EventType::LevelUpChoice) {
+            return;
+        } else {
+            const auto& lvlChoice = static_cast<const LevelUpChoiceEvent&>(e);
+            onLevelUpChoice(lvlChoice);
 
+        }
     });
 }
 
 void LevelUpHandler::onLevelUp(const LevelUpEvent& e) {
 
+
     //TODO Separate into different functions. One that takes either item or Weapon from choice.
-    std::cout << "Level Up Handler Success"<< std::endl;
+    world.togglePaused();
     Weapon w = WeaponManager::getRandWeapon();
     Item i = ItemManager::getRandItem();
 
-    bool isWeapon = false;
-    //Code for Player Choice: Connect with Menu UI
-
-    //Something like Calling a Menu() function and passing in the weapon/item choices.
-    //Return True or False for boolean called isWeapon.
+    world.getEventManager().emit(ShowLevelUpMenuEvent{w, i});
 
 
+}
 
-    if (isWeapon) {
+void LevelUpHandler::onLevelUpChoice(const LevelUpChoiceEvent& e) {
 
+    if (e.choseWeapon) {
+        std::cout << "Chose Weapon"<< std::endl;
     } else {
-        itemAdd(i);
+        std::cout << "Chose Item"<< std::endl;
+
+        itemAdd(e.item);
     }
 
     world.getEventManager().emit(CalculateStatsEvent());
-
+    world.togglePaused();
 }
 
 void LevelUpHandler::itemAdd(const Item& i) {

@@ -64,7 +64,8 @@ struct Children {
 enum class LabelType {
     PlayerPosition,
     Damage,
-    Health
+    Health,
+    UI
 };
 
 struct Label {
@@ -137,6 +138,7 @@ struct ItemTag {
 
 struct Weapon {
     std::string name;
+    std::string path;
     // float fireRate{};
     // float damageModifier{};
     // float projectileSizeModifier{};
@@ -164,7 +166,7 @@ struct Item {
     float projectileSizeModifier=1;
     float aoeModifier=1;
     float xpModifier = 1;
-    std::string path = "";
+    std::string path = "test";
 
 };
 

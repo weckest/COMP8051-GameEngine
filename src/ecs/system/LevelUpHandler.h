@@ -19,6 +19,7 @@ private:
     void onLevelUp(const LevelUpEvent& event);
     void itemAdd(const Item& item);
     void weaponAdd(const Weapon& weapon);
+    void onLevelUpChoice(const LevelUpChoiceEvent& event);
 
 
 };

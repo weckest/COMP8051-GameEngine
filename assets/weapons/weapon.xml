@@ -2,6 +2,7 @@
 <weapons>
     <weapon
             name="bubblegun"
+            path="../assets/sprites/BubbleGun.png"
             fireRate="1.25"
             damageModifier="1.2"
             projectileSizeModifier="1.0"
@@ -11,6 +12,7 @@
             projectileSpeedModifier="1.0"/>
     <weapon
             name="shotgun"
+            path = "../assets/sprites/Shotgun.png"
             fireRate="1.0"
             damageModifier="1.5"
             projectileSizeModifier="1.0"
@@ -20,4 +22,5 @@
             spreadModifier="1.0"
             projectileModifier="5.0"
             projectileSpeedModifier="1.0"/>
+
 </weapons>

@@ -13,12 +13,15 @@
 Scene::Scene(SceneType sceneType, const char *sceneName, const char *mapPath, int windowWidth, int windowHeight)
 : name(sceneName), type(sceneType) {
 
+
     if (sceneType == SceneType::MainMenu) {
 
         initMainMenu(windowWidth, windowHeight);
         return;
 
     }
+
+
 
     initGameplay(mapPath, windowWidth, windowHeight);
 
@@ -45,6 +48,14 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 }
 
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
+
+    world.getEventManager().subscribe([this, windowWidth, windowHeight](const BaseEvent& e) {
+        if (e.type != EventType::ShowLevelUpMenu) return;
+
+        const auto& ev = static_cast<const ShowLevelUpMenuEvent&>(e);
+
+        createLevelUpMenu(windowWidth, windowHeight, ev.weapon, ev.item);
+    });
 
     //load our map
     if (std::strcmp(mapPath, "../assets/map-tlc/TLC-MapUpdated.tmx") == 0) {
@@ -311,6 +322,144 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
         }
     }
 }
+
+//Function to display the menu for player level Up.
+Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, Item i) {
+
+    auto& overlay(world.createEntity());
+
+    SDL_Texture* bgTex = TextureManager::load("../assets/ui/settings.jpg");
+
+    SDL_FRect bgSrc = {0, 0, windowWidth * 0.7f, windowHeight * 0.7f};
+    SDL_FRect bgDst = {
+        (float)windowWidth / 2 - bgSrc.w / 2,
+        (float)windowHeight / 2 - bgSrc.h / 2,
+        bgSrc.w,
+        bgSrc.h
+    };
+
+    overlay.addComponent<Transform>(Vector2D(bgDst.x, bgDst.y), 0.0f, 1.0f);
+    overlay.addComponent<Sprite>(bgTex, bgSrc, bgDst, RenderLayer::UI, true);
+    overlay.addComponent<Children>();
+
+    float baseX = bgDst.x;
+    float baseY = bgDst.y;
+
+    float spacing = 40.0f;
+    float buttonWidth = 150.0f;
+    float buttonHeight = 150.0f;
+
+    float totalWidth = buttonWidth * 2 + spacing;
+
+    float startX = baseX + (bgDst.w - totalWidth) / 2;
+    float centerY = baseY + bgDst.h / 2 - buttonHeight / 2;
+
+
+
+    //
+    // ===== WEAPON BUTTON =====
+    //
+    auto& weaponButton = world.createEntity();
+
+    auto& weaponTransform = weaponButton.addComponent<Transform>(
+        Vector2D(startX, centerY), 0.0f, 1.0f
+    );
+
+    SDL_Texture* weaponTex = TextureManager::load(w.path.c_str());
+
+
+    //Get scale right.
+
+
+
+    SDL_FRect weaponSrc = {0, 0, buttonWidth, buttonHeight};
+    SDL_FRect weaponDst = {
+        weaponTransform.position.x,
+        weaponTransform.position.y,
+        buttonWidth,
+        buttonHeight
+    };
+
+    weaponButton.addComponent<Sprite>(weaponTex, weaponSrc, weaponDst, RenderLayer::UI, true);
+    weaponButton.addComponent<Collider>("ui", weaponDst);
+
+    auto& weaponClickable = weaponButton.addComponent<Clickable>();
+
+    weaponClickable.onPressed = [&weaponTransform]() {
+        weaponTransform.scale = 0.9f;
+    };
+
+    weaponClickable.onReleased = [this, &overlay, w, i, &weaponTransform]() {
+        weaponTransform.scale = 1.0f;
+
+        world.getEventManager().emit(LevelUpChoiceEvent{true, w, i});
+
+        // hide menu after selection
+        toggleSettingsOverlayVisibility(overlay);
+    };
+
+    weaponClickable.onCancel = [&weaponTransform]() {
+        weaponTransform.scale = 1.0f;
+    };
+
+    weaponButton.addComponent<Parent>(&overlay);
+    overlay.getComponent<Children>().children.push_back(&weaponButton);
+
+    //
+    // ===== ITEM BUTTON =====
+    //
+    auto& itemButton = world.createEntity();
+
+    auto& itemTransform = itemButton.addComponent<Transform>(
+        Vector2D(startX + buttonWidth + spacing, centerY), 0.0f, 1.0f
+    );
+
+    SDL_Texture* itemTex = TextureManager::load(i.path.c_str());
+
+    SDL_FRect itemSrc = {0, 0, buttonWidth, buttonHeight};
+    SDL_FRect itemDst = {
+        itemTransform.position.x,
+        itemTransform.position.y,
+        buttonWidth,
+        buttonHeight
+    };
+
+    itemButton.addComponent<Sprite>(itemTex, itemSrc, itemDst, RenderLayer::UI, true);
+    itemButton.addComponent<Collider>("ui", itemDst);
+
+    auto& itemClickable = itemButton.addComponent<Clickable>();
+
+    itemClickable.onPressed = [&itemTransform]() {
+        itemTransform.scale = 0.9f;
+    };
+
+    itemClickable.onReleased = [this, &overlay, w, i, &itemTransform]() {
+        itemTransform.scale = 1.0f;
+
+        world.getEventManager().emit(LevelUpChoiceEvent{false, w, i});
+
+        toggleSettingsOverlayVisibility(overlay);
+    };
+
+    itemClickable.onCancel = [&itemTransform]() {
+        itemTransform.scale = 1.0f;
+    };
+
+    itemButton.addComponent<Parent>(&overlay);
+    overlay.getComponent<Children>().children.push_back(&itemButton);
+
+    return overlay;
+}
+
+
+
+
+
+
+
+
+
+
 
 Entity& Scene::createPlayerPosLabel() {
     auto& playerPosLabel(world.createEntity());

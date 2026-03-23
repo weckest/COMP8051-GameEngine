@@ -243,6 +243,10 @@ public:
         this->player = player;
     }
 
+    void togglePaused() {
+        isPaused = !isPaused;
+    }
+
 };
 
 #endif //INC_8051TUTORIAL_WORLD_H

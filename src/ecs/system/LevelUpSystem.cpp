@@ -30,6 +30,7 @@ void LevelUpSystem::update(const std::vector<std::unique_ptr<Entity>>& entities,
     if (stats.xp >= xpToLevelUp) {
         stats.level++;
         stats.xp -= xpToLevelUp;
+        xpToLevelUp+=100;
         world.getEventManager().emit(LevelUpEvent{stats.level});
         //std::cout << "LEVEL UP!" << std::endl;
     }
