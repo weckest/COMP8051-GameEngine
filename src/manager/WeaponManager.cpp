@@ -61,6 +61,7 @@ void WeaponManager::loadWeaponFromXML(const char *path) {
 
 				// give weapon stat name
 				weapon.weaponStats[key] = value;
+				if (key != "cooldown")
 				weapon.statNames.push_back(key);
 
 			} catch (...) {
@@ -122,6 +123,13 @@ void WeaponManager::upgradeRandStat(Entity& entity, Weapon& weapon) {
 			auto& targ = i;
 			auto& statNames = targ.statNames;
 
+			targ.amtLevelUps += 1;
+
+			//if we are at 5 level ups double bullets
+			if (targ.amtLevelUps % 5 == 0) {
+				targ.weaponStats["projectileModifier"] += 1;
+			}
+
 			// randomly pick a stat to upgrade
 			std::random_device rd;
 			std::mt19937 gen(rd());
@@ -131,6 +139,8 @@ void WeaponManager::upgradeRandStat(Entity& entity, Weapon& weapon) {
 			std::string randomStat = statNames[randomIndex];
 
 			// upgrade the stat
+			// check if the stat is cooldown, if it is skip and reroll the stat
+
 			targ.weaponStats[randomStat] *= 1.1f;         // +10%
 			break;
 		}

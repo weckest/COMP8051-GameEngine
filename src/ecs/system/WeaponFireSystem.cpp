@@ -9,22 +9,32 @@
 
 void WeaponFireSystem::update(World &world, float dt) {
 	for (const auto& entity : world.getEntities()) {
+
 		if (!entity->hasComponent<PlayerTag>())
 			continue;
 
-		auto& player = entity->getComponent<PlayerTag>();
 		auto& weaponList = entity->getComponent<WeaponList>();
-		auto& weaponComp = weaponList.weapons;
+		auto& stats = entity->getComponent<Stats>();
 
-		for (auto& weapon : weaponComp) {
+		for (auto& weapon : weaponList.weapons) {
 
+			// Decrease cooldown over time
 			weapon.weaponStats["cooldown"] -= dt;
 
 			if (weapon.weaponStats["cooldown"] <= 0.0f) {
 
+				// Fire weapon
 				weapon.spawnFunction(weapon, *entity, world);
 
-				weapon.weaponStats["cooldown"]  = weapon.weaponStats["fireRate"] ;
+
+				float baseFireRate = weapon.weaponStats["fireRate"];
+				float fireRateModifier = 1.0f + 0.05f * stats.fireRateModifier;
+
+				// Convert to cooldown (seconds per shot)
+				float cooldown = 1.0f / (baseFireRate * fireRateModifier);
+
+
+				weapon.weaponStats["cooldown"] = cooldown;
 			}
 		}
 	}

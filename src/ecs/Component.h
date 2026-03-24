@@ -152,6 +152,7 @@ struct Weapon {
     // float cooldown{};
     std::unordered_map<std::string, float> weaponStats{};
     std::vector<std::string> statNames{};
+    int amtLevelUps;
     // a function that takes in the above modifiers and spawns a projectile with those modifiers applied
     //  the entity representing the player so we can get the player's transform and direction to spawn the projectile in the right place and direction
     std::function<void( Weapon&, Entity& , World&)> spawnFunction;

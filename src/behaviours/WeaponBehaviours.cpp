@@ -9,12 +9,25 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
             if (!entity.hasComponent<Collider>())
                 return;
 
+            int count = std::max(1, (int)weapon.weaponStats.at("projectileModifier"));
+
+            float fireRate = weapon.weaponStats.at("fireRate");
+            float fireRateMod = 1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier;
+
+            float delayBetweenShots = 0.15f / (fireRate * fireRateMod); // tweak for how "disjointed" it feels
+
             entity.addComponent<TimedSpawner>(
-                1/weapon.weaponStats["fireRate"] + (1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier),
-                [&entity, &world, weapon] {
+                delayBetweenShots,
+                [&, count, shotsFired = 0]() mutable {
+
+                    if (shotsFired >= count) {
+                        return; // stop spawning
+                    }
+
+                    shotsFired++;
+
                     auto &bullet = world.createDeferredEntity();
                     auto &t = entity.getComponent<Transform>();
-                    auto &v = entity.getComponent<Velocity>();
                     auto &s = entity.getComponent<Sprite>();
 
                     SDL_Texture *tex = TextureManager::load("../assets/bubble.png");
@@ -39,25 +52,25 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     );
 
                     Entity* closestEntity = CollisionSystem::getClosestEntity(world, entity, 200);
-                    if (closestEntity == nullptr) {
+                    if (!closestEntity) {
                         bullet.destroy();
                         return;
                     }
+
                     auto& eT = closestEntity->getComponent<Transform>();
-                    Vector2D bulletDir = eT.position - bT.position;
-                    // Vector2D bulletDir = (v.direction == Vector2D(0,0)) ? Vector2D(1,0) : v.direction;
-                    bullet.addComponent<Velocity>(bulletDir, 200.0f);
+                    Vector2D dir = (eT.position - bT.position).normalize();
+
+                    bullet.addComponent<Velocity>(dir, 200.0f);
 
                     auto &c = bullet.addComponent<Collider>("bullet");
                     c.rect.w = dst.w;
                     c.rect.h = dst.h;
 
                     bullet.addComponent<ProjectileTag>(
-                        50.0f * weapon.weaponStats.at("damageModifier") + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
-                        100.0f * weapon.weaponStats.at("aoeModifier"
-                    ));
-
-
+                        50.0f * weapon.weaponStats.at("damageModifier") +
+                        (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
+                        100.0f * weapon.weaponStats.at("aoeModifier")
+                    );
                 }
             );
         }
@@ -129,6 +142,15 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 );
         }
     },
+    {"RingofFire",
+        [](Weapon &weapon, Entity &entity, World &world) {
+                if (!entity.hasComponent<Collider>()) {
+                    return;
+                }
+
+
+        }
+    }
 
 };
 
