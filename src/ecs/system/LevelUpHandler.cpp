@@ -35,7 +35,6 @@ LevelUpHandler::LevelUpHandler(World &world) : world(world) {
 void LevelUpHandler::onLevelUp(const LevelUpEvent& e) {
 
 
-    //TODO Separate into different functions. One that takes either item or Weapon from choice.
     world.togglePaused();
     Weapon w = WeaponManager::getRandWeapon();
     Item i = ItemManager::getRandItem();
