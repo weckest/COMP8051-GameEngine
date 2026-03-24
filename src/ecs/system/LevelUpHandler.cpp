@@ -49,6 +49,8 @@ void LevelUpHandler::onLevelUpChoice(const LevelUpChoiceEvent& e) {
 
     if (e.choseWeapon) {
         std::cout << "Chose Weapon"<< std::endl;
+
+        weaponAdd(e.weapon);
     } else {
         std::cout << "Chose Item"<< std::endl;
 
@@ -115,6 +117,11 @@ void LevelUpHandler::weaponAdd(const Weapon &weapon) {
 
     // if the duplicate does not exist add it to the players pool
     player->getComponent<WeaponList>().weapons.push_back(weapon);
+
+    // print all weapons
+    for (auto& weapons: player->getComponent<WeaponList>().weapons) {
+        std::cout<< weapons.name << " " << std::endl;
+    }
 
 }
 
