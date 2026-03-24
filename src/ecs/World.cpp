@@ -44,6 +44,11 @@ World::World() {
                     case SDLK_G:
                         debugState.grid = !debugState.grid;
                         std::cout << "Debug Grid: " << debugState.grid << std::endl;
+                        for (auto& entity : entities) {
+                            if (entity->hasComponent<Label>() && entity->getComponent<Label>().type == LabelType::Debug) {
+                                entity->getComponent<Label>().visible = !entity->getComponent<Label>().visible;
+                            }
+                        }
                         break;
                     case SDLK_R:
                         debugState.range = !debugState.range;
@@ -67,4 +72,8 @@ World::World() {
     });
 
 
+}
+
+void World::initDebug() {
+    gridSystem.createDebugLabels(*this, &rows, &cols);
 }

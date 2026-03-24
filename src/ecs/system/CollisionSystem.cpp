@@ -15,12 +15,17 @@ CollisionSystem::CollisionSystem(World &world) {
             if (e.type != EventType::Death) return;
 
             const auto& death = static_cast<const DeathEvent&>(e);
+            std::vector<std::pair<Entity*, Entity*>> remove;
             // std::cout << "looking for: " << death.entity << std::endl;
             for (std::pair<Entity*, Entity*> key: activeCollisions) {
                 // std::cout << " " << key.first << ", " << key.second << std::endl;
                 if (key.first == death.entity || key.second == death.entity) {
-                    activeCollisions.erase(key);
+                    remove.push_back(key);
                 }
+            }
+
+            for (std::pair<Entity*, Entity*> key: remove) {
+                activeCollisions.erase(key);
             }
         });
 }

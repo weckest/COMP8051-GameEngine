@@ -32,6 +32,9 @@ public:
     static void getGridIndex(Vector2D* position, int worldWidth, int worldHeight, int gridX, int gridY, Vector2D* index);
     static void getGridIndex(Entity* entity, int worldWidth, int worldHeight, int gridX, int gridY, GridPosition* index);
 
+    void createDebugLabels(World &world, int *rows, int *cols);
+    void updateCellLabels(World& world);
+
 private:
     // void destroyDeferred();
     void countGridSize();

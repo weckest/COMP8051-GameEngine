@@ -137,6 +137,7 @@ public:
                 map.draw(e->getComponent<Camera>());
                 if (debugState.debug && debugState.grid) {
                     gridSystem.draw(e->getComponent<Camera>());
+                    gridSystem.updateCellLabels(*this);
                 }
             }
         }
@@ -246,6 +247,8 @@ public:
     void togglePaused() {
         isPaused = !isPaused;
     }
+
+    void initDebug();
 
 };
 

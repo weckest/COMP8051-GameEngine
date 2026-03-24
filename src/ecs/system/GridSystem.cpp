@@ -4,6 +4,7 @@
 
 #include "GridSystem.h"
 #include "World.h"
+#include "manager/AssetManager.h"
 #include "utils/data/GridPosition.h"
 
 GridSystem::GridSystem(World &world) : world(world) {
@@ -67,23 +68,7 @@ GridSystem::GridSystem(World &world) : world(world) {
         }
     );
 
-    //print the grid position of the entity
-    world.getEventManager().subscribe(
-        [this, &world](const BaseEvent& e) {
-            if (e.type != EventType::GridDebug) return;
-            const auto& debug = static_cast<const GridDebugEvent&>(e);
 
-            auto& map = world.getMap();
-            int scale = map.scale;
-            int width = map.width * scale;
-            int height = map.height * scale;
-            auto& grid = world.getEntityGrid();
-
-            int xIndex, yIndex;
-            getGridIndex(&debug.entity->getComponent<Transform>().position, width, height, grid[0].size(), grid.size(), &xIndex, &yIndex);
-            std::cout << "grid Debug: " << xIndex << ", " << yIndex << std::endl;
-
-    });
 }
 
 void GridSystem::update(
@@ -290,6 +275,74 @@ void GridSystem::getGridIndex(Entity *entity, int worldWidth, int worldHeight, i
     }
 }
 
+void GridSystem::createDebugLabels(World &world, int* rows, int* cols) {
+    Label label = {
+        "0",
+        AssetManager::getFont("arial"),
+        {255,255,255,255},
+        LabelType::Debug,
+        "gridEntityCount"
+    };
+    label.visible = false;
+
+    auto& map = world.getMap();
+    int scale = map.scale;
+    int width = map.width * scale;
+    int height = map.height * scale;
+
+    int rangeY = height / (*rows * 1.0f);
+    int rangeX = width / (*cols * 1.0f);
+
+    //create debug labels for each cells number of entities
+    for (int x = 0; x < *cols; x++) {
+        for (int y = 0; y < *rows; y++) {
+            //create label at position of cell
+
+            auto& entity = world.createEntity();
+            auto& cell = world.getEntityGrid()[y][x];
+            TextureManager::loadLabel(label);
+            entity.addComponent<Label>(label);
+            entity.addComponent<Transform>(Vector2D(rangeX * x + 2.5, rangeY * y + 2.5f), 0.0f, 1.0f);
+        }
+    }
+}
+
+void GridSystem::updateCellLabels(World &world) {
+    auto& map = world.getMap();
+    int scale = map.scale;
+    int width = map.width * scale;
+    int height = map.height * scale;
+
+    Entity* cam = nullptr;
+
+    for (auto& entity : world.getEntities()) {
+        if (entity->hasComponent<Camera>()) {
+            cam = entity.get();
+        }
+    }
+
+    if (!cam) return;
+    auto& camera = cam->getComponent<Camera>();
+
+    auto& entityGrid = world.getEntityGrid();
+    for (auto& entity : world.getEntities()) {
+        if (entity->hasComponent<Label>() && entity->getComponent<Label>().type == LabelType::Debug) {
+            auto& transform = entity->getComponent<Transform>();
+            Vector2D index;
+
+            getGridIndex(&transform.position, width, height, entityGrid[0].size(), entityGrid.size(), &index);
+            std::cout << index.x << " " << index.y << std::endl;
+            if (index.x < 0 || index.x >= width || index.y < 0 || index.y >= height) continue;
+            if ((camera.view.x - camera.worldWidth / 2) )
+            auto& label = entity->getComponent<Label>();
+            label.text = std::to_string(entityGrid[index.y][index.x].size());
+            label.dirty = true;
+
+            transform.position.x -= camera.view.x;
+            transform.position.y -= camera.view.y;
+        }
+    }
+}
 
 
 void GridSystem::countGridSize() {

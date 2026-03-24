@@ -190,6 +190,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     state.addComponent<SceneState>();
 
     createPlayerPosLabel();
+    world.initDebug();
 
 }
 
