@@ -4,7 +4,7 @@
             name="bubblegun"
             path="../assets/sprites/BubbleGun.png"
             fireRate="1.25"
-            damageModifier="1.2"
+            damageModifier="1"
             projectileSizeModifier="1.0"
             aoeModifier="1.3"
             critDamageModifier="2.0"
@@ -14,13 +14,13 @@
             name="shotgun"
             path = "../assets/sprites/Shotgun.png"
             fireRate="1.0"
-            damageModifier="1.5"
+            damageModifier="0.5"
             projectileSizeModifier="1.0"
             aoeModifier="1.0"
             critDamageModifier="2.0"
             critChanceModifier="0.1"
             spreadModifier="1.0"
-            projectileModifier="5.0"
+            projectileModifier="1.0"
             projectileSpeedModifier="1.0"/>
 
 </weapons>

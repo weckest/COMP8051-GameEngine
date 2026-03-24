@@ -48,6 +48,8 @@ void LevelUpHandler::onLevelUpChoice(const LevelUpChoiceEvent& e) {
 
     if (e.choseWeapon) {
         std::cout << "Chose Weapon"<< std::endl;
+
+        weaponAdd(e.weapon);
     } else {
         std::cout << "Chose Item"<< std::endl;
 
@@ -93,6 +95,32 @@ void LevelUpHandler::itemAdd(const Item& i) {
 
 //TODO Brian add how you handle getting a weapon
 void LevelUpHandler::weaponAdd(const Weapon &weapon) {
+
+    Entity* player = nullptr;
+
+    // find player
+    for (auto& entity : world.getEntities()) {
+        if (entity->hasComponent<PlayerTag>()) {
+            player = entity.get();
+            break;
+        }
+    }
+
+    //upgrade weapon if duplicate exist
+    for (auto& weapons: player->getComponent<WeaponList>().weapons) {
+        if (weapons.name == weapon.name) {
+            WeaponManager::upgradeRandStat(*player, weapons);
+            return;
+        }
+    }
+
+    // if the duplicate does not exist add it to the players pool
+    player->getComponent<WeaponList>().weapons.push_back(weapon);
+
+    // print all weapons
+    for (auto& weapons: player->getComponent<WeaponList>().weapons) {
+        std::cout<< weapons.name << " " << std::endl;
+    }
 
 }
 

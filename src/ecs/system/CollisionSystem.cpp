@@ -15,7 +15,9 @@ CollisionSystem::CollisionSystem(World &world) {
             if (e.type != EventType::Death) return;
 
             const auto& death = static_cast<const DeathEvent&>(e);
-            for (CollisionKey key: activeCollisions) {
+            // std::cout << "looking for: " << death.entity << std::endl;
+            for (std::pair<Entity*, Entity*> key: activeCollisions) {
+                // std::cout << " " << key.first << ", " << key.second << std::endl;
                 if (key.first == death.entity || key.second == death.entity) {
                     activeCollisions.erase(key);
                 }
@@ -110,7 +112,7 @@ void CollisionSystem::update(World &world, Timer& timer) {
     timer.startTimer("activeCollisions");
     for (auto& key: activeCollisions) {
         if (!currentCollisions.contains(key)) {
-            if (key.first->isActive() && key.second->isActive()) {
+            if (key.first->isActive() == 1 && key.second->isActive() == 1) {
                 world.getEventManager().emit(CollisionEvent{key.first, key.second, CollisionState::Exit});
             }
         }

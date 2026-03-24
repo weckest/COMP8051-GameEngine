@@ -138,12 +138,12 @@ void EventResponseSystem::onCollision(
 
          auto& bTag = entityA->getComponent<ProjectileTag>();
          std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
-         for (auto& e: entities) {
+         for (auto& entity: entities) {
 
-             auto& eTag = e->getComponent<EnemyTag>();
+             auto& eTag = entity->getComponent<EnemyTag>();
 
-             if (e != entityB) {
-                 float distanceToEnemy = (entityA->getComponent<Transform>().position - e->getComponent<Transform>().position).length();
+             if (entity != entityB) {
+                 float distanceToEnemy = (entityA->getComponent<Transform>().position - entity->getComponent<Transform>().position).length();
                  float bulletDamage = bTag.damage * (bTag.aoe - distanceToEnemy) / bTag.aoe;
                  eTag.health -= bulletDamage;
              } else {
@@ -154,16 +154,16 @@ void EventResponseSystem::onCollision(
 
              if (eTag.health <= 0) {
                  //replace with spawinging in a random object
-                 auto& entityT = e->getComponent<Transform>();
-                 auto& entityS = e->getComponent<Sprite>();
+                 auto& entityT = entity->getComponent<Transform>();
+                 auto& entityS = entity->getComponent<Sprite>();
                  Vector2D center = entityT.position;
                  center.x += entityS.dst.w / 2;
                  center.y += entityS.dst.h / 2;
                  world.getEventManager().emit(SpawnPrefabEvent{"coin", center});
 
                  //destroy the enemy
-                 em.emit(DeathEvent(e));
-                 e->destroy();
+                 em.emit(DeathEvent(entity));
+                 entity->destroy();
              }
          }
 
