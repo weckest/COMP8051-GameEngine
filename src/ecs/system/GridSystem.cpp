@@ -331,15 +331,15 @@ void GridSystem::updateCellLabels(World &world) {
             Vector2D index;
 
             getGridIndex(&transform.position, width, height, entityGrid[0].size(), entityGrid.size(), &index);
-            std::cout << index.x << " " << index.y << std::endl;
             if (index.x < 0 || index.x >= width || index.y < 0 || index.y >= height) continue;
-            if ((camera.view.x - camera.worldWidth / 2) )
-            auto& label = entity->getComponent<Label>();
-            label.text = std::to_string(entityGrid[index.y][index.x].size());
-            label.dirty = true;
+            if ((camera.view.x - camera.worldWidth / 2) < transform.position.x && (camera.view.x + camera.worldWidth / 2) > transform.position.x) {
+                if (camera.view.y - camera.worldHeight / 2 < transform.position.y && camera.view.y + camera.worldHeight / 2 > transform.position.y) {
+                    auto& label = entity->getComponent<Label>();
+                    label.text = std::to_string(entityGrid[index.y][index.x].size());
+                    label.dirty = true;
+                }
+            }
 
-            transform.position.x -= camera.view.x;
-            transform.position.y -= camera.view.y;
         }
     }
 }

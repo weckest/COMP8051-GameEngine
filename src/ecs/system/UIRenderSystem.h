@@ -16,36 +16,50 @@ class UIRenderSystem {
 public:
 
 	void render(const std::vector<std::unique_ptr<Entity>>& entities) {
-			for (auto& e : entities) {
-				if (e->hasComponent<Transform>()) {
-					auto& transform = e->getComponent<Transform>();
+		Entity* camera = nullptr;
+		for (auto& e: entities) {
+			if (e->hasComponent<Camera>()) {
+				camera = e.get();
+			}
+		}
+		if (!camera) return;
+		auto& cam = camera->getComponent<Camera>();
 
-					if (e->hasComponent<Sprite>()) {
-						auto& sprite = e->getComponent<Sprite>();
+		for (auto& e : entities) {
+			if (e->hasComponent<Transform>()) {
+				auto& transform = e->getComponent<Transform>();
 
-						if (sprite.renderLayer != RenderLayer::UI) continue;
+				if (e->hasComponent<Sprite>()) {
+					auto& sprite = e->getComponent<Sprite>();
 
-						// no converting from world space to screen space
-						sprite.dst.x = transform.position.x;
-						sprite.dst.y = transform.position.y;
+					if (sprite.renderLayer != RenderLayer::UI) continue;
 
-						if (sprite.visible) {
-							SDL_FRect scaledDest = RenderUtils::getScaledDest(sprite.dst, transform.scale);
-							TextureManager::draw(sprite.texture, &sprite.src, &scaledDest);
-						}
-					} else if (e->hasComponent<Label>()) {
-						auto& label = e->getComponent<Label>();
+					// no converting from world space to screen space
+					sprite.dst.x = transform.position.x;
+					sprite.dst.y = transform.position.y;
 
-						label.dst.x = transform.position.x;
-						label.dst.y = transform.position.y;
+					if (sprite.visible) {
+						SDL_FRect scaledDest = RenderUtils::getScaledDest(sprite.dst, transform.scale);
+						TextureManager::draw(sprite.texture, &sprite.src, &scaledDest);
+					}
+				} else if (e->hasComponent<Label>()) {
+					auto& label = e->getComponent<Label>();
 
-						if (label.visible) {
-							SDL_FRect scaledDest = RenderUtils::getScaledDest(label.dst, transform.scale);
-							TextureManager::draw(label.texture, nullptr, &scaledDest);
-						}
+					label.dst.x = transform.position.x;
+					label.dst.y = transform.position.y;
+
+					if (label.type == LabelType::Debug) {
+						label.dst.x -= cam.view.x;
+						label.dst.y -= cam.view.y;
+					}
+
+					if (label.visible) {
+						SDL_FRect scaledDest = RenderUtils::getScaledDest(label.dst, transform.scale);
+						TextureManager::draw(label.texture, nullptr, &scaledDest);
 					}
 				}
 			}
+		}
 	}
 };
 
