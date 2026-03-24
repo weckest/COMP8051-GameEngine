@@ -40,7 +40,9 @@ void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World&
 
                 ///TEST CODE. NEED TO REMOVE LATER
                 auto& stats = player->getComponent<PlayerTag>();
-                stats.xp += 10;
+                auto& modifiers = player->getComponent<Stats>();
+
+                stats.xp += (10 * modifiers.xpModifier);
 
                 ///END OF TEST CODE
                 world.getEventManager().emit(DeathEvent(e.get()));

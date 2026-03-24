@@ -63,6 +63,11 @@ void PlayerStatListener::applyChanges(const CalculateStatsEvent &e) {
     std::cout << "Speed mod: " << stats.speedModifier << std::endl;
     std::cout << "fire Rate mod: " << stats.fireRateModifier << std::endl;
     std::cout << "playerSize mod: " << stats.playerSizeModifier << std::endl;
+    std::cout << "aoe mod: " << stats.aoeModifier << std::endl;
+    std::cout << "xp mod: " << stats.xpModifier << std::endl;
+
+
+
 
 
 
