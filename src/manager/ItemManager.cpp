@@ -52,6 +52,9 @@ void ItemManager::loadAllItems(const char* path) {
             item.projectileSizeModifier = value;
         if (elem->QueryFloatAttribute("aoeModifier", &value) == tinyxml2::XML_SUCCESS)
             item.aoeModifier = value;
+        if (elem->QueryFloatAttribute("xpModifier", &value) == tinyxml2::XML_SUCCESS)
+            item.xpModifier = value;
+
 
 
 
