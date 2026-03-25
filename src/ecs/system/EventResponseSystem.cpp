@@ -15,9 +15,11 @@ EventResponseSystem::EventResponseSystem(World &world) {
             if (e.type != EventType::Collision) return;
             const auto& collision = static_cast<const CollisionEvent&>(e); //cast base type into collision type
 
-            // onCollision(collision, "player", "item", world);
+            //item pickup is handled by PickUpSystem.cpp
+            //onCollision(collision, "player", "item", world);
+
             onCollision(collision, "player", "wall", world);
-            // onCollision(collision, "player", "enemy", world);
+            //onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
             onCollision(collision, "enemy", "wall", world);
         }
@@ -74,9 +76,10 @@ void EventResponseSystem::onCollision(
     if (checkTagsFor(ATag, BTag, "item") && checkTagsFor(ATag, BTag, "player")) {
 
 
-
-
         if (e.state != CollisionState::Enter) return;
+
+
+
 
 
         ///TEST CODE. NEED TO REMOVE LATER

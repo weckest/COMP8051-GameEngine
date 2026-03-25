@@ -37,12 +37,13 @@ void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World&
                     continue;
                 }
 
-
                 ///TEST CODE. NEED TO REMOVE LATER
                 auto& stats = player->getComponent<PlayerTag>();
                 auto& modifiers = player->getComponent<Stats>();
 
                 stats.xp += (10 * modifiers.xpModifier);
+
+                world.getAudioEventQueue().push(std::make_unique<AudioEvent>("collect"));
 
                 ///END OF TEST CODE
                 world.getEventManager().emit(DeathEvent(e.get()));

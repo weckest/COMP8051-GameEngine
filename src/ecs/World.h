@@ -39,6 +39,7 @@
 #include "Timer.h"
 #include "UIRenderSystem.h"
 #include "data/DebugState.h"
+#include "event/AudioEventQueue.h"
 #include "manager/ItemManager.hpp"
 #include "scene/SceneType.h"
 
@@ -82,6 +83,7 @@ class World {
     DebugRenderSystem debugRenderSystem{*this};
     HUDSystem hudSystem;
     PreRenderSystem preRenderSystem;
+    AudioEventQueue audioEventQueue;
 
 
 public:
@@ -123,6 +125,7 @@ public:
             timer.stopTimer("update");
         }
         mouseInputSystem.update(*this, event);
+        audioEventQueue.process(); //process all audio events
         preRenderSystem.update(entities);
 
 
@@ -222,6 +225,10 @@ public:
 
     EventManager& getEventManager() {
         return eventManager;
+    }
+
+    AudioEventQueue& getAudioEventQueue() {
+        return audioEventQueue;
     }
 
     ItemManager& getItemManager() {
