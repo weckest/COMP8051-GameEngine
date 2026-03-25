@@ -15,6 +15,7 @@ class AudioManager
     MIX_Mixer *mixer = nullptr;
     MIX_Track *musicTrack = nullptr;
     static MIX_Track *sfxTrack;
+    static MIX_Track *weaponSfxTrack;
     static std::unordered_map<std::string, MIX_Audio*> audio;
 
 public:
@@ -26,6 +27,7 @@ public:
     void stopMusic() const;
 
     static void playSfx(const std::string& name);
+    static void playWeaponSfx(const std::string& name);
 };
 
 #endif //INC_8051TUTORIAL_AUDIOMANAGER_H

@@ -27,8 +27,10 @@ AudioManager::AudioManager()
 
     musicTrack = MIX_CreateTrack(mixer);
     sfxTrack = MIX_CreateTrack(mixer);
+    weaponSfxTrack = MIX_CreateTrack(mixer);
     MIX_SetTrackGain(musicTrack, 0.8f);
     MIX_SetTrackGain(sfxTrack, 0.6f);
+    MIX_SetTrackGain(weaponSfxTrack, 0.3f);
 }
 
 void AudioManager::loadAudio(const std::string& name, const char* path) const
@@ -72,6 +74,20 @@ void AudioManager::playSfx(const std::string& name)
     }
 
     MIX_PlayTrack(sfxTrack, 0);
+    //std::cout << "Playing SFX: " << name << std::endl;
+    //commented because of spam
+}
+
+//to handle different audio levels for the amount of sounds playing
+void AudioManager::playWeaponSfx(const std::string& name)
+{
+    if (MIX_SetTrackAudio(weaponSfxTrack, audio[name]) == 0)
+    {
+        std::cout << "MIX_SetTrackAudio() failed" << std::endl;
+        return;
+    }
+
+    MIX_PlayTrack(weaponSfxTrack, 0);
     //std::cout << "Playing SFX: " << name << std::endl;
     //commented because of spam
 }
