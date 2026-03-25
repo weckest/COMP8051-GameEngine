@@ -140,6 +140,7 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
         if (sceneName == "mainmenu")
         {
+            gameState.playerHealth = 100;
             audioManager.playMusic("musicMainMenu");
         }
 

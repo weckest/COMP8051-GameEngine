@@ -238,6 +238,10 @@ public:
         return weaponManager;
     }
 
+    void resetGame()
+    {
+        //TODO: Handle reset logic somewhere reasonable
+    }
 
     Map& getMap() {return map;}
 
