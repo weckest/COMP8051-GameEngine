@@ -80,6 +80,9 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     audioManager.loadAudio("theme", "../assets/audio/switch_with_me.ogg");
     audioManager.loadAudio("collect", "../assets/audio/coin.ogg");
 
+    audioManager.loadAudio("musicMainMenu", "../assets/audio/music/TLCMainMenu.mp3");
+    audioManager.loadAudio("musicGameplay", "../assets/audio/music/TLCMainTheme.mp3");
+
     //load fonts
     AssetManager::loadFont("arial", "../assets/fonts/arial.ttf", 16);
 
@@ -113,7 +116,8 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     gameState.playerHealth = 100;
 
     //start music
-    audioManager.playMusic("theme");
+    audioManager.playMusic("musicMainMenu");
+
 
     //start level
     sceneManager.changeSceneDeferred("mainmenu");
@@ -132,6 +136,16 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
             std::cout << "Game Over" << std::endl;
             isRunning = false;
             return;
+        }
+
+        if (sceneName == "mainmenu")
+        {
+            audioManager.playMusic("musicMainMenu");
+        }
+
+        if (sceneName == "gameplay")
+        {
+            audioManager.playMusic("musicGameplay");
         }
 
         sceneManager.changeSceneDeferred(sceneName);

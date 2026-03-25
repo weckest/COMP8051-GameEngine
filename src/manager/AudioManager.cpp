@@ -28,7 +28,7 @@ AudioManager::AudioManager()
     musicTrack = MIX_CreateTrack(mixer);
     sfxTrack = MIX_CreateTrack(mixer);
     MIX_SetTrackGain(musicTrack, 0.8f);
-    MIX_SetTrackGain(sfxTrack, 0.8f);
+    MIX_SetTrackGain(sfxTrack, 0.6f);
 }
 
 void AudioManager::loadAudio(const std::string& name, const char* path) const
@@ -72,5 +72,6 @@ void AudioManager::playSfx(const std::string& name)
     }
 
     MIX_PlayTrack(sfxTrack, 0);
-    std::cout << "Playing SFX " << name << std::endl;
+    //std::cout << "Playing SFX: " << name << std::endl;
+    //commented because of spam
 }
