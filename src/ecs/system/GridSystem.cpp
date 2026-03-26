@@ -202,11 +202,11 @@ void GridSystem::draw(const Camera &cam) {
     int height = map.height * scale;
 
     auto& grid = world.getEntityGrid();
-    int colWidth = width / grid[0].size();
-    int rowHeight = height / grid.size();
+    float colWidth = width * 1.0f / grid[0].size();
+    float rowHeight = height * 1.0f / grid.size();
 
-    for (int y = 0; y < grid.size(); y++) {
-        float worldY = static_cast<float>(y) * rowHeight * 1.0f;
+    for (int y = 0; y <= grid.size(); y++) {
+        float worldY = y * rowHeight;
 
         dest.y = std::round(worldY - cam.view.y) - stripeWidth / 2;
         dest.x = 0;
@@ -216,8 +216,8 @@ void GridSystem::draw(const Camera &cam) {
         TextureManager::draw(tex, &src, &dest);
     }
 
-    for (int x = 0; x < grid[0].size(); x++) {
-        float worldX = static_cast<float>(x) * colWidth * 1.0f;
+    for (int x = 0; x <= grid[0].size(); x++) {
+        float worldX = x * colWidth;
 
         //move the tiles or map relative to the camera
         //convert from world space to screen space
@@ -297,22 +297,25 @@ void GridSystem::createDebugLabels(World &world, int* rows, int* cols) {
     int width = map.width * scale;
     int height = map.height * scale;
 
-    int rangeY = height / (*rows * 1.0f);
-    int rangeX = width / (*cols * 1.0f);
-
+    float rangeY = height / (*rows * 1.0f);
+    float rangeX = width / (*cols * 1.0f);
+    // int sum = 0;
     //create debug labels for each cells number of entities
     for (int x = 0; x < *cols; x++) {
         for (int y = 0; y < *rows; y++) {
+            // std::cout << rangeX * x << " " << rangeY * y << std::endl;
             //create label at position of cell
 
             auto& entity = world.createEntity();
             auto& cell = world.getEntityGrid()[y][x];
-            // label.text = "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+            label.text = "0";
             TextureManager::loadLabel(label);
             entity.addComponent<Label>(label);
-            entity.addComponent<Transform>(Vector2D(rangeX * x + 2.5, rangeY * y + 2.5f), 0.0f, 1.0f);
+            entity.addComponent<Transform>(Vector2D(rangeX * x + 2.5f, rangeY * y + 2.5f), 0.0f, 1.0f);
+            // sum++;
         }
     }
+    // std::cout << sum << std::endl;
 }
 
 void GridSystem::updateCellLabels(World &world) {
@@ -339,15 +342,14 @@ void GridSystem::updateCellLabels(World &world) {
             Vector2D index;
 
             getGridIndex(&transform.position, width, height, entityGrid[0].size(), entityGrid.size(), &index);
-            index.x++;
-            index.y++;
 
             if (index.x < 0 || index.x >= width || index.y < 0 || index.y >= height) continue;
-            if ((camera.view.x - camera.worldWidth / 2) < transform.position.x && (camera.view.x + camera.worldWidth / 2) > transform.position.x) {
-                if (camera.view.y - camera.worldHeight / 2 < transform.position.y && camera.view.y + camera.worldHeight / 2 > transform.position.y) {
+
+            if (camera.view.x < transform.position.x && camera.view.x + camera.worldWidth > transform.position.x) {
+                if (camera.view.y < transform.position.y && camera.view.y + camera.worldHeight > transform.position.y) {
                     auto& label = entity->getComponent<Label>();
                     if (label.text == std::to_string(entityGrid[index.y][index.x].size())) continue;
-                    std::cout << index << std::endl;
+                    // std::cout << index << std::endl;
                     label.text = std::to_string(entityGrid[index.y][index.x].size());
                     label.dirty = true;
                 }

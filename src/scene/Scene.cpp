@@ -100,32 +100,32 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     // }
 
     // add spawners
-     for (auto& t: world.getMap().spawners) {
-         auto& e(world.createEntity());
-         e.addComponent<TimedSpawner>(4.0f, [this, t] {
-             //create our projectile (bird)
-             auto& e(world.createDeferredEntity());
-             e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
-             e.addComponent<Velocity>(Vector2D(0.0f,-1.0f), 50.0f);
+    for (auto& t: world.getMap().spawners) {
+        auto& e(world.createEntity());
+        e.addComponent<TimedSpawner>(6.0f, [this, t] {
+            //create our projectile (bird)
+            auto& e(world.createDeferredEntity());
+            e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
+            e.addComponent<Velocity>(Vector2D(0.0f,-1.0f), 50.0f);
 
-             auto& anim = AssetManager::getAnimation("enemy");
-             e.addComponent<Animation>(anim);
+            auto& anim = AssetManager::getAnimation("enemy");
+            e.addComponent<Animation>(anim);
 
-             SDL_Texture* tex = TextureManager::load("../assets/animations/fox_anim.png");
-             SDL_FRect src = {0, 0, 32, 32};
-             SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
-             e.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
+            SDL_Texture* tex = TextureManager::load("../assets/animations/fox_anim.png");
+            SDL_FRect src = {0, 0, 32, 32};
+            SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
+            e.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
 
-             auto& c = e.addComponent<Collider>("enemy");
-             c.rect.w = dst.w;
-             c.rect.h = dst.h;
-             c.layer = CollisionLayer::ENEMY;
-             c.mask = CollisionLayer::PLAYER | CollisionLayer::WALL | CollisionLayer::PROJECTILE;
+            auto& c = e.addComponent<Collider>("enemy");
+            c.rect.w = dst.w;
+            c.rect.h = dst.h;
+            c.layer = CollisionLayer::ENEMY;
+            c.mask = CollisionLayer::PLAYER | CollisionLayer::WALL | CollisionLayer::PROJECTILE;
 
-             e.addComponent<EnemyTag>(100.0f);
-         });
-         e.addComponent<Transform>(t);
-     }
+            e.addComponent<EnemyTag>(100.0f);
+        });
+        e.addComponent<Transform>(t);
+    }
 
     // player = new GameObject("../assets/ball.png", 0, 0);
 
@@ -140,6 +140,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 
     auto& player(world.createEntity());
+    std::cout << &player << std::endl;
     world.setPlayer(&player);
     auto& pt = player.addComponent<PlayerTag>();
     auto& playerStats = player.addComponent<Stats>();
@@ -183,7 +184,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     // adjust this so it fires through weapon manager.
     //make the player shoot
 
-    // player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon());
+    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon());
 
 
     world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{200, 500}});

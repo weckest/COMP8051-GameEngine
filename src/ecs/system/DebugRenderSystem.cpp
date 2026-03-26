@@ -14,8 +14,8 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
     auto& grid = world.getEntityGrid();
     int cols = grid[0].size();
     int rows = grid.size();
-    int colWidth = width / grid[0].size();
-    int rowHeight = height / grid.size();
+    float colWidth = width * 1.0f / grid[0].size();
+    float rowHeight = height * 1.0f / grid.size();
     Entity* cameraEntity = nullptr;
 
 
@@ -47,9 +47,9 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
 
     if (debugState.colliders) {
         for (auto& e : entities) {
-            if (e->hasComponent<Transform>() && e->hasComponent<Sprite>()) {
+            if (e->hasComponent<Transform>()) {
                 auto& t = e->getComponent<Transform>();
-                auto& sprite = e->getComponent<Sprite>();
+
 
                 if (debugState.grid && e->hasComponent<PlayerTag>()) {
                     GridPosition gridPosition{};
@@ -65,11 +65,15 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
                     TextureManager::drawRect(gridPosition.tl, gridPosition.br, 255, 0, 0);
                 }
 
-                SDL_Texture* tex = TextureManager::load("../assets/colors.png");
-                SDL_FRect src {0,32,32,32};
-                SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, sprite.dst.w, sprite.dst.h};
+                if (e->hasComponent<Sprite>()) {
+                    auto& sprite = e->getComponent<Sprite>();
 
-                TextureManager::draw(tex, &src, &dst);
+                    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+                    SDL_FRect src {0,32,32,32};
+                    SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, sprite.dst.w, sprite.dst.h};
+
+                    TextureManager::draw(tex, &src, &dst);
+                }
 
                 //collider debugs
                 //only show if debug mode is on
@@ -81,13 +85,14 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
 
                     TextureManager::drawRect(tl, br, collider.r, collider.g, collider.b);
 
-                } else if (!e->hasComponent<EffectTag>()) {
-                    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
-                    SDL_FRect src {0,32,32,32};
-                    SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, sprite.dst.w, sprite.dst.h};
-
-                    TextureManager::draw(tex, &src, &dst);
                 }
+                // else if (!e->hasComponent<EffectTag>()) {
+                //     SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+                //     SDL_FRect src {0,32,32,32};
+                //     SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, sprite.dst.w, sprite.dst.h};
+                //
+                //     TextureManager::draw(tex, &src, &dst);
+                // }
             }
         }
     }
