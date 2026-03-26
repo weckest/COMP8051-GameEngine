@@ -8,6 +8,7 @@
 #include <ostream>
 
 MIX_Track* AudioManager::sfxTrack;
+MIX_Track* AudioManager::weaponSfxTrack;
 std::unordered_map<std::string, MIX_Audio*> AudioManager::audio;
 
 AudioManager::AudioManager()
