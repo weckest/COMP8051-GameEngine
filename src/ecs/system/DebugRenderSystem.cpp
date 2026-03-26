@@ -4,6 +4,7 @@
 
 #include "DebugRenderSystem.h"
 #include "World.h"
+#include "manager/AssetManager.h"
 
 void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entities, DebugState debugState) {
     Entity* player = world.getPlayer();
@@ -44,12 +45,19 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
         TextureManager::drawCircle(playerCenter, 200.0f, 0, 255, 200);
     }
 
+    for (auto& e : entities) {
+        if (e->hasComponent<Label>()) {
+            if (e->getComponent<Label>().type == LabelType::DebugStats) {
+                updateDebugLabel(*e);
+            }
+        }
+    }
+
 
     if (debugState.colliders) {
         for (auto& e : entities) {
             if (e->hasComponent<Transform>()) {
                 auto& t = e->getComponent<Transform>();
-
 
                 if (debugState.grid && e->hasComponent<PlayerTag>()) {
                     GridPosition gridPosition{};
@@ -118,4 +126,90 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
             }
         }
     }
+}
+
+void DebugRenderSystem::initDebugLabel() {
+    Label label = {
+        "0",
+        AssetManager::getFont("arial"),
+        {255,255,255,255},
+        LabelType::DebugStats,
+        "debugStats"
+    };
+    label.visible = false;
+
+    auto player = world.getPlayer();
+
+    auto& entity = world.createEntity();
+    TextureManager::loadLabel(label);
+    entity.addComponent<Label>(label);
+    entity.addComponent<Transform>(Vector2D(10.0f, 30.0f), 0.0f, 1.0f);
+    auto& children = entity.addComponent<Children>();
+
+    auto& levelUp = createChildDebugLabe(entity, LabelType::LevelUp, Vector2D(10.0f, 50.0f));
+    auto& health = createChildDebugLabe(entity, LabelType::Health, Vector2D(10.0f, 70.0f));
+    auto& weapons = createChildDebugLabe(entity, LabelType::Weapons, Vector2D(10.0f, 90.0f));
+
+
+
+
+}
+
+
+
+void DebugRenderSystem::updateDebugLabel(Entity& entity) {
+    auto& parent = entity.getComponent<Label>();
+    auto& children = entity.getComponent<Children>();
+    auto player = world.getPlayer();
+    auto& stats = player->getComponent<Stats>();
+    auto& pt = player->getComponent<PlayerTag>();
+
+    parent.text = "Entities: " + std::to_string(world.getEntities().size());
+    parent.dirty = true;
+
+    //update the children of the parent label
+    for (auto& child: children.children) {
+        auto& label = child->getComponent<Label>();
+        if (label.type == LabelType::LevelUp) {
+            label.text = "LevelUp: " + std::to_string((pt.xp / pt.level));
+            label.dirty = true;
+
+        } else if (label.type == LabelType::Health) {
+            if (player->hasComponent<Health>()) {
+                auto& health = player->getComponent<Health>();
+                label.text = "Health: " + std::to_string(health.currentHealth);
+                label.dirty = true;
+            }
+        } else if (label.type == LabelType::Weapons) {
+            auto& weaponList = player->getComponent<WeaponList>();
+            label.text = "";
+            for (Weapon w: weaponList.weapons) {
+                label.text += w.name + ", ";
+                label.dirty = true;
+            }
+        }
+    }
+}
+
+Entity& DebugRenderSystem::createChildDebugLabe(Entity &parent, LabelType type, Vector2D position) {
+    auto& children = parent.getComponent<Children>();
+
+    Label label = {
+        "0",
+        AssetManager::getFont("arial"),
+        {255,255,255,255},
+        type,
+        "debugLabel"
+    };
+    label.visible = false;
+
+
+    auto& newLabel = world.createEntity();
+    children.children.emplace_back(&newLabel);
+    newLabel.addComponent<Parent>(&newLabel);
+    TextureManager::loadLabel(label);
+    newLabel.addComponent<Label>(label);
+    newLabel.addComponent<Transform>(position, 0.0f, 1.0f);
+
+    return newLabel;
 }

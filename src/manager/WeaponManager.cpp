@@ -8,6 +8,7 @@
 #include <random>
 
 #include "./WeaponBehaviours.h"
+#include "Game.h"
 
 #include "tinyxml2.h"
 
@@ -15,11 +16,11 @@ std::vector<Weapon> WeaponManager::weapons;
 
 
 const Weapon& WeaponManager::getRandWeapon() {
-
 	if (weapons.empty()) {
 		throw std::runtime_error("No weapons loaded");
 	}
-	int randIndex = rand() % weapons.size();
+	std::cout << std::rand() << std::endl;
+	int randIndex = std::rand() % weapons.size();
 	return weapons[randIndex];
 }
 

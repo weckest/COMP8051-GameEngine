@@ -30,6 +30,7 @@ Game::Game() {
     int min = 1;
     int max = 255;
     std::uniform_int_distribution<int> dist(min, max);
+    std::srand(std::time(0));
 
 }
 

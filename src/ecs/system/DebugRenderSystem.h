@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "Component.h"
 #include "data/DebugState.h"
 
 class Entity;
@@ -18,6 +19,9 @@ public:
     DebugRenderSystem(World& world): world(world) {}
 
     void render(const std::vector<std::unique_ptr<Entity>>& entities, DebugState debugState);
+    void initDebugLabel();
+    void updateDebugLabel(Entity& entity);
+    Entity& createChildDebugLabe(Entity& parent, LabelType type, Vector2D position);
 };
 
 #endif //INC_8051TUTORIAL_DEBUGRENDERSYSTEM_H

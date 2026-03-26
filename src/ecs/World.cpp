@@ -18,6 +18,16 @@ World::World() {
 
            debugState.debug = !debugState.debug;
            std::cout << "Debug: " << debugState.debug << std::endl;
+           std::cout << getComponentTypeID<Parent>() << std::endl;
+           for (auto& entity : entities) {
+               if (entity->hasComponent<Label>() && entity->getComponent<Label>().type == LabelType::DebugStats) {
+                   entity->getComponent<Label>().visible = debugState.debug;
+                   auto& children = entity->getComponent<Children>();
+                   for (auto& child : children.children) {
+                       child->getComponent<Label>().visible = debugState.debug;
+                   }
+               }
+           }
 
        });
 
@@ -78,6 +88,7 @@ World::World() {
 
 void World::initDebug() {
     gridSystem.createDebugLabels(*this, &rows, &cols);
-    std::cout << "ColWidth: " << getMap().width * getMap().scale / entityGrid[0].size() << std::endl;
-    std::cout << "RowHeight: " << getMap().height * getMap().scale / entityGrid[0].size() << std::endl;
+    debugRenderSystem.initDebugLabel();
+    // std::cout << "ColWidth: " << getMap().width * getMap().scale / entityGrid[0].size() << std::endl;
+    // std::cout << "RowHeight: " << getMap().height * getMap().scale / entityGrid[0].size() << std::endl;
 }

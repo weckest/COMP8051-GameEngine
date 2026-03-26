@@ -66,7 +66,10 @@ enum class LabelType {
     Damage,
     Health,
     UI,
-    Debug
+    Debug,
+    DebugStats,
+    LevelUp,
+    Weapons
 };
 
 struct Label {
