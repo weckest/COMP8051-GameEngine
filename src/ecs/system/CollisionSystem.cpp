@@ -59,9 +59,6 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
     }
 
-
-
-
     //outer loop
     timer.startTimer("outerLoop");
     for (size_t i = 0; i < collidables.size(); i++) {
@@ -92,20 +89,27 @@ void CollisionSystem::update(World &world, Timer& timer) {
                         //dont do collisions if the entity is dead
                         if (!entityB->isActive()) continue;
 
-                        if (Collision::AABB(colliderA, colliderB)) {
-                            CollisionKey key = makeKey(entityA, entityB);
-                            if (currentCollisions.contains(key)) continue;
-                            currentCollisions.insert(key);
+                        for (const std::string& tag : colliderA.tags) {
+                            if (colliderB.tag == tag) {
+                                if (Collision::AABB(colliderA, colliderB)) {
+                                    CollisionKey key = makeKey(entityA, entityB);
+                                    if (currentCollisions.contains(key)) continue;
+                                    currentCollisions.insert(key);
 
-                            if (!activeCollisions.contains(key)) {
-                                timer.startTimer("enterCollision");
-                                world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
-                                timer.stopTimer("enterCollision");
+                                    if (!activeCollisions.contains(key)) {
+                                        timer.startTimer("enterCollision");
+                                        world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
+                                        timer.stopTimer("enterCollision");
+                                    }
+                                    timer.startTimer("stayCollision");
+                                    world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
+                                    timer.stopTimer("stayCollision");
+                                }
+                                break;
                             }
-                            timer.startTimer("stayCollision");
-                            world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
-                            timer.stopTimer("stayCollision");
                         }
+
+
                     }
                     timer.stopTimer("innerLoop");
                 }

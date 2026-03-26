@@ -101,7 +101,6 @@ public:
             movementSystem.update(entities, dt);
             timer.stopTimer("movement");
             enemyMovementSystem.update(entities, dt);
-            spawnTimerSystem.update(entities, dt);
             timer.startTimer("pickUp");
             pickUpSystem.update(entities, *this);
             timer.stopTimer("pickUp");
@@ -116,6 +115,7 @@ public:
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
+            spawnTimerSystem.update(entities, dt);
             destructionSystem.update(entities);
             levelUpSystem.update(entities, *this);
             weaponFireSystem.update(*this, dt);
@@ -123,7 +123,9 @@ public:
             timer.stopTimer("update");
         }
         mouseInputSystem.update(*this, event);
+        timer.startTimer("prerender");
         preRenderSystem.update(entities);
+        timer.stopTimer("prerender");
 
 
         synchronizeEntities();

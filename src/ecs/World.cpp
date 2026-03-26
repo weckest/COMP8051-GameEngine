@@ -10,6 +10,8 @@ World::World() {
             std::vector<std::vector<Entity*>>(cols)
     );
 
+
+
     getEventManager().subscribe(
        [this](const BaseEvent &e) {
            if (e.type != EventType::ToggleDebug) return;
@@ -76,4 +78,6 @@ World::World() {
 
 void World::initDebug() {
     gridSystem.createDebugLabels(*this, &rows, &cols);
+    std::cout << "ColWidth: " << getMap().width * getMap().scale / entityGrid[0].size() << std::endl;
+    std::cout << "RowHeight: " << getMap().height * getMap().scale / entityGrid[0].size() << std::endl;
 }

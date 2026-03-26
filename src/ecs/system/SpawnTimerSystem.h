@@ -13,10 +13,40 @@
 class SpawnTimerSystem {
 public:
     void update(const std::vector<std::unique_ptr<Entity>>& entities, const float dt) {
-        for (auto& entity: entities) {
-            if (entity->hasComponent<TimedSpawner>()) {
-                auto& spawner = entity->getComponent<TimedSpawner>();
+        Entity* camera = nullptr;
+        Entity* player = nullptr;
 
+        for (auto& e: entities) {
+            if (e->hasComponent<Camera>()) {
+                camera = e.get();
+            }
+            if (e->hasComponent<PlayerTag>()) {
+                player = e.get();
+            }
+        }
+        if (!camera) return;
+        if (!player) return;
+        auto& cam = camera->getComponent<Camera>();
+        auto& pt = player->getComponent<Transform>();
+
+        for (auto& entity: entities) {
+            if (entity->hasComponent<TimedSpawner>() && entity->hasComponent<Transform>()) {
+                auto& spawner = entity->getComponent<TimedSpawner>();
+                auto& transform = entity->getComponent<Transform>();
+
+                // std::cout << "Camera: " << cam.view.x << " " << cam.view.y << " " << cam.view.w << " " << cam.view.h << std::endl;
+
+                float tX = transform.position.x;
+                float tY = transform.position.y;
+                // std::cout << transform.position.x << " " << transform.position.y << std::endl;
+
+                if ((tX > cam.view.x && tX < cam.view.x + cam.view.w) && (tY > cam.view.y && tY < cam.view.y + cam.view.h)
+                    && !entity->hasComponent<PlayerTag>() && !entity->hasComponent<EnemyTag>()) {
+                    // std::cout << "Skipping" << std::endl;
+                    continue;
+                }
+
+                // std::cout << "Not Skipped" << std::endl;
                 spawner.timer -= dt;
 
                 if (spawner.timer <= 0) {

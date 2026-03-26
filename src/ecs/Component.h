@@ -85,6 +85,7 @@ struct Collider {
     std::string tag{};
     SDL_FRect rect{};
     bool enabled = true;
+    std::vector<std::string> tags{};
     Uint8 r = 255;
     Uint8 g = 255;
     Uint8 b = 255;

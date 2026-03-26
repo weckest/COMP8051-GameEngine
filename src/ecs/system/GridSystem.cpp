@@ -195,7 +195,7 @@ bool GridSystem::insertEntity(Entity *entity, int x, int y) {
 
 void GridSystem::draw(const Camera &cam) {
     SDL_FRect src{96, 0, 32, 32}, dest{};
-    int stripeWidth = 8;
+    int stripeWidth = 4;
     auto& map = world.getMap();
     int scale = map.scale;
     int width = map.width * scale;
@@ -270,8 +270,15 @@ void GridSystem::getGridIndex(Entity *entity, int worldWidth, int worldHeight, i
             entityWH.y += c.rect.h;
         }
 
+
         getGridIndex(&t.position, worldWidth, worldHeight, gridX, gridY, &index->tl);
         getGridIndex(&entityWH, worldWidth, worldHeight, gridX, gridY, &index->br);
+        index->br.x++;
+        index->br.y++;
+
+        if (entity->hasComponent<PlayerTag>()) {
+            // std::cout << entityWH << "\n" << index->tl << "\n" <<  index->br << "\n" << std::endl;
+        }
     }
 }
 
@@ -300,6 +307,7 @@ void GridSystem::createDebugLabels(World &world, int* rows, int* cols) {
 
             auto& entity = world.createEntity();
             auto& cell = world.getEntityGrid()[y][x];
+            // label.text = "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
             TextureManager::loadLabel(label);
             entity.addComponent<Label>(label);
             entity.addComponent<Transform>(Vector2D(rangeX * x + 2.5, rangeY * y + 2.5f), 0.0f, 1.0f);
@@ -331,15 +339,19 @@ void GridSystem::updateCellLabels(World &world) {
             Vector2D index;
 
             getGridIndex(&transform.position, width, height, entityGrid[0].size(), entityGrid.size(), &index);
+            index.x++;
+            index.y++;
+
             if (index.x < 0 || index.x >= width || index.y < 0 || index.y >= height) continue;
             if ((camera.view.x - camera.worldWidth / 2) < transform.position.x && (camera.view.x + camera.worldWidth / 2) > transform.position.x) {
                 if (camera.view.y - camera.worldHeight / 2 < transform.position.y && camera.view.y + camera.worldHeight / 2 > transform.position.y) {
                     auto& label = entity->getComponent<Label>();
+                    if (label.text == std::to_string(entityGrid[index.y][index.x].size())) continue;
+                    std::cout << index << std::endl;
                     label.text = std::to_string(entityGrid[index.y][index.x].size());
                     label.dirty = true;
                 }
             }
-
         }
     }
 }

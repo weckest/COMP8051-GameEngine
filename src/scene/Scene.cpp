@@ -98,30 +98,34 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     //     e.addComponent<ItemTag>();
     // }
 
-    //add spawners
-    for (auto& t: world.getMap().spawners) {
-        auto& e(world.createEntity());
-        e.addComponent<TimedSpawner>(4.0f, [this, t] {
-            //create our projectile (bird)
-            auto& e(world.createDeferredEntity());
-            e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
-            e.addComponent<Velocity>(Vector2D(0.0f,-1.0f), 50.0f);
+    // add spawners
+     for (auto& t: world.getMap().spawners) {
+         auto& e(world.createEntity());
+         e.addComponent<TimedSpawner>(4.0f, [this, t] {
+             //create our projectile (bird)
+             auto& e(world.createDeferredEntity());
+             e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
+             e.addComponent<Velocity>(Vector2D(0.0f,-1.0f), 50.0f);
 
-            auto& anim = AssetManager::getAnimation("enemy");
-            e.addComponent<Animation>(anim);
+             auto& anim = AssetManager::getAnimation("enemy");
+             e.addComponent<Animation>(anim);
 
-            SDL_Texture* tex = TextureManager::load("../assets/animations/fox_anim.png");
-            SDL_FRect src = {0, 0, 32, 32};
-            SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
-            e.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
+             SDL_Texture* tex = TextureManager::load("../assets/animations/fox_anim.png");
+             SDL_FRect src = {0, 0, 32, 32};
+             SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
+             e.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
 
-            auto& c = e.addComponent<Collider>("enemy");
-            c.rect.w = dst.w;
-            c.rect.h = dst.h;;
+             auto& c = e.addComponent<Collider>("enemy");
+             c.rect.w = dst.w;
+             c.rect.h = dst.h;
+             c.tags.push_back("bullet");
+             c.tags.push_back("player");
+             c.tags.push_back("wall");
 
-            e.addComponent<EnemyTag>(100.0f);
-        });
-    }
+             e.addComponent<EnemyTag>(100.0f);
+         });
+         e.addComponent<Transform>(t);
+     }
 
     // player = new GameObject("../assets/ball.png", 0, 0);
 
@@ -166,6 +170,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     auto& playerCollider = player.addComponent<Collider>("player");
     playerCollider.rect.w = playerDst.w / 2;
     playerCollider.rect.h = playerDst.h / 2;
+    playerCollider.tags.push_back("enemy");
+    playerCollider.tags.push_back("wall");
 
     player.addComponent<Health>(Game::gameState.playerHealth);
 
