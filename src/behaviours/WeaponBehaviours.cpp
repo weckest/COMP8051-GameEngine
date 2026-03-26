@@ -65,6 +65,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     auto &c = bullet.addComponent<Collider>("bullet");
                     c.rect.w = dst.w;
                     c.rect.h = dst.h;
+                    c.layer = CollisionLayer::PROJECTILE;
+                    c.mask = CollisionLayer::ENEMY;
 
                     bullet.addComponent<ProjectileTag>(
                         50.0f * weapon.weaponStats.at("damageModifier") +
@@ -132,6 +134,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 auto &c = bullet.addComponent<Collider>("bullet");
                 c.rect.w = dst.w;
                 c.rect.h = dst.h;
+                c.layer = CollisionLayer::PROJECTILE;
+                c.mask = CollisionLayer::ENEMY;
 
                 bullet.addComponent<ProjectileTag>(
                 50.0f * weapon.weaponStats.at("damageModifier") + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),

@@ -5,6 +5,7 @@
 #include "CollisionSystem.h"
 
 #include <iostream>
+#include <unordered_set>
 
 #include "Collision.h"
 #include "World.h"
@@ -41,7 +42,8 @@ void CollisionSystem::update(World &world, Timer& timer) {
     int width = map.width * scale;
     int height = map.height * scale;
 
-    std::set<CollisionKey> currentCollisions;
+    std::unordered_set<CollisionKey, CollisionKeyHash> currentCollisions{};
+    std::vector<CollisionEvent> events;
 
     //update all collider positions first
     for (auto entity: collidables) {
@@ -88,25 +90,18 @@ void CollisionSystem::update(World &world, Timer& timer) {
                         if (entityA == entityB) continue;
                         //dont do collisions if the entity is dead
                         if (!entityB->isActive()) continue;
+                        if (colliderA.mask & colliderB.layer) {
+                            if (Collision::AABB(colliderA, colliderB)) {
+                                CollisionKey key = makeKey(entityA, entityB);
+                                if (currentCollisions.contains(key)) continue;
+                                currentCollisions.insert(key);
 
-                        for (const std::string& tag : colliderA.tags) {
-                            if (colliderB.tag == tag) {
-                                if (Collision::AABB(colliderA, colliderB)) {
-                                    CollisionKey key = makeKey(entityA, entityB);
-                                    if (currentCollisions.contains(key)) continue;
-                                    currentCollisions.insert(key);
-
-                                    if (!activeCollisions.contains(key)) {
-                                        timer.startTimer("enterCollision");
-                                        world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
-                                        timer.stopTimer("enterCollision");
-                                    }
-                                    timer.startTimer("stayCollision");
-                                    world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
-                                    timer.stopTimer("stayCollision");
+                                if (!activeCollisions.contains(key)) {
+                                    events.emplace_back(entityA, entityB, CollisionState::Enter);
                                 }
-                                break;
+                                events.emplace_back(entityA, entityB, CollisionState::Stay);
                             }
+                            break;
                         }
 
 
@@ -117,6 +112,11 @@ void CollisionSystem::update(World &world, Timer& timer) {
         }
     }
     timer.stopTimer("outerLoop");
+
+    EventManager em = world.getEventManager();
+    for (CollisionEvent event: events) {
+        em.emit(event);
+    }
 
     timer.startTimer("activeCollisions");
     for (auto& key: activeCollisions) {

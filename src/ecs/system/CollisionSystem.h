@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <set>
+#include <unordered_set>
 #include <vector>
 
 #include "Entity.h"
@@ -18,12 +19,18 @@ using CollisionKey = std::pair<Entity*, Entity*>;
 //forward declaring
 class World;
 
+struct CollisionKeyHash {
+    size_t operator()(const CollisionKey& k) const {
+        return std::hash<Entity*>()(k.first) ^ std::hash<Entity*>()(k.second);
+    }
+};
+
 class CollisionSystem {
 public:
     CollisionSystem(World& world);
     void update(World &world, Timer &timer);
 
-    std::set<CollisionKey> activeCollisions;
+    std::unordered_set<CollisionKey, CollisionKeyHash> activeCollisions;
     static std::vector<Entity*> getAllWithin(World& world, Entity& entity, float distance);
     static Entity* getClosestEntity(World &world, Entity &entity, float distance);
 private:

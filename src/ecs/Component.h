@@ -81,11 +81,19 @@ struct Label {
     bool dirty = false;
 };
 
+enum CollisionLayer {
+    PLAYER = 1 << 0,
+    ENEMY = 1 << 1,
+    WALL = 1 << 2,
+    PROJECTILE = 1 << 3
+};
+
 struct Collider {
     std::string tag{};
     SDL_FRect rect{};
     bool enabled = true;
-    std::vector<std::string> tags{};
+    uint32_t layer;
+    uint32_t mask;
     Uint8 r = 255;
     Uint8 g = 255;
     Uint8 b = 255;

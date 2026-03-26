@@ -73,6 +73,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
         c.rect.y = collider.rect.y;
         c.rect.w = collider.rect.w;
         c.rect.h = collider.rect.h;
+        c.layer = CollisionLayer::WALL;
 
         //just to have a visual of the colliders
         // SDL_Texture* tex = TextureManager::load("../assets/spritesheet.png");
@@ -118,9 +119,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
              auto& c = e.addComponent<Collider>("enemy");
              c.rect.w = dst.w;
              c.rect.h = dst.h;
-             c.tags.push_back("bullet");
-             c.tags.push_back("player");
-             c.tags.push_back("wall");
+             c.layer = CollisionLayer::ENEMY;
+             c.mask = CollisionLayer::PLAYER | CollisionLayer::WALL | CollisionLayer::PROJECTILE;
 
              e.addComponent<EnemyTag>(100.0f);
          });
@@ -170,8 +170,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     auto& playerCollider = player.addComponent<Collider>("player");
     playerCollider.rect.w = playerDst.w / 2;
     playerCollider.rect.h = playerDst.h / 2;
-    playerCollider.tags.push_back("enemy");
-    playerCollider.tags.push_back("wall");
+    playerCollider.layer = CollisionLayer::PLAYER;
+    playerCollider.mask = CollisionLayer::WALL | CollisionLayer::ENEMY;
 
     player.addComponent<Health>(Game::gameState.playerHealth);
 
@@ -183,7 +183,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     // adjust this so it fires through weapon manager.
     //make the player shoot
 
-    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon());
+    // player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon());
 
 
     world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{200, 500}});

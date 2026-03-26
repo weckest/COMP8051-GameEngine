@@ -118,7 +118,7 @@ void EventResponseSystem::onCollision(
 
         Game::gameState.playerHealth = health.currentHealth;
 
-        std::cout << health.currentHealth << std::endl;
+        // std::cout << health.currentHealth << std::endl;
 
         auto& bt = entityB->getComponent<Transform>();
         Vector2D diff = bt.oldPosition - bt.position;
