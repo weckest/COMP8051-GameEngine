@@ -87,25 +87,47 @@ endif()
 # =========================
 # macOS (Homebrew) Setup
 # =========================
-if (APPLE)
+# =========================
+# macOS (Homebrew + custom SDL3_mixer) Setup
+# =========================
+if(APPLE)
 
-    # Allow CMake to find all Homebrew packages
-    set(CMAKE_PREFIX_PATH "/opt/homebrew")
-
+    # Homebrew SDL3 packages for core, image, ttf
     find_package(SDL3 REQUIRED)
     find_package(SDL3_image REQUIRED)
     find_package(SDL3_ttf REQUIRED)
-    find_package(SDL3_mixer REQUIRED)
 
-    target_link_libraries(8051Tutorial
-            PRIVATE
+    # Include headers for Homebrew SDL3
+    target_include_directories(8051Tutorial PRIVATE
+            ${SDL3_INCLUDE_DIRS}
+            ${SDL3_IMAGE_INCLUDE_DIRS}
+            ${SDL3_TTF_INCLUDE_DIRS}
+    )
+
+    # Include headers for your custom SDL3_mixer
+    set(SDL3_MIXER_ROOT "${CMAKE_SOURCE_DIR}/SDL3_SDK_APPLE")
+    target_include_directories(8051Tutorial PRIVATE
+            ${SDL3_MIXER_ROOT}/include
+    )
+
+    # Link Homebrew libraries
+    target_link_libraries(8051Tutorial PRIVATE
             SDL3::SDL3
             SDL3_image::SDL3_image
             SDL3_ttf::SDL3_ttf
-            SDL3_mixer::SDL3_mixer
     )
 
-    target_compile_options(8051Tutorial PRIVATE -Wno-narrowing)
+    # Link custom SDL3_mixer
+    target_link_libraries(8051Tutorial PRIVATE
+            "${SDL3_MIXER_ROOT}/lib/libSDL3_mixer.dylib"
+    )
+
+    # Embed rpath so executable can find custom mixer at runtime
+    set_target_properties(8051Tutorial PROPERTIES
+            BUILD_RPATH "${SDL3_MIXER_ROOT}/lib"
+            INSTALL_RPATH "${SDL3_MIXER_ROOT}/lib"
+            MACOSX_RPATH TRUE
+    )
 endif()
 
 # =========================

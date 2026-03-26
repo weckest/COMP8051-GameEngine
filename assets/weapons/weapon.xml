@@ -18,7 +18,7 @@
             name="bubblegun"
             path="../assets/sprites/BubbleGun.png"
             fireRate="1.0"
-            damageModifier="1"
+            damageModifier="0.5"
             projectileSizeModifier="1.0"
             projectileModifier="1.0"
             aoeModifier="1.3"

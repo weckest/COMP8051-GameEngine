@@ -17,4 +17,6 @@ extern std::unordered_map<std::string, std::function<void(Weapon&, Entity&, Worl
 
 std::function<void(Weapon&, Entity&, World&)> getWeaponBehaviour(const std::string& name);
 
+float getStat(const Weapon& weapon, const std::string& key, float defaultValue);
+
 #endif //INC_8051TUTORIAL_WEAPONBEHAVIOURS_H

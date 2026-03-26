@@ -134,6 +134,7 @@ struct Health {
 
 struct EffectTag{};
 struct MagnetTag{};
+struct RingFireTag{};
 struct FoodTag {
     float heal{};
 };
