@@ -15,7 +15,9 @@ EventResponseSystem::EventResponseSystem(World &world) {
             if (e.type != EventType::Collision) return;
             const auto& collision = static_cast<const CollisionEvent&>(e); //cast base type into collision type
 
-            // onCollision(collision, "player", "item", world);
+            //item pickup is handled by PickUpSystem.cpp
+            //onCollision(collision, "player", "item", world);
+
             onCollision(collision, "player", "wall", world);
             onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
@@ -74,8 +76,6 @@ void EventResponseSystem::onCollision(
     if (checkTagsFor(ATag, BTag, "item") && checkTagsFor(ATag, BTag, "player")) {
 
 
-
-
         if (e.state != CollisionState::Enter) return;
 
 
@@ -129,7 +129,7 @@ void EventResponseSystem::onCollision(
         if (health.currentHealth <= 0) {
             em.emit(DeathEvent(entityA));
             entityA->destroy();
-            Game::onSceneChangeRequest("gameover");
+            Game::onSceneChangeRequest("mainmenu");
         }
 
     } else if (checkTagsFor(ATag, BTag, "bullet") && checkTagsFor(ATag, BTag, "enemy")) {

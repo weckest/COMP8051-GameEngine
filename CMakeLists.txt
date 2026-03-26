@@ -39,6 +39,7 @@ set(SRC_FILES
         src/ecs/system/PlayerStatListener.cpp
         src/ecs/system/PickUpSystem.cpp
         src/ecs/system/DebugRenderSystem.cpp
+        src/manager/AudioManager.cpp
 )
 
 # ALWAYS create the executable first
@@ -52,17 +53,20 @@ if (WIN32)
     set(SDL3_SDK_ROOT "${CMAKE_SOURCE_DIR}/SDL3_SDK_WIN32")
     set(SDL3_IMAGE_PATH "${CMAKE_SOURCE_DIR}/SDL3_Image")
     set(SDL3_TTF_PATH "${CMAKE_SOURCE_DIR}/SDL3_TTF")
+    set(SDL3_MIXER_PATH "${CMAKE_SOURCE_DIR}/SDL3_Mixer")
 
     target_include_directories(8051Tutorial PRIVATE
             ${SDL3_SDK_ROOT}/include
             ${SDL3_IMAGE_PATH}/include
             ${SDL3_TTF_PATH}/include
+            ${SDL3_MIXER_PATH}/include
     )
 
     target_link_directories(8051Tutorial PRIVATE
             ${SDL3_SDK_ROOT}/lib
             ${SDL3_IMAGE_PATH}/lib
             ${SDL3_TTF_PATH}/lib
+            ${SDL3_MIXER_PATH}/lib
     )
 
     file(GLOB SDL3_DLLS "${SDL3_SDK_ROOT}/bin/.dll")
@@ -91,12 +95,14 @@ if (APPLE)
     find_package(SDL3 REQUIRED)
     find_package(SDL3_image REQUIRED)
     find_package(SDL3_ttf REQUIRED)
+    find_package(SDL3_mixer REQUIRED)
 
     target_link_libraries(8051Tutorial
             PRIVATE
             SDL3::SDL3
             SDL3_image::SDL3_image
             SDL3_ttf::SDL3_ttf
+            SDL3_mixer::SDL3_mixer
     )
 
     target_compile_options(8051Tutorial PRIVATE -Wno-narrowing)
