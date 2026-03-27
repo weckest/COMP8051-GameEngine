@@ -104,6 +104,11 @@ void TextureManager::draw(SDL_Texture *texture, const SDL_FRect* src, const SDL_
     SDL_RenderTexture(game->renderer, texture, src, dst);
 }
 
+void TextureManager::draw(SDL_Texture *texture, const SDL_FRect* src, const SDL_FRect* dst, float rotation, SDL_FPoint* center) {
+    //draw the texture to the screen form vram
+    SDL_RenderTextureRotated(game->renderer, texture, src, dst, rotation, center, SDL_FLIP_NONE);
+}
+
 void TextureManager::drawLine(Vector2D start, Vector2D end) {
     SDL_RenderLine(game->renderer, start.x, start.y, end.x, end.y);
 }

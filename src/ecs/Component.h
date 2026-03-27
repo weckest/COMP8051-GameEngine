@@ -44,6 +44,10 @@ struct Sprite {
     SDL_FRect dst{};
     RenderLayer renderLayer = RenderLayer::World;
     bool visible = true;
+
+    //Scaling
+    bool hasBase = false;
+    SDL_FRect baseDst{};
 };
 
 struct Clickable {
@@ -100,6 +104,10 @@ struct Collider {
     Uint8 r = 255;
     Uint8 g = 255;
     Uint8 b = 255;
+
+    //Scale
+    SDL_FRect baseRect{};
+    bool hasBase = false;
 };
 
 struct Animation {

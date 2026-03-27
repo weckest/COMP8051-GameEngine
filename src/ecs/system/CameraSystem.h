@@ -26,13 +26,14 @@ public:
         if (!playerEntity) return;
 
         auto& playerTransform = playerEntity->getComponent<Transform>();
+        auto& playerSprite = playerEntity->getComponent<Sprite>();
         for (auto& e: entities) {
             if (e->hasComponent<Camera>()) {
                 auto& cam = e->getComponent<Camera>();
 
                 //positions the camera so the player is at the center of its view
-                cam.view.x = playerTransform.position.x - cam.view.w / 2;
-                cam.view.y = playerTransform.position.y - cam.view.h / 2;
+                cam.view.x = playerTransform.position.x - cam.view.w / 2 + (playerSprite.dst.w / 2);
+                cam.view.y = playerTransform.position.y - cam.view.h / 2 + (playerSprite.dst.h / 2);
 
                 //clamp camera
                 //the camera is positioning its self to the player is center but the player could walk off the screen

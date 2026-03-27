@@ -150,7 +150,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
     //GAME
     //direct position of middle of intersection
-    auto& playerTransform = player.addComponent<Transform>(Vector2D((14 * 32) - 16,(25 * 32) + 16), 0.0f, 0.0f);
+    auto& playerTransform = player.addComponent<Transform>(Vector2D((14 * 32) - 16,(25 * 32) + 16), 0.0f, 1.0f);
 
     auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0.0f,0.0f), 120.0f * playerStats.speedModifier);
 

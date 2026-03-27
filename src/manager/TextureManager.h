@@ -23,6 +23,9 @@ public:
     //floating point Rect = FRect
     static void draw(SDL_Texture* texture, const SDL_FRect* src, const SDL_FRect* dst);
 
+    //rotation overload
+    static void draw(SDL_Texture* texture, const SDL_FRect* src, const SDL_FRect* dst, float rotation, SDL_FPoint* center);
+
     static void drawLine(Vector2D start, Vector2D end);
 
     static void drawLine(Vector2D start, Vector2D end, Uint8 r, Uint8 g, Uint8 b);

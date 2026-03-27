@@ -53,10 +53,12 @@ void CollisionSystem::update(World &world, Timer& timer) {
         c.rect.y = t.position.y;
 
         //FOR THE GAME
-        //TODO: this needs to be a calculation for when we dynamically change the player size
         if (entity->hasComponent<PlayerTag>()) {
-            c.rect.x += 16;
-            c.rect.y += 16;
+
+            auto& playerSprite = entity->getComponent<Sprite>();
+
+            c.rect.x += playerSprite.dst.w / 4;
+            c.rect.y += playerSprite.dst.h / 4;
         }
 
     }
