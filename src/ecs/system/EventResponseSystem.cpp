@@ -21,6 +21,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
             onCollision(collision, "player", "wall", world);
             onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
+            onCollision(collision, "RingoFire", "enemy", world);
             onCollision(collision, "enemy", "wall", world);
         }
     );
@@ -191,6 +192,42 @@ void EventResponseSystem::onCollision(
         //destroy the bullet
         em.emit(DeathEvent(entityA));
         entityA->destroy();
+    } else if (entityA->hasComponent<RingFireTag>() && checkTagsFor(ATag, BTag, "enemy")) {
+
+        auto& ringFire = entityA->getComponent<RingFireTag>();
+        auto& projectileInfo = entityA->getComponent<ProjectileTag>();
+        float range = ringFire.range;
+
+        // find all enemies within range
+        std::vector<Entity*> enemies = CollisionSystem::getAllWithin(world, *entityA, range);
+        std::vector<Entity*> toDestroy;
+
+        for (auto& enemy : enemies) {
+            if (!enemy->hasComponent<EnemyTag>()) continue;
+
+            auto& eTag = enemy->getComponent<EnemyTag>();
+            eTag.health -= projectileInfo.damage;
+
+            if (eTag.health <= 0) {
+                Vector2D center{};
+                if (enemy->hasComponent<Transform>() && enemy->hasComponent<Sprite>()) {
+                    auto& t = enemy->getComponent<Transform>();
+                    auto& s = enemy->getComponent<Sprite>();
+                    center = t.position;
+                    center.x += s.dst.w / 2;
+                    center.y += s.dst.h / 2;
+                }
+
+                world.getEventManager().emit(SpawnPrefabEvent{"coin", center});
+                toDestroy.push_back(enemy);
+            }
+        }
+
+        // safely destroy all dead enemies after loop
+        for (auto& enemy : toDestroy) {
+            world.getEventManager().emit(DeathEvent(enemy));
+            enemy->destroy();
+        }
     }
 }
 

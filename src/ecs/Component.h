@@ -143,7 +143,9 @@ struct Health {
 
 struct EffectTag{};
 struct MagnetTag{};
-struct RingFireTag{};
+struct RingFireTag {
+    float range;
+};
 struct FoodTag {
     float heal{};
 };
@@ -213,6 +215,11 @@ struct Stats {
 
 struct ItemList {
     std::vector<Item> items{};
+};
+
+struct Lifetime {
+    float time{};
+    bool justSpawned = true;
 };
 
 struct WeaponList {

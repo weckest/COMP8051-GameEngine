@@ -24,6 +24,7 @@
 #include "KeyboardInputSystem.h"
 #include "LevelUpHandler.h"
 #include "LevelUpSystem.hpp"
+#include "LifetimeSystem.h"
 #include "event/EventManager.h"
 #include "MainMenuSystem.h"
 #include "Map.h"
@@ -57,6 +58,7 @@ class World {
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     EventManager eventManager;
     ItemManager itemManager;
+    LifetimeSystem lifetimeSystem;
     WeaponManager weaponManager;
     RenderSystem renderSystem{*this};
     MovementSystem movementSystem{*this};
@@ -88,6 +90,7 @@ class World {
 
 public:
     World();
+
     void update(float dt, SDL_Event& event, SceneType sceneType) {
 
         if (sceneType == SceneType::MainMenu) {
@@ -121,6 +124,7 @@ public:
             destructionSystem.update(entities);
             levelUpSystem.update(entities, *this);
             weaponFireSystem.update(*this, dt);
+            lifetimeSystem.update(entities, dt);
             hudSystem.update(entities);
             timer.stopTimer("update");
         }
@@ -238,6 +242,10 @@ public:
     }
     WeaponManager& getWeaponManager() {
         return weaponManager;
+    }
+
+    CollisionSystem& getCollisionSystem() {
+        return collisionSystem;
     }
 
     void resetGame()

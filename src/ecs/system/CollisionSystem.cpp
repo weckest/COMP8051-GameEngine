@@ -143,26 +143,37 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
 std::vector<Entity*> CollisionSystem::getAllWithin(World &world, Entity &entity, float distance) {
     std::vector<Entity*> collidables;
-    if (!entity.hasComponent<Transform>() && !entity.hasComponent<Sprite>()) return collidables;
+
+    // Require at least Transform
+    if (!entity.hasComponent<Transform>()) return collidables;
 
     auto& et = entity.getComponent<Transform>();
-    auto& es = entity.getComponent<Sprite>();
     Vector2D eTemp = et.position;
-    eTemp.x += es.dst.w;
-    eTemp.y += es.dst.h;
 
-    for (auto& e: world.getEntities()) {
-        if (e->hasComponent<Transform>() && e->hasComponent<EnemyTag>() && e->hasComponent<Sprite>()) {
-            auto& t = e->getComponent<Transform>();
+    if (entity.hasComponent<Sprite>()) {
+        auto& es = entity.getComponent<Sprite>();
+        eTemp.x += es.dst.w;
+        eTemp.y += es.dst.h;
+    }
+
+    for (auto& ePtr : world.getEntities()) {
+        if (!ePtr) continue; // skip null entity pointers
+        Entity* e = ePtr.get();
+
+        if (!e->hasComponent<Transform>() || !e->hasComponent<EnemyTag>()) continue;
+
+        Vector2D temp = e->getComponent<Transform>().position;
+        if (e->hasComponent<Sprite>()) {
             auto& s = e->getComponent<Sprite>();
-            Vector2D temp = t.position;
             temp.x += s.dst.w;
             temp.y += s.dst.h;
-            if ((temp - eTemp).length() <= distance) {
-                collidables.push_back(e.get());
-            }
+        }
+
+        if ((temp - eTemp).length() <= distance) {
+            collidables.push_back(e);
         }
     }
+
     return collidables;
 }
 

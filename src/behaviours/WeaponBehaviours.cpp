@@ -70,7 +70,6 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 bullet.addComponent<Velocity>(dir, 200.0f);
 
                 auto &c = bullet.addComponent<Collider>("bullet");
-                // std::cout << "Bubble " << &c << std::endl;
                 c.rect.w = dst.w;
                 c.rect.h = dst.h;
                     c.layer = CollisionLayer::PROJECTILE;
@@ -100,7 +99,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
                 int count = std::max(1, (int)(getStat(weapon, "projectileModifier", 1.0f) * 3));
 
-                float baseAngle = getStat(weapon, "aoeModifier", 1.0f);
+                float baseAngle = getStat(weapon, "spreadModifier", 1.0f);
                 float step = (count > 1) ? (baseAngle / (count - 1)) : 0.0f;
 
                 auto &t = entity.getComponent<Transform>();
@@ -149,7 +148,6 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     bullet.addComponent<Velocity>(dir, 300.0f);
 
                     auto &c = bullet.addComponent<Collider>("bullet");
-                    // std::cout << "Shot " << &c << std::endl;
                     c.rect.w = dst.w;
                     c.rect.h = dst.h;
                 c.layer = CollisionLayer::PROJECTILE;
@@ -200,6 +198,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
                     c.rect.w = radius * 2;
                     c.rect.h = radius * 2;
+                    c.layer = CollisionLayer::PROJECTILE;
+                    c.mask = CollisionLayer::ENEMY;
 
                     Vector2D centerPos = {
                         playerTransform.position.x + playerSprite.dst.w / 2.0f,
@@ -211,15 +211,16 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                         centerPos.y - c.rect.h / 2.0f
                     };
 
-                    ring.addComponent<RingFireTag>();
+                    ring.addComponent<RingFireTag>(radius * 2);
 
-                    ring.addComponent<TimedSpawner>(
-                        0.2f,
-                        [&ring, &world]() {
-                            world.getEventManager().emit(DeathEvent{&ring});
-                            ring.destroy();
-                        }
-                    );
+                    // lifetime instead of nested spawner
+                    ring.addComponent<Lifetime>(getStat(weapon, "lifetime", 0.1f));
+
+                    ring.addComponent<ProjectileTag>(
+                        50.0f * getStat(weapon, "damageModifier", 1.0f) + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
+                        0.0f
+                        );
+
                 }
             );
             // periodically check for all entities within the collider using
