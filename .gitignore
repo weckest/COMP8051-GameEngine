@@ -5,6 +5,7 @@ build/
 
 # CLion
 .idea/
+.idea/editor.xml
 
 # macOS
 .DS_Store
