@@ -69,6 +69,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
         auto& e = world.createEntity();
         e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
         auto& c = e.addComponent<Collider>("wall");
+        // std::cout << "Wall " << &c << std::endl;
         c.rect.x = collider.rect.x;
         c.rect.y = collider.rect.y;
         c.rect.w = collider.rect.w;
@@ -105,6 +106,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
         e.addComponent<TimedSpawner>(6.0f, [this, t] {
             //create our projectile (bird)
             auto& e(world.createDeferredEntity());
+            // std::cout << "Spawn Enemy " << &e << std::endl;
             e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
             e.addComponent<Velocity>(Vector2D(0.0f,-1.0f), 50.0f);
 
@@ -117,6 +119,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
             e.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
 
             auto& c = e.addComponent<Collider>("enemy");
+            // std::cout << "Enemy " << &c << std::endl;
             c.rect.w = dst.w;
             c.rect.h = dst.h;
             c.layer = CollisionLayer::ENEMY;
@@ -139,8 +142,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     cam.addComponent<Camera>(camView, world.getMap().width * 32.0f, world.getMap().height * 32.0f);
 
 
-    auto& player(world.createEntity());
-    std::cout << &player << std::endl;
+    auto& player = world.createEntity();
+    // std::cout << "Player " << &player << std::endl;
     world.setPlayer(&player);
     auto& pt = player.addComponent<PlayerTag>();
     auto& playerStats = player.addComponent<Stats>();
@@ -169,6 +172,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     // GAME: Reduce hitbox size
     //TODO: This will need to change when we configure the new sprite
     auto& playerCollider = player.addComponent<Collider>("player");
+    std::cout << "Player " << &playerCollider << std::endl;
     playerCollider.rect.w = playerDst.w / 2;
     playerCollider.rect.h = playerDst.h / 2;
     playerCollider.layer = CollisionLayer::PLAYER;

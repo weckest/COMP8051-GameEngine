@@ -73,7 +73,8 @@ enum class LabelType {
     Debug,
     DebugStats,
     LevelUp,
-    Weapons
+    Weapons,
+    Memory
 };
 
 struct Label {

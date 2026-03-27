@@ -16,6 +16,7 @@ CollisionSystem::CollisionSystem(World &world) {
             if (e.type != EventType::Death) return;
 
             const auto& death = static_cast<const DeathEvent&>(e);
+            // std::cout << "Death " << &*death.entity << std::endl;
             std::vector<std::pair<Entity*, Entity*>> remove;
             // std::cout << "looking for: " << death.entity << std::endl;
             for (std::pair<Entity*, Entity*> key: activeCollisions) {
@@ -24,7 +25,7 @@ CollisionSystem::CollisionSystem(World &world) {
                     remove.push_back(key);
                 }
             }
-
+            // std::cout << remove.size() << std::endl;
             for (std::pair<Entity*, Entity*> key: remove) {
                 activeCollisions.erase(key);
             }
@@ -69,6 +70,8 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
         auto entityA = collidables[i];
 
+        // std::cout << "Entity A " << entityA << std::endl;
+
         //dont do collisions if the entity is dead
         if (!entityA->isActive()) continue;
 
@@ -92,6 +95,8 @@ void CollisionSystem::update(World &world, Timer& timer) {
                         if (entityA == entityB) continue;
                         //dont do collisions if the entity is dead
                         if (!entityB->isActive()) continue;
+                        if (!entityB->hasComponent<Collider>()) continue;
+
                         if (colliderA.mask & colliderB.layer) {
                             if (Collision::AABB(colliderA, colliderB)) {
                                 CollisionKey key = makeKey(entityA, entityB);
@@ -100,8 +105,9 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
                                 if (!activeCollisions.contains(key)) {
                                     events.emplace_back(entityA, entityB, CollisionState::Enter);
+                                } else {
+                                    events.emplace_back(entityA, entityB, CollisionState::Stay);
                                 }
-                                events.emplace_back(entityA, entityB, CollisionState::Stay);
                             }
                             break;
                         }
@@ -168,6 +174,7 @@ Entity * CollisionSystem::getClosestEntity(World& world, Entity &entity, float r
         int width = map.width * scale;
         int height = map.height * scale;
         auto& t = entity.getComponent<Transform>();
+        if (!&t) return nullptr;
         Vector2D centerPoint = t.position;
         Vector2D topLeft{};
         Vector2D bottomRight{};

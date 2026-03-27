@@ -29,6 +29,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 shotsFired++;
 
                 auto &bullet = world.createDeferredEntity();
+                // std::cout << "Spawn Bubble " << &bullet << std::endl;
                 auto &t = entity.getComponent<Transform>();
                 auto &s = entity.getComponent<Sprite>();
 
@@ -58,6 +59,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
                 Entity* closestEntity = CollisionSystem::getClosestEntity(world, entity, 200);
                 if (!closestEntity) {
+                    world.getEventManager().emit(DeathEvent{&bullet});
                     bullet.destroy();
                     return;
                 }
@@ -68,6 +70,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 bullet.addComponent<Velocity>(dir, 200.0f);
 
                 auto &c = bullet.addComponent<Collider>("bullet");
+                // std::cout << "Bubble " << &c << std::endl;
                 c.rect.w = dst.w;
                 c.rect.h = dst.h;
                     c.layer = CollisionLayer::PROJECTILE;
@@ -116,6 +119,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 for (int i = 0; i < count; i++) {
 
                     auto &bullet = world.createDeferredEntity();
+                    // std::cout << "Spawn Shot " << &bullet << std::endl;
 
                     SDL_FRect dst = {
                         t.position.x,
@@ -145,6 +149,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     bullet.addComponent<Velocity>(dir, 300.0f);
 
                     auto &c = bullet.addComponent<Collider>("bullet");
+                    // std::cout << "Shot " << &c << std::endl;
                     c.rect.w = dst.w;
                     c.rect.h = dst.h;
                 c.layer = CollisionLayer::PROJECTILE;
@@ -189,6 +194,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     ring.addComponent<Transform>(playerTransform.position, 0.0f, 1.0f);
 
                     auto& c = ring.addComponent<Collider>("RingoFire");
+                    // std::cout << "RoF " << &c << std::endl;
 
                     float radius = 100.0f * getStat(weapon, "rangeModifier", 1.0f);
 
@@ -209,7 +215,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
                     ring.addComponent<TimedSpawner>(
                         0.2f,
-                        [&ring]() {
+                        [&ring, &world]() {
+                            world.getEventManager().emit(DeathEvent{&ring});
                             ring.destroy();
                         }
                     );

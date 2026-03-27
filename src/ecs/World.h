@@ -157,7 +157,7 @@ public:
 
         if (debugState.debug && debugState.timer && !isPaused) {
             timer.printResults();
-            std::cout << "Entity#: " <<  entities.size() << "\n" << std::endl;
+            // std::cout << "Entity#: " <<  entities.size() << "\n" << std::endl;
         }
     }
 
@@ -203,7 +203,7 @@ public:
                     //print the entity address we are cleaning up
                     // std::cout << "Entity " << e << " destroyed" << std::endl;
                     //remove the entity from the grid
-                    eventManager.emit(DeathEvent{&*e});
+                    eventManager.emit(DeathEvent{e.get()});
                     return !e->isActive();
                 }
                 return !e->isActive();

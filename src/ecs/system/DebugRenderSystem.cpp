@@ -73,7 +73,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
                     TextureManager::drawRect(gridPosition.tl, gridPosition.br, 255, 0, 0);
                 }
 
-                if (e->hasComponent<Sprite>()) {
+                if (e->hasComponent<Sprite>() && !e->hasComponent<EffectTag>()) {
                     auto& sprite = e->getComponent<Sprite>();
 
                     SDL_Texture* tex = TextureManager::load("../assets/colors.png");
@@ -149,6 +149,7 @@ void DebugRenderSystem::initDebugLabel() {
     auto& levelUp = createChildDebugLabe(entity, LabelType::LevelUp, Vector2D(10.0f, 50.0f));
     auto& health = createChildDebugLabe(entity, LabelType::Health, Vector2D(10.0f, 70.0f));
     auto& weapons = createChildDebugLabe(entity, LabelType::Weapons, Vector2D(10.0f, 90.0f));
+    auto& memory = createChildDebugLabe(entity, LabelType::Memory, Vector2D(10.0f, 110.0f));
 
 
 
@@ -187,6 +188,15 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
                 label.text += w.name + ", ";
                 label.dirty = true;
             }
+        } else if (label.type == LabelType::Memory) {
+            Uint64 size = 0;
+            for (auto& e : world.getEntities()) {
+                size += sizeof(*e.get());
+
+                // std::cout << sizeof(*e.get()) << std::endl;
+            }
+            label.text = "Memory: " + std::to_string((size * 1.0f) / 10000);
+            label.dirty = true;
         }
     }
 }

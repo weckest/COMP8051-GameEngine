@@ -173,7 +173,7 @@ void EventResponseSystem::onCollision(
          auto& explosion = world.createDeferredEntity();
          auto& bt = entityA->getComponent<Transform>();
          auto& bs = entityA->getComponent<Sprite>();
-         auto& t = explosion.addComponent<Transform>(bt.position);
+         auto& t = explosion.addComponent<Transform>(bt.position, 0.0f, 1.0f);
          t.position.x = bt.position.x - bs.dst.w / 2 - (explosionSize / 2 - bs.dst.w / 2);
          t.position.y = bt.position.y - bs.dst.h / 2 - (explosionSize / 2 - bs.dst.h / 2);
 
