@@ -206,6 +206,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
     createPlayerPosLabel();
     world.initDebug();
+    createInventoryUI(windowWidth, windowHeight);
 
 }
 
@@ -511,7 +512,7 @@ void Scene::createInventoryUI(int windowWidth, int windowHeight) {
     float startX = 20.0f;
 
     float startY =  windowHeight - 80.0f; // bottom-left
-    float rowSpacing = 40.0f;
+    float rowSpacing = 60.0f;
     float spacing = 50.0f;
 
 
@@ -529,7 +530,7 @@ void Scene::createInventoryUI(int windowWidth, int windowHeight) {
         SDL_Texture* tex = TextureManager::load(item.path.c_str());
 
         SDL_FRect src = {0,0,32,32};
-        SDL_FRect dst = {transform.position.x, transform.position.y, 32, 32};
+        SDL_FRect dst = {transform.position.x, transform.position.y, 48, 48};
 
         icon.addComponent<Sprite>(tex, src, dst, RenderLayer::UI, true);
         icon.addComponent<InventoryUI>();
@@ -551,7 +552,7 @@ void Scene::createInventoryUI(int windowWidth, int windowHeight) {
         SDL_Texture* tex = TextureManager::load(weapon.path.c_str());
 
         SDL_FRect src = {0,0,32,32};
-        SDL_FRect dst = {transform.position.x, transform.position.y, 32, 32};
+        SDL_FRect dst = {transform.position.x, transform.position.y, 48, 48 };
 
         icon.addComponent<Sprite>(tex, src, dst, RenderLayer::UI, true);
         icon.addComponent<InventoryUI>();

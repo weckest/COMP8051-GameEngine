@@ -142,7 +142,7 @@ void WeaponManager::upgradeRandStat(Entity& entity, Weapon& weapon) {
 			// upgrade the stat
 			// check if the stat is cooldown, if it is skip and reroll the stat
 
-			targ.weaponStats[randomStat] *= 1.1f;         // +10%
+			targ.weaponStats[randomStat] += 0.1f;         // +10%
 			break;
 		}
 	}
