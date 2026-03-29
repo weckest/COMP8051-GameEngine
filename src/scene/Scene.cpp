@@ -314,6 +314,8 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 
     auto& sprite = overlay.getComponent<Sprite>();
 
+    auto& children = overlay.getComponent<Children>().children;
+
     bool newVisibility = !sprite.visible;
 
     sprite.visible = newVisibility;
@@ -335,6 +337,11 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
                 child->getComponent<Collider>().enabled = newVisibility;
 
             }
+
+            if (child && child->hasComponent<Label>()) {
+                child->getComponent<Label>().visible = newVisibility;
+            }
+
 
         }
     }
@@ -364,7 +371,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
     float baseX = bgDst.x;
     float baseY = bgDst.y;
 
-    float spacing = 40.0f;
+    float spacing = 80.0f;
     float buttonWidth = 150.0f;
     float buttonHeight = 150.0f;
 
@@ -423,6 +430,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
         //Update inventory function
         createInventoryUI(windowWidth,windowHeight);
 
+
     };
 
     weaponClickable.onCancel = [&weaponTransform]() {
@@ -460,6 +468,41 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
     itemButton.addComponent<Collider>("ui", itemDst);
 
 
+    //////////////Item Label
+    auto& itemLabelEntity = world.createEntity();
+    Label itemLabel = {
+        i.name,
+        AssetManager::getFont("bungee"),
+        {0,0,0,0},
+        LabelType::UI,
+
+        "itemLabel"
+    };
+
+    itemLabel.visible = true;
+
+    TextureManager::loadLabel(itemLabel);
+
+
+    itemLabel.dirty = true;
+    itemLabelEntity.addComponent<Label>(itemLabel);
+
+
+
+    // Compute position centered on item
+    float itemLabelX = itemTransform.position.x + buttonWidth / 2 - (itemLabel.dst.w / 2)  -60;
+    float itemLabelY = itemTransform.position.y - itemLabel.dst.h - 15; // 5 px above button
+    itemLabelEntity.addComponent<Transform>(
+        Vector2D(itemLabelX, itemLabelY), 0.0f, 1.0f
+    );
+
+    // parent it to overlay
+    itemLabelEntity.addComponent<Parent>(&overlay);
+    overlay.getComponent<Children>().children.push_back(&itemLabelEntity);
+
+
+    ////////////
+
     //Functions for when clicked and released
     auto& itemClickable = itemButton.addComponent<Clickable>();
 
@@ -476,6 +519,8 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
 
         //Call function to redraw items/weapons.
         createInventoryUI(windowWidth,windowHeight);
+
+
 
     };
 
@@ -584,4 +629,5 @@ Entity& Scene::createPlayerPosLabel() {
     playerPosLabel.addComponent<Label>(label);
     playerPosLabel.addComponent<Transform>(Vector2D(10, 10), 0.0f, 1.0f);
     return playerPosLabel;
+
 }

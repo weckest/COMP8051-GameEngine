@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <items>
-    <item name="The Art of (business) War" damageModifier="1.1"  path ="../assets/sprites/ArtOfWar.png"/>
+    <item name="Art of Business" damageModifier="1.1"  path ="../assets/sprites/ArtOfWar.png"/>
     <item name="Nose Candy" speedModifier="1.2" path="../assets/sprites/NoseCandy.png"/>
     <item name="Golden Deluxe Tie" fireRateModifier="1.1" path="../assets/sprites/GoldenTie.png"/>
     <item name="Packed Lunch" playerSizeModifier="1.5" damageModifier="1.2" path ="../assets/sprites/PackedLunch.png"/>

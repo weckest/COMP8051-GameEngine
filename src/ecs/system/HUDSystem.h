@@ -40,6 +40,8 @@ public:
                     label.text = ss.str();
                     label.dirty = true;
                 }
+
+
             }
 
         }
