@@ -43,6 +43,7 @@ private:
     Entity& createPlayerPosLabel();
 
     Entity& createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, Item i);
+    void createInventoryUI(int windowWidth, int windowHeight);
 };
 
 #endif //INC_8051TUTORIAL_SCENE_H

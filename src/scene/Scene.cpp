@@ -57,6 +57,10 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
         createLevelUpMenu(windowWidth, windowHeight, ev.weapon, ev.item);
     });
 
+
+
+
+
     //load our map
     if (std::strcmp(mapPath, "../assets/map-tlc/TLC-MapUpdated.tmx") == 0) {
         world.getMap().load(mapPath, TextureManager::load("../assets/map-tlc/TLC-Tilesheet.png"));
@@ -338,6 +342,7 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 //Function to display the menu for player level Up.
 Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, Item i) {
 
+    //Create overlay entity and load background textures
     auto& overlay(world.createEntity());
 
     SDL_Texture* bgTex = TextureManager::load("../assets/ui/settings.jpg");
@@ -354,6 +359,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
     overlay.addComponent<Sprite>(bgTex, bgSrc, bgDst, RenderLayer::UI, true);
     overlay.addComponent<Children>();
 
+    //Characteristsics of Buttons and how far apart to put them
     float baseX = bgDst.x;
     float baseY = bgDst.y;
 
@@ -371,6 +377,8 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
     //
     // ===== WEAPON BUTTON =====
     //
+
+    //Loads weapon texture from path
     auto& weaponButton = world.createEntity();
 
     auto& weaponTransform = weaponButton.addComponent<Transform>(
@@ -380,9 +388,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
     SDL_Texture* weaponTex = TextureManager::load(w.path.c_str());
 
 
-    //Get scale right.
-
-
+    //Get scale correct and position.
 
     SDL_FRect weaponSrc = {0, 0, buttonWidth, buttonHeight};
     SDL_FRect weaponDst = {
@@ -392,34 +398,46 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
         buttonHeight
     };
 
+
+    //Add sprite and collider
     weaponButton.addComponent<Sprite>(weaponTex, weaponSrc, weaponDst, RenderLayer::UI, true);
     weaponButton.addComponent<Collider>("ui", weaponDst);
 
+
+    //Functions for when button is pressed and released.
     auto& weaponClickable = weaponButton.addComponent<Clickable>();
 
     weaponClickable.onPressed = [&weaponTransform]() {
         weaponTransform.scale = 0.9f;
     };
 
-    weaponClickable.onReleased = [this, &overlay, w, i, &weaponTransform]() {
+    weaponClickable.onReleased = [this, &overlay, w, i, &weaponTransform, windowWidth, windowHeight]() {
         weaponTransform.scale = 1.0f;
 
         world.getEventManager().emit(LevelUpChoiceEvent{true, w, i});
 
         // hide menu after selection
         toggleSettingsOverlayVisibility(overlay);
+
+        //Update inventory function
+        createInventoryUI(windowWidth,windowHeight);
+
     };
 
     weaponClickable.onCancel = [&weaponTransform]() {
         weaponTransform.scale = 1.0f;
     };
 
+
+    //Make parent child relationship and add to overlay
     weaponButton.addComponent<Parent>(&overlay);
     overlay.getComponent<Children>().children.push_back(&weaponButton);
 
     //
     // ===== ITEM BUTTON =====
     //
+
+    //create button,
     auto& itemButton = world.createEntity();
 
     auto& itemTransform = itemButton.addComponent<Transform>(
@@ -436,31 +454,110 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
         buttonHeight
     };
 
+    //Add sprites and collider
     itemButton.addComponent<Sprite>(itemTex, itemSrc, itemDst, RenderLayer::UI, true);
     itemButton.addComponent<Collider>("ui", itemDst);
 
+
+    //Functions for when clicked and released
     auto& itemClickable = itemButton.addComponent<Clickable>();
 
     itemClickable.onPressed = [&itemTransform]() {
         itemTransform.scale = 0.9f;
     };
 
-    itemClickable.onReleased = [this, &overlay, w, i, &itemTransform]() {
+    itemClickable.onReleased = [this, &overlay, w, i, &itemTransform, windowWidth, windowHeight]() {
         itemTransform.scale = 1.0f;
 
         world.getEventManager().emit(LevelUpChoiceEvent{false, w, i});
 
         toggleSettingsOverlayVisibility(overlay);
+
+        //Call function to redraw items/weapons.
+        createInventoryUI(windowWidth,windowHeight);
+
     };
 
     itemClickable.onCancel = [&itemTransform]() {
         itemTransform.scale = 1.0f;
     };
 
+    //Add as child of overlay, push to overlay
     itemButton.addComponent<Parent>(&overlay);
     overlay.getComponent<Children>().children.push_back(&itemButton);
 
     return overlay;
+}
+
+
+
+
+void Scene::createInventoryUI(int windowWidth, int windowHeight) {
+
+    //
+    for (auto& e : world.getEntities()) {
+        if (e->hasComponent<InventoryUI>()) {
+            e->destroy(); // or mark for removal
+        }
+    }
+
+
+    Entity* player = world.getPlayer();
+    if (!player) return;
+
+    auto& items = player->getComponent<ItemList>().items;
+    auto& weapons = player->getComponent<WeaponList>().weapons;
+
+    float startX = 20.0f;
+
+    float startY =  windowHeight - 80.0f; // bottom-left
+    float rowSpacing = 40.0f;
+    float spacing = 50.0f;
+
+
+    // ===== ITEMS =====
+    int itemIndex = 0;
+
+    for (auto& item : items) {
+
+        auto& icon = world.createEntity();
+
+        auto& transform = icon.addComponent<Transform>(
+            Vector2D(startX + itemIndex * spacing, startY), 0.0f, 1.0f
+        );
+
+        SDL_Texture* tex = TextureManager::load(item.path.c_str());
+
+        SDL_FRect src = {0,0,32,32};
+        SDL_FRect dst = {transform.position.x, transform.position.y, 32, 32};
+
+        icon.addComponent<Sprite>(tex, src, dst, RenderLayer::UI, true);
+        icon.addComponent<InventoryUI>();
+
+        itemIndex++;
+    }
+
+    // ===== WEAPONS =====
+    int weaponIndex = 0;
+    float weaponY = startY - rowSpacing;
+    for (auto& weapon : weapons) {
+
+        auto& icon = world.createEntity();
+
+        auto& transform = icon.addComponent<Transform>(
+            Vector2D(startX + weaponIndex * spacing, weaponY), 0.0f, 1.0f
+        );
+
+        SDL_Texture* tex = TextureManager::load(weapon.path.c_str());
+
+        SDL_FRect src = {0,0,32,32};
+        SDL_FRect dst = {transform.position.x, transform.position.y, 32, 32};
+
+        icon.addComponent<Sprite>(tex, src, dst, RenderLayer::UI, true);
+        icon.addComponent<InventoryUI>();
+
+        weaponIndex++;
+    }
 }
 
 
