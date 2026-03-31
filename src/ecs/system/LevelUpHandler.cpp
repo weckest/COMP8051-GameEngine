@@ -36,10 +36,10 @@ void LevelUpHandler::onLevelUp(const LevelUpEvent& e) {
 
 
     world.togglePaused();
-    Weapon w = WeaponManager::getRandWeapon();
+    dataBundle d = WeaponManager::getRandWeapon();
     Item i = ItemManager::getRandItem();
 
-    world.getEventManager().emit(ShowLevelUpMenuEvent{w, i});
+    world.getEventManager().emit(ShowLevelUpMenuEvent{d, i});
 
 
 }
@@ -49,7 +49,7 @@ void LevelUpHandler::onLevelUpChoice(const LevelUpChoiceEvent& e) {
     if (e.choseWeapon) {
         std::cout << "Chose Weapon"<< std::endl;
 
-        weaponAdd(e.weapon);
+        weaponAdd(e.bundle);
     } else {
         std::cout << "Chose Item"<< std::endl;
 
@@ -94,7 +94,7 @@ void LevelUpHandler::itemAdd(const Item& i) {
 
 
 //TODO Brian add how you handle getting a weapon
-void LevelUpHandler::weaponAdd(const Weapon &weapon) {
+void LevelUpHandler::weaponAdd(const dataBundle& data) {
 
     Entity* player = nullptr;
 
@@ -107,9 +107,11 @@ void LevelUpHandler::weaponAdd(const Weapon &weapon) {
     }
 
     //upgrade weapon if duplicate exist
+    auto& weapon = data.weapon;
     for (auto& weapons: player->getComponent<WeaponList>().weapons) {
         if (weapons.name == weapon.name) {
-            WeaponManager::upgradeRandStat(*player, weapons);
+            dataBundle d(data.name, weapons);
+            WeaponManager::upgradeRandStat(*player, d);
             return;
         }
     }

@@ -11,9 +11,9 @@ class WeaponManager {
 
 public:
 	static void loadWeaponFromXML(const char* path);
-	static const Weapon& getRandWeapon();
+	static const dataBundle getRandWeapon();
 	 void switchWeapon(Entity& entity);
-	static void upgradeRandStat(Entity& entity, Weapon& weapon);
+	static void upgradeRandStat(Entity &entity, dataBundle bundle);
 };
 
 #endif //INC_8051TUTORIAL_WEAPONMANAGER_H

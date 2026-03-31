@@ -128,17 +128,17 @@ struct MagnetEvent : BaseEvent {
 
 struct LevelUpChoiceEvent : BaseEvent {
     bool choseWeapon;
-    Weapon weapon;
+    dataBundle bundle;
     Item item;
-    LevelUpChoiceEvent(bool choseWeapon, Weapon weapon, Item item) : choseWeapon(choseWeapon), weapon(weapon), item(item) {
+    LevelUpChoiceEvent(bool choseWeapon, dataBundle data, Item item) : choseWeapon(choseWeapon), bundle(data), item(item) {
         type = EventType::LevelUpChoice;
     }
 };
 
 struct ShowLevelUpMenuEvent :BaseEvent {
-    Weapon weapon;
+    dataBundle bundle;
     Item item;
-    ShowLevelUpMenuEvent(Weapon weapon, Item item): weapon(weapon), item(item) {
+    ShowLevelUpMenuEvent(dataBundle data, Item item): bundle(data), item(item) {
         type = EventType::ShowLevelUpMenu;
     }
 };
