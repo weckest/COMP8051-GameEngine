@@ -54,7 +54,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
         const auto& ev = static_cast<const ShowLevelUpMenuEvent&>(e);
 
-        createLevelUpMenu(windowWidth, windowHeight, ev.weapon, ev.item);
+        createLevelUpMenu(windowWidth, windowHeight, ev.bundle, ev.item);
     });
 
 
@@ -193,7 +193,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     // adjust this so it fires through weapon manager.
     //make the player shoot
 
-    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon());
+    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon().weapon);
 
 
     world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{200, 500}});
@@ -351,7 +351,7 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 }
 
 //Function to display the menu for player level Up.
-Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, Item i) {
+Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w, Item i) {
 
     //Create overlay entity and load background textures
     auto& overlay(world.createEntity());
@@ -396,7 +396,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
         Vector2D(startX, centerY), 0.0f, 1.0f
     );
 
-    SDL_Texture* weaponTex = TextureManager::load(w.path.c_str());
+    SDL_Texture* weaponTex = TextureManager::load(w.weapon.path.c_str());
 
 
     //Get scale correct and position.
