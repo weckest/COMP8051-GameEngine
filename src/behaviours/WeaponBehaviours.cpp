@@ -23,7 +23,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
         entity.addComponent<TimedSpawner>(
             delayBetweenShots,
-            [&, count, shotsFired = 0]() mutable {
+            [&, entity,weapon,count, shotsFired = 0]() mutable {
 
                 if (shotsFired >= count) return;
                 shotsFired++;
@@ -179,7 +179,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
             entity.addComponent<TimedSpawner>(
                 delayBetweenShots,
-                [&, count, shotsFired = 0]() mutable {
+                [&, entity,weapon,count, shotsFired = 0]() mutable {
 
                     if (shotsFired >= count) return;
                     shotsFired++;
@@ -194,7 +194,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     auto& c = ring.addComponent<Collider>("RingoFire");
                     // std::cout << "RoF " << &c << std::endl;
 
-                    float radius = 100.0f * getStat(weapon, "rangeModifier", 1.0f);
+                    float radius = 50.0f * getStat(weapon, "rangeModifier", 1.0f);
 
                     c.rect.w = radius * 2;
                     c.rect.h = radius * 2;
@@ -217,7 +217,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     ring.addComponent<Lifetime>(getStat(weapon, "lifetime", 0.1f));
 
                     ring.addComponent<ProjectileTag>(
-                        50.0f * getStat(weapon, "damageModifier", 1.0f) + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
+                        25.0f * getStat(weapon, "damageModifier", 1.0f) + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
                         0.0f
                         );
 

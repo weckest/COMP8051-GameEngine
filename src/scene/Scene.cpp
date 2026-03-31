@@ -117,9 +117,10 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
             auto& anim = AssetManager::getAnimation("enemy");
             e.addComponent<Animation>(anim);
 
-            SDL_Texture* tex = TextureManager::load("../assets/animations/fox_anim.png");
-            SDL_FRect src = {0, 0, 32, 32};
-            SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
+            int zType = rand() % 4;
+            SDL_Texture* tex = TextureManager::load(("../assets/animations/z" + std::to_string(zType + 1) + "_anim.png").c_str());
+            SDL_FRect src = {0, 0, 128, 128};
+            SDL_FRect dst = {t.position.x, t.position.y, 64, 64};
             e.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
 
             auto& c = e.addComponent<Collider>("enemy");

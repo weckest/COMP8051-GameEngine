@@ -30,7 +30,7 @@
     <weapon
             name="RingofFire"
             path = "../assets/sprites/RingOfFire.png"
-            fireRate="1.0"
+            fireRate="0.25"
             damageModifier="1.0"
             rangeModifier="1.0"
             projectileModifier="2.0"
@@ -40,8 +40,6 @@
             critChanceModifier="0.0"
             projectileSizeModifier="1.0"
             projectileSpeedModifier="0.0"
-            cooldown="10.0"
+            cooldown="5.0"
     />
-
-
 </weapons>
