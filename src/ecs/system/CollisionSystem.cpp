@@ -59,7 +59,7 @@ void CollisionSystem::update(World &world, Timer& timer) {
             auto& playerSprite = entity->getComponent<Sprite>();
 
             c.rect.x += playerSprite.dst.w / 4;
-            c.rect.y += playerSprite.dst.h / 4;
+            c.rect.y += playerSprite.dst.h / 4 * 2;
         }
 
     }

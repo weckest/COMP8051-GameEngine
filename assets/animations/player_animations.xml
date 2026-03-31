@@ -27,7 +27,7 @@
         <frame x="512" y="256" w="128" h="128"/>
         <frame x="640" y="256" w="128" h="128"/>
     </idle_left>
-    <walk_right>
+    <walk_left>
         <frame x="0" y="384" w="128" h="128"/>
         <frame x="128" y="384" w="128" h="128"/>
         <frame x="256" y="384" w="128" h="128"/>
@@ -38,5 +38,5 @@
         <frame x="896" y="384" w="128" h="128"/>
         <frame x="1024" y="384" w="128" h="128"/>
         <frame x="1152" y="384" w="128" h="128"/>
-    </walk_right>
+    </walk_left>
 </animations>

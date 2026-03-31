@@ -31,6 +31,10 @@ void MovementSystem::update(std::vector<std::unique_ptr<Entity>> &entities, floa
 
             Vector2D directionVec = v.direction;
 
+            if (v.direction.x != 0.0f) {
+                v.facingRight = v.direction.x > 0.0f;
+            }
+
             if (entity->hasComponent<ItemTag>()) {
                 directionVec = world.getPlayer()->getComponent<Transform>().position - t.position;
             }

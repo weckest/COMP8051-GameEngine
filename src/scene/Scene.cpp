@@ -164,7 +164,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     Animation anim = AssetManager::getAnimation("player");
     player.addComponent<Animation>(anim);
 
-    SDL_Texture* tex = TextureManager::load("../assets/animations/spritesheet.png");
+    SDL_Texture* tex = TextureManager::load("../assets/animations/player_anim.png");
     SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
     SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64 * playerStats.playerSizeModifier, 64 * playerStats.playerSizeModifier};
     player.addComponent<Sprite>(tex, playerSrc, playerDst, RenderLayer::World);

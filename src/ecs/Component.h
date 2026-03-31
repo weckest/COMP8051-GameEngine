@@ -36,6 +36,7 @@ enum class RenderLayer {
 struct Velocity {
     Vector2D direction{};
     float speed{};
+    bool facingRight = true;
 };
 
 struct Sprite {
