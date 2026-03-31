@@ -117,9 +117,10 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
             auto& anim = AssetManager::getAnimation("enemy");
             e.addComponent<Animation>(anim);
 
-            SDL_Texture* tex = TextureManager::load("../assets/animations/fox_anim.png");
-            SDL_FRect src = {0, 0, 32, 32};
-            SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
+            int zType = rand() % 4;
+            SDL_Texture* tex = TextureManager::load(("../assets/animations/z" + std::to_string(zType + 1) + "_anim.png").c_str());
+            SDL_FRect src = {0, 0, 128, 128};
+            SDL_FRect dst = {t.position.x, t.position.y, 64, 64};
             e.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
 
             auto& c = e.addComponent<Collider>("enemy");
@@ -207,6 +208,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     createPlayerPosLabel();
     world.initDebug();
     createInventoryUI(windowWidth, windowHeight);
+    createLevelUpUI(windowWidth, windowHeight);
 
 }
 
@@ -606,16 +608,6 @@ void Scene::createInventoryUI(int windowWidth, int windowHeight) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
 Entity& Scene::createPlayerPosLabel() {
     auto& playerPosLabel(world.createEntity());
     Label label = {
@@ -629,5 +621,36 @@ Entity& Scene::createPlayerPosLabel() {
     playerPosLabel.addComponent<Label>(label);
     playerPosLabel.addComponent<Transform>(Vector2D(10, 10), 0.0f, 1.0f);
     return playerPosLabel;
+
+}
+
+void Scene::createLevelUpUI(int windowWidth, int windowHeight) {
+    //create backing
+    auto& back = world.createEntity();
+    back.addComponent<LevelUpBar>();
+    auto& c = back.addComponent<Children>();
+    auto& t = back.addComponent<Transform>(Vector2D(0.0f, 0.0f), 0.0f, 1.0f);
+
+    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+
+    SDL_FRect src{0,64,32,32};
+    SDL_FRect dst{t.position.x, t.position.y, windowWidth * 1.0f, 25.0f};
+
+    back.addComponent<Sprite>(tex, src, dst, RenderLayer::UI, true);
+
+    //create levelup bar
+    float offset = 2.5f;
+    auto& l = world.createEntity();
+    l.addComponent<Parent>(&back);
+    back.getComponent<Children>().children.push_back(&l);
+    auto& lt = l.addComponent<Transform>(Vector2D(t.position.x + offset, t.position.y + offset), 0.0f, 1.0f);
+
+    SDL_Texture* ltex = TextureManager::load("../assets/colors.png");
+
+    SDL_FRect lsrc{65,33,30,31};
+    SDL_FRect ldst{lt.position.x, lt.position.y, 0.0f, dst.h - offset * 2};
+
+    l.addComponent<Sprite>(ltex, lsrc, ldst, RenderLayer::UI, true);
+
 
 }

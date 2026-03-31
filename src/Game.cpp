@@ -91,7 +91,7 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
     //load assets
     AssetManager::loadAnimation("player", "../assets/animations/player_animations.xml");
-    AssetManager::loadAnimation("enemy", "../assets/animations/fox_animations.xml");
+    AssetManager::loadAnimation("enemy", "../assets/animations/zombie_animations.xml");
     AssetManager::loadAnimation("explosion", "../assets/animations/explosion_animation.xml");
     WeaponManager::loadWeaponFromXML("../assets/weapons/weapon.xml");
 
