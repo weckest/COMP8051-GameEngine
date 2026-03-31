@@ -103,7 +103,7 @@ public:
         } else {
             timer.startTimer("update");
             keyboardInputSystem.update(*this, entities, event);
-            bobbingSystem.update(entities, dt);
+
             timer.startTimer("movement");
             movementSystem.update(entities, dt);
             timer.stopTimer("movement");
@@ -131,6 +131,8 @@ public:
             hudSystem.update(entities);
             timer.stopTimer("update");
         }
+
+        bobbingSystem.update(entities, dt);
         mouseInputSystem.update(*this, event);
         audioEventQueue.process(); //process all audio events
         timer.startTimer("prerender");
