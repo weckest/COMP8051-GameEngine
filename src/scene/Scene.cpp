@@ -125,8 +125,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
             auto& c = e.addComponent<Collider>("enemy");
             // std::cout << "Enemy " << &c << std::endl;
-            c.rect.w = dst.w;
-            c.rect.h = dst.h;
+            c.rect.w = dst.w / 2;
+            c.rect.h = dst.h / 2;
             c.layer = CollisionLayer::ENEMY;
             c.mask = CollisionLayer::PLAYER | CollisionLayer::WALL | CollisionLayer::PROJECTILE;
 
