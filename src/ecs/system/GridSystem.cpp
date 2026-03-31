@@ -63,12 +63,9 @@ GridSystem::GridSystem(World &world) : world(world) {
                         removeEntity(entity, xIndex, yIndex);
                     }
                 }
-
             }
         }
     );
-
-
 }
 
 void GridSystem::update(

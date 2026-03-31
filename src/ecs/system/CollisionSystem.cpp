@@ -221,8 +221,8 @@ Entity * CollisionSystem::getClosestEntity(World& world, Entity &entity, float r
                             entityB->hasComponent<EnemyTag>()
                         ) {
 
-                            auto& t = entityB->getComponent<Transform>();
-                            Vector2D bCenterPoint = t.position;
+                            auto& bT = entityB->getComponent<Transform>();
+                            Vector2D bCenterPoint = bT.position;
 
                             if (entityB->hasComponent<Sprite>()) {
                                 auto& s = entityB->getComponent<Sprite>();
