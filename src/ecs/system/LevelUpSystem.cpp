@@ -45,7 +45,7 @@ void LevelUpSystem::update(const std::vector<std::unique_ptr<Entity>>& entities,
             auto& bar = e->getComponent<Children>().children.front();
             if (bar->hasComponent<Sprite>()) {
                 auto& sprite = bar->getComponent<Sprite>();
-                sprite.dst.w = (cam.worldWidth - 5.0f) * (stats.xp / stats.level / 100.0f);
+                sprite.dst.w = (cam.view.w - 10.0f) * stats.xp / xpToLevelUp;
             }
         }
     }

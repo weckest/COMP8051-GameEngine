@@ -19,6 +19,7 @@
 #include "EnemyMovementSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
+#include "GameStateSystem.h"
 #include "GridSystem.h"
 #include "HeathSystem.h"
 #include "HUDSystem.h"
@@ -61,6 +62,7 @@ class World {
     ItemManager itemManager;
     LifetimeSystem lifetimeSystem;
     WeaponManager weaponManager;
+    GameStateSystem gameStateSystem;
     RenderSystem renderSystem{*this};
     MovementSystem movementSystem{*this};
     KeyBoardInputSystem keyboardInputSystem;
@@ -103,6 +105,7 @@ public:
         } else {
             timer.startTimer("update");
             keyboardInputSystem.update(*this, entities, event);
+            gameStateSystem.update(entities, dt);
             bobbingSystem.update(entities, dt);
             timer.startTimer("movement");
             movementSystem.update(entities, dt);

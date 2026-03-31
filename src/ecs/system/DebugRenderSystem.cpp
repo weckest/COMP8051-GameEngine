@@ -45,13 +45,58 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
         TextureManager::drawCircle(playerCenter, 200.0f, 0, 255, 200);
     }
 
+    int sumColliders = 0;
+    int sumItems = 0;
+    int sumEnemies = 0;
     for (auto& e : entities) {
         if (e->hasComponent<Label>()) {
             if (e->getComponent<Label>().type == LabelType::DebugStats) {
                 updateDebugLabel(*e);
             }
         }
+        if (e->hasComponent<Collider>()) {
+            sumColliders++;
+        }
+        if (e->hasComponent<ItemTag>()) {
+            sumItems++;
+        }
+        if (e->hasComponent<EnemyTag>()) {
+            sumEnemies++;
+        }
     }
+
+    std::cout << sumColliders << " sum colliders" << std::endl;
+    std::cout << sumItems << " sum items" << std::endl;
+    std::cout << sumEnemies << " sum enemies" << std::endl;
+
+    int sumGridColliders = 0;
+    int sumGridItems = 0;
+    int sumGridEnemies = 0;
+    std::vector<Entity*> flaggedEntities;
+    for (int i = 0; i < grid.size(); i++) {
+        for (int j = 0; j < grid[i].size(); j++) {
+            auto& cell = grid[i][j];
+            for (auto& e : cell) {
+                auto it = std::find(flaggedEntities.begin(), flaggedEntities.end(), e);
+                if (it == flaggedEntities.end()) {
+                    flaggedEntities.push_back(e);
+                    if (e->hasComponent<Collider>()) {
+                        sumGridColliders++;
+                    }
+                    if (e->hasComponent<ItemTag>()) {
+                        sumGridItems++;
+                    }
+                    if (e->hasComponent<EnemyTag>()) {
+                        sumGridEnemies++;
+                    }
+                }
+            }
+        }
+    }
+
+    std::cout << sumGridColliders << " grid colliders" << std::endl;
+    std::cout << sumGridItems << " grid items" << std::endl;
+    std::cout << sumGridEnemies << " grid enemies" << std::endl;
 
 
     if (debugState.colliders) {
@@ -167,7 +212,7 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
     for (auto& child: children.children) {
         auto& label = child->getComponent<Label>();
         if (label.type == LabelType::LevelUp) {
-            label.text = "LevelUp: " + std::to_string((pt.xp / pt.level));
+            label.text = "LevelUp: " + std::to_string((pt.xp / pt.level / 2));
             label.dirty = true;
 
         } else if (label.type == LabelType::Health) {
