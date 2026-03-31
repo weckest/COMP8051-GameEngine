@@ -53,13 +53,13 @@ void CollisionSystem::update(World &world, Timer& timer) {
         c.rect.x = t.position.x;
         c.rect.y = t.position.y;
 
-        //FOR THE GAME
-        if (entity->hasComponent<PlayerTag>()) {
+        //have to resize due to how the spritesheet is set up
+        if (entity->hasComponent<PlayerTag>() || entity->hasComponent<EnemyTag>()) {
 
-            auto& playerSprite = entity->getComponent<Sprite>();
+            auto& spr = entity->getComponent<Sprite>();
 
-            c.rect.x += playerSprite.dst.w / 4;
-            c.rect.y += playerSprite.dst.h / 4 * 2;
+            c.rect.x += spr.dst.w / 4;
+            c.rect.y += spr.dst.h / 4 * 2;
         }
 
     }
