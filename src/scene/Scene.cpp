@@ -37,11 +37,35 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     auto& menu(world.createEntity());
     auto& menuTransform = menu.addComponent<Transform>(Vector2D(0,0), 0.0f, 1.0f);
 
-    SDL_Texture* tex = TextureManager::load("../assets/menu.png");
-    SDL_FRect src = {0, 0, 800, 600};
+    SDL_Texture* tex = TextureManager::load("../assets/mainmenu/TFC-BG.png");
+    SDL_FRect src = {0, 0, 2304, 1296};
     SDL_FRect dst = {menuTransform.position.x, menuTransform.position.y, (float)windowWidth, (float)windowHeight};
 
     menu.addComponent<Sprite>(tex, src, dst);
+
+    //TODO: Settings and Credits
+    //TITLE
+    auto& title = world.createEntity();
+    auto& titleTransform = title.addComponent<Transform>(Vector2D((windowWidth / 4.0f), 30), 0.0f, 1.0f);
+
+    SDL_Texture* titleTex = TextureManager::load("../assets/mainmenu/TFC-Title.png");
+    SDL_FRect titleSrc = {0, 0, 1280, 720};
+    SDL_FRect titleDst = {titleTransform.position.x, titleTransform.position.y, (float)windowWidth / 2, (float)windowHeight / 3};
+    title.addComponent<Sprite>(titleTex, titleSrc, titleDst);
+
+    title.addComponent<ItemTag>();
+
+    //PLAY
+
+    //SETTINGS
+    //auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
+    //createSettingsButton(windowWidth, windowHeight, settingsOverlay);
+
+    //CREDITS
+    //auto& creditsOverlay = createCreditsOverlay(windowWidth, windowHeight);
+    //createCreditsButton(windowWidth, windowHeight, creditsOverlay);
+
+    //QUIT
 
     auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
     createCogButton(windowWidth, windowHeight, settingsOverlay);
@@ -125,8 +149,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
             auto& c = e.addComponent<Collider>("enemy");
             // std::cout << "Enemy " << &c << std::endl;
-            c.rect.w = dst.w;
-            c.rect.h = dst.h;
+            c.rect.w = dst.w / 2;
+            c.rect.h = dst.h / 2;
             c.layer = CollisionLayer::ENEMY;
             c.mask = CollisionLayer::PLAYER | CollisionLayer::WALL | CollisionLayer::PROJECTILE;
 
@@ -415,6 +439,42 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
     weaponButton.addComponent<Collider>("ui", weaponDst);
 
 
+
+    //////////////Weapon Label
+    auto& weaponLabelEntity = world.createEntity();
+    Label weaponLabel = {
+        w.weapon.name,
+        AssetManager::getFont("bungee"),
+        {0,0,0,0},
+        LabelType::UI,
+
+        "weaponLabel"
+    };
+
+    weaponLabel.visible = true;
+
+    TextureManager::loadLabel(weaponLabel);
+
+
+    weaponLabel.dirty = true;
+    weaponLabelEntity.addComponent<Label>(weaponLabel);
+
+
+
+    // Compute position centered on item
+    float weaponLabelX = weaponTransform.position.x + buttonWidth / 2 - (weaponLabel.dst.w / 2)  -70;
+    float weaponLabelY = weaponTransform.position.y - weaponLabel.dst.h - 15; // 5 px above button
+    weaponLabelEntity.addComponent<Transform>(
+        Vector2D(weaponLabelX, weaponLabelY), 0.0f, 1.0f
+    );
+
+    // parent it to overlay
+    weaponLabelEntity.addComponent<Parent>(&overlay);
+    overlay.getComponent<Children>().children.push_back(&weaponLabelEntity);
+
+
+
+
     //Functions for when button is pressed and released.
     auto& weaponClickable = weaponButton.addComponent<Clickable>();
 
@@ -493,7 +553,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
 
 
     // Compute position centered on item
-    float itemLabelX = itemTransform.position.x + buttonWidth / 2 - (itemLabel.dst.w / 2)  -60;
+    float itemLabelX = itemTransform.position.x + buttonWidth / 2 - (itemLabel.dst.w / 2)  -70;
     float itemLabelY = itemTransform.position.y - itemLabel.dst.h - 15; // 5 px above button
     itemLabelEntity.addComponent<Transform>(
         Vector2D(itemLabelX, itemLabelY), 0.0f, 1.0f
