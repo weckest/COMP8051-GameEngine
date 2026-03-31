@@ -415,6 +415,42 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
     weaponButton.addComponent<Collider>("ui", weaponDst);
 
 
+
+    //////////////Weapon Label
+    auto& weaponLabelEntity = world.createEntity();
+    Label weaponLabel = {
+        w.weapon.name,
+        AssetManager::getFont("bungee"),
+        {0,0,0,0},
+        LabelType::UI,
+
+        "weaponLabel"
+    };
+
+    weaponLabel.visible = true;
+
+    TextureManager::loadLabel(weaponLabel);
+
+
+    weaponLabel.dirty = true;
+    weaponLabelEntity.addComponent<Label>(weaponLabel);
+
+
+
+    // Compute position centered on item
+    float weaponLabelX = weaponTransform.position.x + buttonWidth / 2 - (weaponLabel.dst.w / 2)  -70;
+    float weaponLabelY = weaponTransform.position.y - weaponLabel.dst.h - 15; // 5 px above button
+    weaponLabelEntity.addComponent<Transform>(
+        Vector2D(weaponLabelX, weaponLabelY), 0.0f, 1.0f
+    );
+
+    // parent it to overlay
+    weaponLabelEntity.addComponent<Parent>(&overlay);
+    overlay.getComponent<Children>().children.push_back(&weaponLabelEntity);
+
+
+
+
     //Functions for when button is pressed and released.
     auto& weaponClickable = weaponButton.addComponent<Clickable>();
 
@@ -493,7 +529,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
 
 
     // Compute position centered on item
-    float itemLabelX = itemTransform.position.x + buttonWidth / 2 - (itemLabel.dst.w / 2)  -60;
+    float itemLabelX = itemTransform.position.x + buttonWidth / 2 - (itemLabel.dst.w / 2)  -70;
     float itemLabelY = itemTransform.position.y - itemLabel.dst.h - 15; // 5 px above button
     itemLabelEntity.addComponent<Transform>(
         Vector2D(itemLabelX, itemLabelY), 0.0f, 1.0f
