@@ -32,8 +32,16 @@ Uint64 Timer::getTimer(std::string name) {
     return timers[name];
 }
 
+std::vector<std::string> Timer::getTimers() {
+    std::vector<std::string> result{};
+    for (std::pair<std::string, std::vector<float>> key : results) {
+        result.emplace_back(key.first);
+    }
+    return result;
+}
+
 float Timer::getResult(std::string name) {
-    return results[name].back();
+    return nstoms(results[name].back());
 }
 
 float Timer::getAvgResult(std::string name) {
@@ -43,12 +51,12 @@ float Timer::getAvgResult(std::string name) {
         sum += time;
         count++;
     }
-    return sum / count;
+    return nstoms(sum / count);
 }
 
 void Timer::printResults() {
     std::cout << "" << std::endl;
     for (std::pair<std::string, std::vector<float>> result : results) {
-        std::cout << result.first << ": " << nstoms(getResult(result.first)) << "ms, Avg: " << nstoms(getAvgResult(result.first)) << "ms" << std::endl;
+        std::cout << result.first << ": " << getResult(result.first) << "ms, Avg: " << getAvgResult(result.first) << "ms" << std::endl;
     }
 }

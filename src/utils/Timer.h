@@ -21,6 +21,7 @@ public:
     void startTimer(std::string name);
     float stopTimer(std::string name);
     Uint64 getTimer(std::string name);
+    std::vector<std::string> getTimers();
     float getResult(std::string name);
     float getAvgResult(std::string name);
     void printResults();

@@ -154,15 +154,13 @@ public:
         timer.startTimer("render");
         renderSystem.render(entities);
         timer.stopTimer("render");
+        timer.startTimer("debug");
         if (debugState.debug) {
             debugRenderSystem.render(entities, debugState);
         }
+        timer.stopTimer("debug");
         uiRenderSystem.render(entities);
 
-        if (debugState.debug && debugState.timer && !isPaused) {
-            timer.printResults();
-            // std::cout << "Entity#: " <<  entities.size() << "\n" << std::endl;
-        }
     }
 
     Entity& createEntity() {
@@ -263,6 +261,10 @@ public:
 
     void setPlayer(Entity* player) {
         this->player = player;
+    }
+
+    Timer& getTimer() {
+        return timer;
     }
 
     void togglePaused() {
