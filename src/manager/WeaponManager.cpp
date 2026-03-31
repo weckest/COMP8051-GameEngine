@@ -128,7 +128,7 @@ void WeaponManager::upgradeRandStat(Entity& entity, Weapon& weapon) {
 
 			//if we are at 5 level ups double bullets
 			if (targ.amtLevelUps % 5 == 0) {
-				targ.weaponStats["projectileModifier"] += 1;
+				targ.weaponStats["projectileModifier"] *= 2;
 			}
 
 			// randomly pick a stat to upgrade
@@ -142,7 +142,7 @@ void WeaponManager::upgradeRandStat(Entity& entity, Weapon& weapon) {
 			// upgrade the stat
 			// check if the stat is cooldown, if it is skip and reroll the stat
 
-			targ.weaponStats[randomStat] += 0.1f;         // +10%
+			targ.weaponStats[randomStat] *= 1.25f;         //25%
 			break;
 		}
 	}
