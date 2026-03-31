@@ -149,14 +149,9 @@ void DebugRenderSystem::initDebugLabel() {
     auto& levelUp = createChildDebugLabe(entity, LabelType::LevelUp, Vector2D(10.0f, 50.0f));
     auto& health = createChildDebugLabe(entity, LabelType::Health, Vector2D(10.0f, 70.0f));
     auto& weapons = createChildDebugLabe(entity, LabelType::Weapons, Vector2D(10.0f, 90.0f));
-    auto& memory = createChildDebugLabe(entity, LabelType::Memory, Vector2D(10.0f, 110.0f));
-
-
-
-
+    auto& times = createChildDebugLabe(entity, LabelType::Times, Vector2D(10.0f, 110.0f));
+    times.addComponent<Children>();
 }
-
-
 
 void DebugRenderSystem::updateDebugLabel(Entity& entity) {
     auto& parent = entity.getComponent<Label>();
@@ -188,15 +183,24 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
                 label.text += w.name + ", ";
                 label.dirty = true;
             }
-        } else if (label.type == LabelType::Memory) {
-            Uint64 size = 0;
-            for (auto& e : world.getEntities()) {
-                size += sizeof(*e.get());
-
-                // std::cout << sizeof(*e.get()) << std::endl;
-            }
-            label.text = "Memory: " + std::to_string((size * 1.0f) / 10000);
+        } else if (label.type == LabelType::Times) {
+            std::vector<std::string> timers = world.getTimer().getTimers();
+            label.text = "Timers: " + std::to_string(timers.size());
             label.dirty = true;
+            auto& t = child->getComponent<Transform>();
+            auto& timerChildren = child->getComponent<Children>();
+            if (timerChildren.children.empty()) {
+                for (int i = 0; i < timers.size(); i++) {
+                    createChildDebugLabe(*child, LabelType::Times, Vector2D(20.0f, t.position.y + 20.0f * (i + 1)))
+                    .getComponent<Label>().visible = true;
+
+                }
+            }
+            for (int i = 0; i < timers.size(); i++) {
+                auto& childLabel = timerChildren.children[i]->getComponent<Label>();
+                childLabel.text = timers[i] + ": " + std::to_string(world.getTimer().getAvgResult(timers[i])) + "ms";
+                childLabel.dirty = true;
+            }
         }
     }
 }

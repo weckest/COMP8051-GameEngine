@@ -25,6 +25,12 @@ World::World() {
                    auto& children = entity->getComponent<Children>();
                    for (auto& child : children.children) {
                        child->getComponent<Label>().visible = debugState.debug;
+                       if (child->hasComponent<Children>()) {
+                           for (auto& labelChild : child->getComponent<Children>().children) {
+                               std::cout << "timer debug flipper" << std::endl;
+                               labelChild->getComponent<Label>().visible = debugState.debug;
+                           }
+                       }
                    }
                }
            }

@@ -88,7 +88,6 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
                     //check for the collider collision
                     //inner loop
-                    timer.startTimer("innerLoop");
                     for (auto& entityB : cell) {
                         auto& colliderB = entityB->getComponent<Collider>();
 
@@ -114,7 +113,6 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
 
                     }
-                    timer.stopTimer("innerLoop");
                 }
             }
         }
@@ -136,9 +134,7 @@ void CollisionSystem::update(World &world, Timer& timer) {
     }
     timer.stopTimer("activeCollisions");
 
-    timer.startTimer("moveCollisions");
     activeCollisions = std::move(currentCollisions); //update with current collisions
-    timer.stopTimer("moveCollisions");
 }
 
 std::vector<Entity*> CollisionSystem::getAllWithin(World &world, Entity &entity, float distance) {
