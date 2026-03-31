@@ -18,13 +18,17 @@ World::World() {
 
            debugState.debug = !debugState.debug;
            std::cout << "Debug: " << debugState.debug << std::endl;
-           std::cout << getComponentTypeID<Parent>() << std::endl;
            for (auto& entity : entities) {
                if (entity->hasComponent<Label>() && entity->getComponent<Label>().type == LabelType::DebugStats) {
                    entity->getComponent<Label>().visible = debugState.debug;
                    auto& children = entity->getComponent<Children>();
                    for (auto& child : children.children) {
                        child->getComponent<Label>().visible = debugState.debug;
+                       if (child->hasComponent<Children>()) {
+                           for (auto& labelChild : child->getComponent<Children>().children) {
+                               labelChild->getComponent<Label>().visible = debugState.debug;
+                           }
+                       }
                    }
                }
            }

@@ -20,6 +20,7 @@
 #include "Entity.h"
 #include "EventResponseSystem.h"
 #include "GridSystem.h"
+#include "HeathSystem.h"
 #include "HUDSystem.h"
 #include "KeyboardInputSystem.h"
 #include "LevelUpHandler.h"
@@ -76,6 +77,7 @@ class World {
     MainMenuSystem mainMenuSystem;
     SpawnerSystem spawnerSystem{*this};
     LevelUpSystem levelUpSystem;
+    HealthSystem healthSystem;
     WeaponFireSystem weaponFireSystem;
     LevelUpHandler levelUpHandler{*this};
     UIRenderSystem uiRenderSystem;
@@ -123,6 +125,7 @@ public:
             spawnTimerSystem.update(entities, dt);
             destructionSystem.update(entities);
             levelUpSystem.update(entities, *this);
+            healthSystem.update(entities, *this);
             weaponFireSystem.update(*this, dt);
             lifetimeSystem.update(entities, dt);
             hudSystem.update(entities);
@@ -154,15 +157,13 @@ public:
         timer.startTimer("render");
         renderSystem.render(entities);
         timer.stopTimer("render");
+        timer.startTimer("debug");
         if (debugState.debug) {
             debugRenderSystem.render(entities, debugState);
         }
+        timer.stopTimer("debug");
         uiRenderSystem.render(entities);
 
-        if (debugState.debug && debugState.timer && !isPaused) {
-            timer.printResults();
-            // std::cout << "Entity#: " <<  entities.size() << "\n" << std::endl;
-        }
     }
 
     Entity& createEntity() {
@@ -263,6 +264,10 @@ public:
 
     void setPlayer(Entity* player) {
         this->player = player;
+    }
+
+    Timer& getTimer() {
+        return timer;
     }
 
     void togglePaused() {

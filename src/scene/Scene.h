@@ -42,7 +42,10 @@ private:
 
     Entity& createPlayerPosLabel();
 
-    Entity& createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, Item i);
+    void createLevelUpUI(int windowWidth, int windowHeight);
+    void createHealthBar(int windowWidth, int windowHeight);
+
+    Entity& createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w, Item i);
     void createInventoryUI(int windowWidth, int windowHeight);
 };
 

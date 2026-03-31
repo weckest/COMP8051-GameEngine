@@ -54,7 +54,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
         const auto& ev = static_cast<const ShowLevelUpMenuEvent&>(e);
 
-        createLevelUpMenu(windowWidth, windowHeight, ev.weapon, ev.item);
+        createLevelUpMenu(windowWidth, windowHeight, ev.bundle, ev.item);
     });
 
 
@@ -117,15 +117,16 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
             auto& anim = AssetManager::getAnimation("enemy");
             e.addComponent<Animation>(anim);
 
-            SDL_Texture* tex = TextureManager::load("../assets/animations/fox_anim.png");
-            SDL_FRect src = {0, 0, 32, 32};
-            SDL_FRect dst = {t.position.x, t.position.y, 32, 32};
+            int zType = rand() % 4;
+            SDL_Texture* tex = TextureManager::load(("../assets/animations/z" + std::to_string(zType + 1) + "_anim.png").c_str());
+            SDL_FRect src = {0, 0, 128, 128};
+            SDL_FRect dst = {t.position.x, t.position.y, 64, 64};
             e.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
 
             auto& c = e.addComponent<Collider>("enemy");
             // std::cout << "Enemy " << &c << std::endl;
-            c.rect.w = dst.w;
-            c.rect.h = dst.h;
+            c.rect.w = dst.w / 2;
+            c.rect.h = dst.h / 2;
             c.layer = CollisionLayer::ENEMY;
             c.mask = CollisionLayer::PLAYER | CollisionLayer::WALL | CollisionLayer::PROJECTILE;
 
@@ -164,7 +165,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     Animation anim = AssetManager::getAnimation("player");
     player.addComponent<Animation>(anim);
 
-    SDL_Texture* tex = TextureManager::load("../assets/animations/spritesheet.png");
+    SDL_Texture* tex = TextureManager::load("../assets/animations/player_anim.png");
     SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
     SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64 * playerStats.playerSizeModifier, 64 * playerStats.playerSizeModifier};
     player.addComponent<Sprite>(tex, playerSrc, playerDst, RenderLayer::World);
@@ -192,7 +193,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     // adjust this so it fires through weapon manager.
     //make the player shoot
 
-    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon());
+    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon().weapon);
 
 
     world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{200, 500}});
@@ -207,6 +208,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     createPlayerPosLabel();
     world.initDebug();
     createInventoryUI(windowWidth, windowHeight);
+    createLevelUpUI(windowWidth, windowHeight);
+    createHealthBar(windowWidth, windowHeight);
 
 }
 
@@ -348,7 +351,7 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 }
 
 //Function to display the menu for player level Up.
-Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, Item i) {
+Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w, Item i) {
 
     //Create overlay entity and load background textures
     auto& overlay(world.createEntity());
@@ -393,7 +396,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, Weapon w, It
         Vector2D(startX, centerY), 0.0f, 1.0f
     );
 
-    SDL_Texture* weaponTex = TextureManager::load(w.path.c_str());
+    SDL_Texture* weaponTex = TextureManager::load(w.weapon.path.c_str());
 
 
     //Get scale correct and position.
@@ -606,16 +609,6 @@ void Scene::createInventoryUI(int windowWidth, int windowHeight) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
 Entity& Scene::createPlayerPosLabel() {
     auto& playerPosLabel(world.createEntity());
     Label label = {
@@ -629,5 +622,63 @@ Entity& Scene::createPlayerPosLabel() {
     playerPosLabel.addComponent<Label>(label);
     playerPosLabel.addComponent<Transform>(Vector2D(10, 10), 0.0f, 1.0f);
     return playerPosLabel;
+
+}
+
+void Scene::createLevelUpUI(int windowWidth, int windowHeight) {
+    //create backing
+    auto& back = world.createEntity();
+    back.addComponent<LevelUpBar>();
+    auto& c = back.addComponent<Children>();
+    auto& t = back.addComponent<Transform>(Vector2D(0.0f, 0.0f), 0.0f, 1.0f);
+
+    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+
+    SDL_FRect src{0,64,32,32};
+    SDL_FRect dst{t.position.x, t.position.y, windowWidth * 1.0f, 25.0f};
+
+    back.addComponent<Sprite>(tex, src, dst, RenderLayer::UI, true);
+
+    //create levelup bar
+    float offset = 2.5f;
+    auto& l = world.createEntity();
+    l.addComponent<Parent>(&back);
+    back.getComponent<Children>().children.push_back(&l);
+    auto& lt = l.addComponent<Transform>(Vector2D(t.position.x + offset, t.position.y + offset), 0.0f, 1.0f);
+
+    SDL_Texture* ltex = TextureManager::load("../assets/colors.png");
+
+    SDL_FRect lsrc{65,33,30,31};
+    SDL_FRect ldst{lt.position.x, lt.position.y, 0.0f, dst.h - offset * 2};
+
+    l.addComponent<Sprite>(ltex, lsrc, ldst, RenderLayer::UI, true);
+}
+
+void Scene::createHealthBar(int windowWidth, int windowHeight) {
+    auto& back = world.createEntity();
+    back.addComponent<HealthBar>();
+    auto& c = back.addComponent<Children>();
+    auto& t = back.addComponent<Transform>(Vector2D(windowWidth - 225.0f, windowHeight - 50.0f), 0.0f, 1.0f);
+
+    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+
+    SDL_FRect src{0,64,32,32};
+    SDL_FRect dst{t.position.x, t.position.y, 200.0f, 25.0f};
+
+    back.addComponent<Sprite>(tex, src, dst, RenderLayer::UI, true);
+
+    //create health bar
+    float offset = 2.5f;
+    auto& health = world.createEntity();
+    health.addComponent<Parent>(&back);
+    c.children.push_back(&health);
+    auto& ht = health.addComponent<Transform>(Vector2D(t.position.x + offset, t.position.y + offset), 0.0f, 1.0f);
+
+    SDL_Texture* htex = TextureManager::load("../assets/colors.png");
+
+    SDL_FRect hsrc{0,0,32,32};
+    SDL_FRect hdst{t.position.x, t.position.y, 200.0f - offset * 2, 25.0f - offset * 2};
+
+    health.addComponent<Sprite>(htex, hsrc, hdst, RenderLayer::UI, true);
 
 }

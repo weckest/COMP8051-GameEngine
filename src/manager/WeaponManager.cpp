@@ -15,13 +15,24 @@
 std::vector<Weapon> WeaponManager::weapons;
 
 
-const Weapon& WeaponManager::getRandWeapon() {
+const dataBundle WeaponManager::getRandWeapon() {
 	if (weapons.empty()) {
 		throw std::runtime_error("No weapons loaded");
 	}
-	std::cout << std::rand() << std::endl;
-	int randIndex = std::rand() % weapons.size();
-	return weapons[randIndex];
+
+	// Pick a random weapon
+	int randWeaponIndex = std::rand() % weapons.size();
+	Weapon& w = weapons[randWeaponIndex];
+
+	if (w.statNames.empty()) {
+		throw std::runtime_error("Weapon has no stats");
+	}
+
+	// Pick a random stat name
+	int randStatIndex = std::rand() % w.statNames.size();
+	std::string randomStat = w.statNames[randStatIndex];
+
+	return dataBundle{randomStat, w};
 }
 
 void WeaponManager::loadWeaponFromXML(const char *path) {
@@ -110,9 +121,9 @@ void WeaponManager::loadWeaponFromXML(const char *path) {
 	}
 }
 
-void WeaponManager::upgradeRandStat(Entity& entity, Weapon& weapon) {
+void WeaponManager::upgradeRandStat(Entity& entity, dataBundle bundle) {
 	//get weapon name that needs to upgrade
-	auto name = weapon.name;
+	auto name = bundle.weapon.name;
 
 	//find the weapon in the player's list (entity)
 	auto& weaponList = entity.getComponent<WeaponList>().weapons;
@@ -128,21 +139,10 @@ void WeaponManager::upgradeRandStat(Entity& entity, Weapon& weapon) {
 
 			//if we are at 5 level ups double bullets
 			if (targ.amtLevelUps % 5 == 0) {
-				targ.weaponStats["projectileModifier"] += 1;
+				targ.weaponStats["projectileModifier"] *= 2;
 			}
 
-			// randomly pick a stat to upgrade
-			std::random_device rd;
-			std::mt19937 gen(rd());
-			std::uniform_int_distribution<> dist(0, statNames.size() - 1);
-
-			int randomIndex = dist(gen);
-			std::string randomStat = statNames[randomIndex];
-
-			// upgrade the stat
-			// check if the stat is cooldown, if it is skip and reroll the stat
-
-			targ.weaponStats[randomStat] += 0.1f;         // +10%
+			targ.weaponStats[bundle.name] *= 1.25f;         //25%
 			break;
 		}
 	}

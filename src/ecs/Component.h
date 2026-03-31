@@ -36,6 +36,7 @@ enum class RenderLayer {
 struct Velocity {
     Vector2D direction{};
     float speed{};
+    bool facingRight = true;
 };
 
 struct Sprite {
@@ -74,7 +75,7 @@ enum class LabelType {
     DebugStats,
     LevelUp,
     Weapons,
-    Memory
+    Times
 };
 
 struct Label {
@@ -227,5 +228,13 @@ struct WeaponList {
 };
 
 struct InventoryUI{};
+
+struct LevelUpBar{};
+struct HealthBar{};
+
+struct dataBundle {
+    std::string name;
+    Weapon &weapon;
+};
 
 #endif //INC_8051TUTORIAL_COMPONENT_H

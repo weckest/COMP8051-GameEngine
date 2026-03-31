@@ -105,7 +105,32 @@ void EventResponseSystem::onCollision(
         if (e.state != CollisionState::Stay) return;
 
         auto& t = entityA->getComponent<Transform>();
-        t.position = t.oldPosition;
+        //t.position = t.oldPosition;
+
+        auto& entityCollider = entityA->getComponent<Collider>();
+        auto& wallCollider = entityB->getComponent<Collider>();
+
+        //find overlaps
+        float overlapX = std::min(entityCollider.rect.w + entityCollider.rect.x - wallCollider.rect.x,
+            wallCollider.rect.w + wallCollider.rect.x - entityCollider.rect.x);
+        float overlapY = std::min(entityCollider.rect.h + entityCollider.rect.y - wallCollider.rect.y,
+            wallCollider.rect.h + wallCollider.rect.y - entityCollider.rect.y);
+
+        //resolve
+        if (overlapX < overlapY) {
+            // Resolve X only → slide vertically
+            if (t.position.x > t.oldPosition.x)
+                t.position.x -= overlapX; // moving right
+            else
+                t.position.x += overlapX; // moving left
+        }
+        else {
+            // Resolve Y only → slide horizontally
+            if (t.position.y > t.oldPosition.y)
+                t.position.y -= overlapY; // moving down
+            else
+                t.position.y += overlapY; // moving up
+        }
 
     } else if (checkTagsFor(ATag, BTag, "enemy") && checkTagsFor(ATag, BTag, "player")) {
 

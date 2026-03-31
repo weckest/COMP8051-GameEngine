@@ -53,13 +53,13 @@ void CollisionSystem::update(World &world, Timer& timer) {
         c.rect.x = t.position.x;
         c.rect.y = t.position.y;
 
-        //FOR THE GAME
-        if (entity->hasComponent<PlayerTag>()) {
+        //have to resize due to how the spritesheet is set up
+        if (entity->hasComponent<PlayerTag>() || entity->hasComponent<EnemyTag>()) {
 
-            auto& playerSprite = entity->getComponent<Sprite>();
+            auto& spr = entity->getComponent<Sprite>();
 
-            c.rect.x += playerSprite.dst.w / 4;
-            c.rect.y += playerSprite.dst.h / 4;
+            c.rect.x += spr.dst.w / 4;
+            c.rect.y += spr.dst.h / 4 * 2;
         }
 
     }
@@ -88,7 +88,6 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
                     //check for the collider collision
                     //inner loop
-                    timer.startTimer("innerLoop");
                     for (auto& entityB : cell) {
                         auto& colliderB = entityB->getComponent<Collider>();
 
@@ -114,7 +113,6 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
 
                     }
-                    timer.stopTimer("innerLoop");
                 }
             }
         }
@@ -136,9 +134,7 @@ void CollisionSystem::update(World &world, Timer& timer) {
     }
     timer.stopTimer("activeCollisions");
 
-    timer.startTimer("moveCollisions");
     activeCollisions = std::move(currentCollisions); //update with current collisions
-    timer.stopTimer("moveCollisions");
 }
 
 std::vector<Entity*> CollisionSystem::getAllWithin(World &world, Entity &entity, float distance) {
@@ -225,8 +221,8 @@ Entity * CollisionSystem::getClosestEntity(World& world, Entity &entity, float r
                             entityB->hasComponent<EnemyTag>()
                         ) {
 
-                            auto& t = entityB->getComponent<Transform>();
-                            Vector2D bCenterPoint = t.position;
+                            auto& bT = entityB->getComponent<Transform>();
+                            Vector2D bCenterPoint = bT.position;
 
                             if (entityB->hasComponent<Sprite>()) {
                                 auto& s = entityB->getComponent<Sprite>();
