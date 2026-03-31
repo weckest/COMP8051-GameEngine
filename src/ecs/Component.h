@@ -230,5 +230,6 @@ struct WeaponList {
 struct InventoryUI{};
 
 struct LevelUpBar{};
+struct HealthBar{};
 
 #endif //INC_8051TUTORIAL_COMPONENT_H

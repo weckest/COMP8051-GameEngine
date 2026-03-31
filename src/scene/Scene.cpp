@@ -209,6 +209,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     world.initDebug();
     createInventoryUI(windowWidth, windowHeight);
     createLevelUpUI(windowWidth, windowHeight);
+    createHealthBar(windowWidth, windowHeight);
 
 }
 
@@ -651,6 +652,33 @@ void Scene::createLevelUpUI(int windowWidth, int windowHeight) {
     SDL_FRect ldst{lt.position.x, lt.position.y, 0.0f, dst.h - offset * 2};
 
     l.addComponent<Sprite>(ltex, lsrc, ldst, RenderLayer::UI, true);
+}
 
+void Scene::createHealthBar(int windowWidth, int windowHeight) {
+    auto& back = world.createEntity();
+    back.addComponent<HealthBar>();
+    auto& c = back.addComponent<Children>();
+    auto& t = back.addComponent<Transform>(Vector2D(windowWidth - 225.0f, windowHeight - 50.0f), 0.0f, 1.0f);
+
+    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+
+    SDL_FRect src{0,64,32,32};
+    SDL_FRect dst{t.position.x, t.position.y, 200.0f, 25.0f};
+
+    back.addComponent<Sprite>(tex, src, dst, RenderLayer::UI, true);
+
+    //create health bar
+    float offset = 2.5f;
+    auto& health = world.createEntity();
+    health.addComponent<Parent>(&back);
+    c.children.push_back(&health);
+    auto& ht = health.addComponent<Transform>(Vector2D(t.position.x + offset, t.position.y + offset), 0.0f, 1.0f);
+
+    SDL_Texture* htex = TextureManager::load("../assets/colors.png");
+
+    SDL_FRect hsrc{0,0,32,32};
+    SDL_FRect hdst{t.position.x, t.position.y, 200.0f - offset * 2, 25.0f - offset * 2};
+
+    health.addComponent<Sprite>(htex, hsrc, hdst, RenderLayer::UI, true);
 
 }

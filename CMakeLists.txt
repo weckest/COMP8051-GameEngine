@@ -40,6 +40,7 @@ set(SRC_FILES
         src/ecs/system/PickUpSystem.cpp
         src/ecs/system/DebugRenderSystem.cpp
         src/manager/AudioManager.cpp
+        src/ecs/system/HealthSystem.cpp
 )
 
 # ALWAYS create the executable first
