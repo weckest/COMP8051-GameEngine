@@ -194,6 +194,7 @@ struct Item {
     float aoeModifier=1;
     float xpModifier = 1;
     std::string path = "test";
+    std::string statName{};
 
 };
 

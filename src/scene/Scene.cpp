@@ -409,7 +409,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
     float centerY = bgDst.y + bgDst.h / 2.0f - BUTTON_SIZE / 2.0f;
 
     // =========================================================
-    // 🔥 WEAPON BUTTON
+    // WEAPON BUTTON
     // =========================================================
     auto& weaponButton = world.createEntity();
 
@@ -431,7 +431,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
     weaponButton.addComponent<Sprite>(weaponTex, weaponSrc, weaponDst, RenderLayer::UI, true);
     weaponButton.addComponent<Collider>("ui", weaponDst);
 
-    // Label
+    //Weapon Label
     auto& weaponLabelEntity = world.createEntity();
 
     Label weaponLabel = {
@@ -455,6 +455,33 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
 
     weaponLabelEntity.addComponent<Parent>(&overlay);
     overlay.getComponent<Children>().children.push_back(&weaponLabelEntity);
+
+    //Stat Label
+    auto& weaponStatEntity = world.createEntity();
+
+    Label weaponStat = {
+        "+" + w.name,
+        AssetManager::getFont("bungeeSmall"),
+        {0,100,0,255},
+        LabelType::UI,
+        "weaponStat"
+    };
+
+    weaponStat.dirty = true;
+
+    TextureManager::loadLabel(weaponStat);
+
+    float weaponStatX = weaponDst.x + BUTTON_SIZE / 2 - weaponLabel.dst.w / 2;
+    float weaponStatY = weaponDst.y - weaponLabel.dst.h +160;
+
+    weaponStatEntity.addComponent<Label>(weaponStat);
+    weaponStatEntity.addComponent<Transform>(Vector2D(weaponStatX, weaponStatY), 0.0f, 1.0f);
+
+    weaponStatEntity.addComponent<Parent>(&overlay);
+    overlay.getComponent<Children>().children.push_back(&weaponStatEntity);
+
+    //Stat Label
+
 
     // Clickable
     auto& weaponClickable = weaponButton.addComponent<Clickable>();
@@ -480,7 +507,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
     overlay.getComponent<Children>().children.push_back(&weaponButton);
 
     // =========================================================
-    // 🧪 ITEM BUTTON
+    // ITEM BUTTON
     // =========================================================
     auto& itemButton = world.createEntity();
 
@@ -526,6 +553,30 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
 
     itemLabelEntity.addComponent<Parent>(&overlay);
     overlay.getComponent<Children>().children.push_back(&itemLabelEntity);
+
+    //Item Stat Label
+    auto& itemStatEntity = world.createEntity();
+
+    Label itemStat = {
+        "+" + i.statName,
+        AssetManager::getFont("bungeeSmall"),
+        {0,100,0,255},
+        LabelType::UI,
+        "itemStat"
+    };
+    itemStat.dirty = true;
+
+    TextureManager::loadLabel(itemStat);
+
+    float itemStatX = itemDst.x + BUTTON_SIZE / 2 - itemStat.dst.w / 2;
+    float itemStatY = itemDst.y - itemStat.dst.h +160;
+
+    itemStatEntity.addComponent<Label>(itemStat);
+    itemStatEntity.addComponent<Transform>(Vector2D(itemStatX, itemStatY), 0.0f, 1.0f);
+
+    itemStatEntity.addComponent<Parent>(&overlay);
+    overlay.getComponent<Children>().children.push_back(&itemStatEntity);
+
 
     // Clickable
     auto& itemClickable = itemButton.addComponent<Clickable>();

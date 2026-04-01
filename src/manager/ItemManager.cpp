@@ -38,6 +38,11 @@ void ItemManager::loadAllItems(const char* path) {
             item.path = itemPath;
         }
 
+        if (auto* itemStat = elem->Attribute("stat")) {
+            //std::cout << itemPath << std::endl;
+            item.statName = itemStat;
+        }
+
         //check to make sure value exists before adding
         float value;
         if (elem->QueryFloatAttribute("damageModifier", &value) == tinyxml2::XML_SUCCESS)
