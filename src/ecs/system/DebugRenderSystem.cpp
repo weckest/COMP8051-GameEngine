@@ -42,7 +42,12 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
     playerCenter.y -= cam.view.y;
 
     if (debugState.range) {
-        TextureManager::drawCircle(playerCenter, 200.0f, 0, 255, 200);
+
+        for (auto& e : entities) {
+            if (e->hasComponent<RingFireTag>()) {
+                TextureManager::drawCircle(playerCenter, e->getComponent<RingFireTag>().range, 0, 255, 200);
+            }
+        }
     }
 
     int sumColliders = 0;

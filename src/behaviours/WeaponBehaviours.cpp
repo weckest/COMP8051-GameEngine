@@ -77,8 +77,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     c.mask = CollisionLayer::ENEMY;
 
                 float damage =
-                    50.0f * getStat(weapon, "damageModifier", 1.0f) +
-                    (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier);
+                    50.0f * (getStat(weapon, "damageModifier", 1.0f) +
+                    (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier));
 
                 float aoe = 100.0f * getStat(weapon, "aoeModifier", 1.0f);
 
@@ -155,8 +155,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 c.mask = CollisionLayer::ENEMY;
 
                     float damage =
-                        50.0f * getStat(weapon, "damageModifier", 1.0f) +
-                        (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier);
+                        50.0f * (getStat(weapon, "damageModifier", 1.0f) +
+                        (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier));
 
                     float aoe = 100.0f * getStat(weapon, "aoeModifier", 1.0f);
 
@@ -212,13 +212,13 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                         centerPos.y - c.rect.h / 2.0f
                     };
 
-                    ring.addComponent<RingFireTag>(radius * 2);
+                    ring.addComponent<RingFireTag>(radius );
 
                     // lifetime instead of nested spawner
                     ring.addComponent<Lifetime>(getStat(weapon, "lifetime", 0.1f));
 
                     ring.addComponent<ProjectileTag>(
-                        25.0f * getStat(weapon, "damageModifier", 1.0f) + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
+                        25.0f * (getStat(weapon, "damageModifier", 1.0f) + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier)),
                         0.0f
                         );
 
@@ -230,9 +230,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
             // do damage
 
             //destroy itself
-
-
-        }
+    }
     }
 
 };

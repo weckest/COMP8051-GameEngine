@@ -230,12 +230,22 @@ void EventResponseSystem::onCollision(
         entityA->destroy();
     } else if (entityA->hasComponent<RingFireTag>() && checkTagsFor(ATag, BTag, "enemy")) {
 
+        //find player
+        Entity* player = nullptr;
+        for (auto& e: world.getEntities()) {
+            if (e->hasComponent<PlayerTag>()) {
+                player = e.get();
+                break;
+            }
+        }
         auto& ringFire = entityA->getComponent<RingFireTag>();
         auto& projectileInfo = entityA->getComponent<ProjectileTag>();
         float range = ringFire.range;
 
         // find all enemies within range
-        std::vector<Entity*> enemies = CollisionSystem::getAllWithin(world, *entityA, range);
+        if (!player) return;
+
+        std::vector<Entity*> enemies = CollisionSystem::getAllWithin(world, *player, range);
         std::vector<Entity*> toDestroy;
 
         for (auto& enemy : enemies) {

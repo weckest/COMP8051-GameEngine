@@ -139,10 +139,12 @@ void WeaponManager::upgradeRandStat(Entity& entity, dataBundle bundle) {
 
 			//if we are at 5 level ups double bullets
 			if (targ.amtLevelUps % 5 == 0) {
-				targ.weaponStats["projectileModifier"] *= 2;
+				targ.weaponStats["projectileModifier"] += 1;
 			}
 
-			targ.weaponStats[bundle.name] *= 1.25f;         //25%
+			// random percentage between 10% -> 20%
+			float percentage = (std::rand() % 11 + 10) / 100.0f;
+			targ.weaponStats[bundle.name] += percentage;
 			break;
 		}
 	}
