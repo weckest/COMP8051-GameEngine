@@ -4,9 +4,10 @@
 
 #include "MouseInputSystem.h"
 
+#include "Game.h"
 #include "World.h"
 
-void MouseInputSystem::update(World& world, const SDL_Event& e) {
+void MouseInputSystem::update(World& world, const SDL_Event& e, SDL_Renderer* renderer) {
 	if (e.type != SDL_EVENT_MOUSE_MOTION &&
 		e.type != SDL_EVENT_MOUSE_BUTTON_DOWN &&
 		e.type != SDL_EVENT_MOUSE_BUTTON_UP) {
@@ -16,6 +17,9 @@ void MouseInputSystem::update(World& world, const SDL_Event& e) {
 	float mx, my;
 	SDL_GetMouseState(&mx, &my);
 
+	float logicalX, logicalY;
+	SDL_RenderCoordinatesFromWindow(renderer, mx, my, &logicalX, &logicalY);
+
 	for (auto& entity : world.getEntities()) {
 		if (entity->hasComponent<Clickable>() && entity->hasComponent<Collider>()) {
 			Clickable& clickable = entity->getComponent<Clickable>();
@@ -23,8 +27,11 @@ void MouseInputSystem::update(World& world, const SDL_Event& e) {
 
 			if (!collider.enabled) continue;
 
-			bool inside = (mx >= collider.rect.x  && mx <= collider.rect.x + collider.rect.w &&
-				my >= collider.rect.y && my <= collider.rect.y + collider.rect.h);
+
+			bool inside = (logicalX >= collider.rect.x &&
+		   logicalX <= collider.rect.x + collider.rect.w &&
+		   logicalY >= collider.rect.y &&
+		   logicalY <= collider.rect.y + collider.rect.h);
 
 			//hover
 
