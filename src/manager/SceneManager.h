@@ -18,6 +18,7 @@ struct SceneParams {
     const char* mapPath;
     int windowWidth;
     int windowHeight;
+    SDL_Window* window;
 };
 
 class SceneManager {
@@ -34,7 +35,8 @@ class SceneManager {
                 params.name,
                 params.mapPath,
                 params.windowWidth,
-                params.windowHeight
+                params.windowHeight,
+                params.window
             );
         } else {
             std::cerr << "Scene not found: " << name << std::endl;
@@ -44,16 +46,17 @@ class SceneManager {
 
 public:
     std::unique_ptr<Scene> currentScene;
-    void loadScene(SceneType sceneType, const char* sceneName, const char* mapPath, int windowWidth, int windowHeight) {
-        sceneParam[sceneName] = {sceneType, sceneName, mapPath, windowWidth, windowHeight};
+    void loadScene(SceneType sceneType, const char* sceneName, const char* mapPath,
+               int windowWidth, int windowHeight, SDL_Window* window) {
+        sceneParam[sceneName] = {sceneType, sceneName, mapPath, windowWidth, windowHeight, window};
     }
 
     void changeSceneDeferred(const std::string& name) {
         pendingScene = name;
     }
 
-    void update(const float dt, SDL_Event& e) {
-        if (currentScene) currentScene->update(dt, e); //all our world updates
+    void update(const float dt, SDL_Event& e, SDL_Renderer* renderer) {
+        if (currentScene) currentScene->update(dt, e, renderer); //all our world updates
         if (!pendingScene.empty()) {
             changeScene(pendingScene);
             pendingScene.clear();

@@ -95,7 +95,7 @@ class World {
 public:
     World();
 
-    void update(float dt, SDL_Event& event, SceneType sceneType) {
+    void update(float dt, SDL_Event& event, SceneType sceneType, SDL_Renderer* renderer) {
 
         if (sceneType == SceneType::MainMenu) {
             //main menu system
@@ -106,6 +106,7 @@ public:
             timer.startTimer("update");
             keyboardInputSystem.update(*this, entities, event);
             gameStateSystem.update(entities, dt);
+            bobbingSystem.update(entities, dt);
             timer.startTimer("movement");
             movementSystem.update(entities, dt);
             timer.stopTimer("movement");
@@ -135,7 +136,7 @@ public:
             timer.stopTimer("update");
         }
         bobbingSystem.update(entities, dt);
-        mouseInputSystem.update(*this, event);
+        mouseInputSystem.update(*this, event,renderer);
         audioEventQueue.process(); //process all audio events
         timer.startTimer("prerender");
         preRenderSystem.update(entities);

@@ -43,7 +43,17 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
     int flags = 0;
     if (fullscreen) {
-        flags = SDL_WINDOW_FULLSCREEN;
+        const SDL_DisplayMode* mode = SDL_GetDesktopDisplayMode(0);
+        if (mode) {
+            width = mode->w;
+            height = mode->h;
+            flags = SDL_WINDOW_FULLSCREEN;
+        } else {
+            width = 800;
+            height = 600;
+        }
+    } else {
+        flags = 0;
     }
 
     //Initialize SDL library
@@ -108,10 +118,10 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     std::cout << "Animations loaded..." << std::endl;
 
     //load scenes
-    sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, width, height);
-    sceneManager.loadScene(SceneType::Gameplay, "level1", "../assets/map.tmx", width, height);
-    sceneManager.loadScene(SceneType::Gameplay, "level2", "../assets/map2/map2.tmx", width, height);
-    sceneManager.loadScene(SceneType::Gameplay, "gameplay", "../assets/map-tlc/TLC-MapUpdated.tmx", width, height);
+    sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, width, height, window);
+    sceneManager.loadScene(SceneType::Gameplay, "level1", "../assets/map.tmx", width, height, window);
+    sceneManager.loadScene(SceneType::Gameplay, "level2", "../assets/map2/map2.tmx", width, height, window);
+    sceneManager.loadScene(SceneType::Gameplay, "gameplay", "../assets/map-tlc/TLC-MapUpdated.tmx", width, height, window);
 
     std::cout << "Scenes loaded..." << std::endl;
 
@@ -168,13 +178,35 @@ void Game::handleEvents() {
         case SDL_EVENT_QUIT: //usually triggered when the user closes the window
             isRunning = false;
             break;
+        case SDL_EVENT_KEY_DOWN: {
+            // In SDL3, use event.key.keycode
+            if (event.key.key == SDLK_9) { // top-row '9' key
+                isFullscreen = !isFullscreen; // toggle fullscreen
+
+                if (isFullscreen) {
+                    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+                } else {
+                    SDL_SetWindowFullscreen(window, 0);
+                }
+            }
+            int winW, winH;
+            SDL_GetWindowSize(window, &winW, &winH);
+
+            // Your design resolution
+            const int designW = 800;
+            const int designH = 600;
+
+            SDL_SetRenderLogicalPresentation(renderer, 800, 600,
+    SDL_LOGICAL_PRESENTATION_LETTERBOX);
+            break;
+        }
         default:
             break;
     }
 }
 
 void Game::update(float dt) {
-    sceneManager.update(dt, event);
+    sceneManager.update(dt, event, renderer);
 }
 
 void Game::render() {

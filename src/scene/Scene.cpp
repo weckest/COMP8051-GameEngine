@@ -10,21 +10,16 @@
 #include "Game.h"
 #include "manager/WeaponManager.h"
 
-Scene::Scene(SceneType sceneType, const char *sceneName, const char *mapPath, int windowWidth, int windowHeight)
-: name(sceneName), type(sceneType) {
-
+Scene::Scene(SceneType sceneType, const char* sceneName, const char* mapPath,
+             int windowWidth, int windowHeight, SDL_Window* window)
+    : name(sceneName), type(sceneType) {
 
     if (sceneType == SceneType::MainMenu) {
-
         initMainMenu(windowWidth, windowHeight);
         return;
-
     }
 
-
-
-    initGameplay(mapPath, windowWidth, windowHeight);
-
+    initGameplay(window, mapPath, windowWidth, windowHeight); // now works
 }
 
 void Scene::initMainMenu(int windowWidth, int windowHeight) {
@@ -71,14 +66,16 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     createCogButton(windowWidth, windowHeight, settingsOverlay);
 }
 
-void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
+void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidth, int windowHeight) {
 
-    world.getEventManager().subscribe([this, windowWidth, windowHeight](const BaseEvent& e) {
+    world.getEventManager().subscribe([this, window](const BaseEvent& e) {
         if (e.type != EventType::ShowLevelUpMenu) return;
 
         const auto& ev = static_cast<const ShowLevelUpMenuEvent&>(e);
 
-        createLevelUpMenu(windowWidth, windowHeight, ev.bundle, ev.item);
+        // Dynamically get the current window size
+
+        createLevelUpMenu(800, 600, ev.bundle, ev.item);
     });
 
 
@@ -377,43 +374,43 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 //Function to display the menu for player level Up.
 Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w, Item i) {
 
-    //Create overlay entity and load background textures
-    auto& overlay(world.createEntity());
+    // DESIGN RESOLUTION (matches SDL logical presentation)
+    constexpr int DESIGN_WIDTH = 800;
+    constexpr int DESIGN_HEIGHT = 600;
+
+    // ===== OVERLAY =====
+    auto& overlay = world.createEntity();
 
     SDL_Texture* bgTex = TextureManager::load("../assets/ui/settings.jpg");
 
-    SDL_FRect bgSrc = {0, 0, windowWidth * 0.7f, windowHeight * 0.7f};
+    float bgWidth = DESIGN_WIDTH * 0.7f;
+    float bgHeight = DESIGN_HEIGHT * 0.7f;
+
     SDL_FRect bgDst = {
-        (float)windowWidth / 2 - bgSrc.w / 2,
-        (float)windowHeight / 2 - bgSrc.h / 2,
-        bgSrc.w,
-        bgSrc.h
+        (DESIGN_WIDTH - bgWidth) / 2.0f,
+        (DESIGN_HEIGHT - bgHeight) / 2.0f,
+        bgWidth,
+        bgHeight
     };
+
+    SDL_FRect bgSrc = {0, 0, bgWidth, bgHeight};
 
     overlay.addComponent<Transform>(Vector2D(bgDst.x, bgDst.y), 0.0f, 1.0f);
     overlay.addComponent<Sprite>(bgTex, bgSrc, bgDst, RenderLayer::UI, true);
     overlay.addComponent<Children>();
 
-    //Characteristsics of Buttons and how far apart to put them
-    float baseX = bgDst.x;
-    float baseY = bgDst.y;
+    // ===== BUTTON LAYOUT =====
+    constexpr float BUTTON_SIZE = 120.0f;
+    constexpr float SPACING = 60.0f;
 
-    float spacing = 80.0f;
-    float buttonWidth = 150.0f;
-    float buttonHeight = 150.0f;
+    float totalWidth = BUTTON_SIZE * 2 + SPACING;
 
-    float totalWidth = buttonWidth * 2 + spacing;
+    float startX = bgDst.x + (bgDst.w - totalWidth) / 2.0f;
+    float centerY = bgDst.y + bgDst.h / 2.0f - BUTTON_SIZE / 2.0f;
 
-    float startX = baseX + (bgDst.w - totalWidth) / 2;
-    float centerY = baseY + bgDst.h / 2 - buttonHeight / 2;
-
-
-
-    //
-    // ===== WEAPON BUTTON =====
-    //
-
-    //Loads weapon texture from path
+    // =========================================================
+    // 🔥 WEAPON BUTTON
+    // =========================================================
     auto& weaponButton = world.createEntity();
 
     auto& weaponTransform = weaponButton.addComponent<Transform>(
@@ -422,176 +419,134 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
 
     SDL_Texture* weaponTex = TextureManager::load(w.weapon.path.c_str());
 
-
-    //Get scale correct and position.
-
-    SDL_FRect weaponSrc = {0, 0, buttonWidth, buttonHeight};
     SDL_FRect weaponDst = {
         weaponTransform.position.x,
         weaponTransform.position.y,
-        buttonWidth,
-        buttonHeight
+        BUTTON_SIZE,
+        BUTTON_SIZE
     };
 
+    SDL_FRect weaponSrc = {0, 0, 32, 32};
 
-    //Add sprite and collider
     weaponButton.addComponent<Sprite>(weaponTex, weaponSrc, weaponDst, RenderLayer::UI, true);
     weaponButton.addComponent<Collider>("ui", weaponDst);
 
-
-
-    //////////////Weapon Label
+    // Label
     auto& weaponLabelEntity = world.createEntity();
+
     Label weaponLabel = {
         w.weapon.name,
         AssetManager::getFont("bungee"),
-        {0,0,0,0},
+        {0,0,0,255},
         LabelType::UI,
-
         "weaponLabel"
     };
 
-    weaponLabel.visible = true;
+    weaponLabel.textureCacheKey = "weapon_" + w.weapon.name;
+    weaponLabel.dirty = true;
 
     TextureManager::loadLabel(weaponLabel);
 
+    float weaponLabelX = weaponDst.x + BUTTON_SIZE / 2 - weaponLabel.dst.w / 2;
+    float weaponLabelY = weaponDst.y - weaponLabel.dst.h - 10;
 
-    weaponLabel.dirty = true;
     weaponLabelEntity.addComponent<Label>(weaponLabel);
+    weaponLabelEntity.addComponent<Transform>(Vector2D(weaponLabelX, weaponLabelY), 0.0f, 1.0f);
 
-
-
-    // Compute position centered on item
-    float weaponLabelX = weaponTransform.position.x + buttonWidth / 2 - (weaponLabel.dst.w / 2)  -70;
-    float weaponLabelY = weaponTransform.position.y - weaponLabel.dst.h - 15; // 5 px above button
-    weaponLabelEntity.addComponent<Transform>(
-        Vector2D(weaponLabelX, weaponLabelY), 0.0f, 1.0f
-    );
-
-    // parent it to overlay
     weaponLabelEntity.addComponent<Parent>(&overlay);
     overlay.getComponent<Children>().children.push_back(&weaponLabelEntity);
 
-
-
-
-    //Functions for when button is pressed and released.
+    // Clickable
     auto& weaponClickable = weaponButton.addComponent<Clickable>();
 
     weaponClickable.onPressed = [&weaponTransform]() {
         weaponTransform.scale = 0.9f;
     };
 
-    weaponClickable.onReleased = [this, &overlay, w, i, &weaponTransform, windowWidth, windowHeight]() {
+    weaponClickable.onReleased = [this, &overlay, w, i, &weaponTransform]() {
         weaponTransform.scale = 1.0f;
 
         world.getEventManager().emit(LevelUpChoiceEvent{true, w, i});
 
-        // hide menu after selection
         toggleSettingsOverlayVisibility(overlay);
-
-        //Update inventory function
-        createInventoryUI(windowWidth,windowHeight);
-
-
+        createInventoryUI(800, 600); // use design size
     };
 
     weaponClickable.onCancel = [&weaponTransform]() {
         weaponTransform.scale = 1.0f;
     };
 
-
-    //Make parent child relationship and add to overlay
     weaponButton.addComponent<Parent>(&overlay);
     overlay.getComponent<Children>().children.push_back(&weaponButton);
 
-    //
-    // ===== ITEM BUTTON =====
-    //
-
-    //create button,
+    // =========================================================
+    // 🧪 ITEM BUTTON
+    // =========================================================
     auto& itemButton = world.createEntity();
 
     auto& itemTransform = itemButton.addComponent<Transform>(
-        Vector2D(startX + buttonWidth + spacing, centerY), 0.0f, 1.0f
+        Vector2D(startX + BUTTON_SIZE + SPACING, centerY), 0.0f, 1.0f
     );
 
     SDL_Texture* itemTex = TextureManager::load(i.path.c_str());
 
-    SDL_FRect itemSrc = {0, 0, buttonWidth, buttonHeight};
     SDL_FRect itemDst = {
         itemTransform.position.x,
         itemTransform.position.y,
-        buttonWidth,
-        buttonHeight
+        BUTTON_SIZE,
+        BUTTON_SIZE
     };
 
-    //Add sprites and collider
+    SDL_FRect itemSrc = {0, 0, 32, 32};
+
     itemButton.addComponent<Sprite>(itemTex, itemSrc, itemDst, RenderLayer::UI, true);
     itemButton.addComponent<Collider>("ui", itemDst);
 
-
-    //////////////Item Label
+    // Label
     auto& itemLabelEntity = world.createEntity();
+
     Label itemLabel = {
         i.name,
         AssetManager::getFont("bungee"),
-        {0,0,0,0},
+        {0,0,0,255},
         LabelType::UI,
-
         "itemLabel"
     };
 
-    itemLabel.visible = true;
+    itemLabel.textureCacheKey = "item_" + i.name;
+    itemLabel.dirty = true;
 
     TextureManager::loadLabel(itemLabel);
 
+    float itemLabelX = itemDst.x + BUTTON_SIZE / 2 - itemLabel.dst.w / 2;
+    float itemLabelY = itemDst.y - itemLabel.dst.h - 10;
 
-    itemLabel.dirty = true;
     itemLabelEntity.addComponent<Label>(itemLabel);
+    itemLabelEntity.addComponent<Transform>(Vector2D(itemLabelX, itemLabelY), 0.0f, 1.0f);
 
-
-
-    // Compute position centered on item
-    float itemLabelX = itemTransform.position.x + buttonWidth / 2 - (itemLabel.dst.w / 2)  -70;
-    float itemLabelY = itemTransform.position.y - itemLabel.dst.h - 15; // 5 px above button
-    itemLabelEntity.addComponent<Transform>(
-        Vector2D(itemLabelX, itemLabelY), 0.0f, 1.0f
-    );
-
-    // parent it to overlay
     itemLabelEntity.addComponent<Parent>(&overlay);
     overlay.getComponent<Children>().children.push_back(&itemLabelEntity);
 
-
-    ////////////
-
-    //Functions for when clicked and released
+    // Clickable
     auto& itemClickable = itemButton.addComponent<Clickable>();
 
     itemClickable.onPressed = [&itemTransform]() {
         itemTransform.scale = 0.9f;
     };
 
-    itemClickable.onReleased = [this, &overlay, w, i, &itemTransform, windowWidth, windowHeight]() {
+    itemClickable.onReleased = [this, &overlay, w, i, &itemTransform]() {
         itemTransform.scale = 1.0f;
 
         world.getEventManager().emit(LevelUpChoiceEvent{false, w, i});
 
         toggleSettingsOverlayVisibility(overlay);
-
-        //Call function to redraw items/weapons.
-        createInventoryUI(windowWidth,windowHeight);
-
-
-
+        createInventoryUI(800, 600);
     };
 
     itemClickable.onCancel = [&itemTransform]() {
         itemTransform.scale = 1.0f;
     };
 
-    //Add as child of overlay, push to overlay
     itemButton.addComponent<Parent>(&overlay);
     overlay.getComponent<Children>().children.push_back(&itemButton);
 

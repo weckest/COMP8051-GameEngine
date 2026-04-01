@@ -24,6 +24,9 @@ public:
     Game();
     ~Game();
 
+    bool isFullscreen = false;
+    SDL_Window* window = nullptr;
+
     //these are the types that SDL uses
     void init(const char* title, int width, int height, bool fullscreen);
 
@@ -33,6 +36,10 @@ public:
     void render(); //handles the drawing of the current game state to the screen
     SDL_Window* getWindow() {
         return window;
+    }
+
+    SDL_Renderer* getRenderer() {
+        return renderer;
     }
 
     //used to free resources
@@ -55,7 +62,6 @@ private:
     bool isRunning = false;
 
 
-    SDL_Window* window = nullptr;
     SDL_Event event;
 
     //sdl stores color channels as 8-bit unsigned
