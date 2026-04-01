@@ -39,6 +39,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     menu.addComponent<Sprite>(tex, src, dst);
 
     //TODO: Settings and Credits
+
     //TITLE
     auto& title = world.createEntity();
     auto& titleTransform = title.addComponent<Transform>(Vector2D((windowWidth / 4.0f), 30), 0.0f, 1.0f);
@@ -51,6 +52,33 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     title.addComponent<ItemTag>();
 
     //PLAY
+    auto& playButton = world.createEntity();
+    auto& playTransform = playButton.addComponent<Transform>(Vector2D((windowWidth / 2.0f), windowHeight / 2.0f), 0.0f, 1.0f);
+
+    SDL_Texture* playTex = TextureManager::load("../assets/ui/buttons/green/normal.png");
+    SDL_FRect playSrc = {0, 0, 48, 16};
+    SDL_FRect playDst = {playTransform.position.x, playTransform.position.y, (float)playSrc.w * 2.5f, (float)playSrc.h * 2.5f};
+    playTransform.position.x -= playDst.w / 2; //center it
+    playDst.x -= playDst.w / 2; //center it
+    playButton.addComponent<Sprite>(playTex, playSrc, playDst, RenderLayer::UI);
+    playButton.addComponent<Collider>("ui", playDst);
+
+    auto& clickable = playButton.addComponent<Clickable>();
+
+    clickable.onPressed =  [&playTransform] {
+        playTransform.scale = 1.1f;
+    };
+
+    clickable.onReleased =  [this, &playTransform] {
+        Game::onSceneChangeRequest("gameplay");
+        playTransform.scale = 1.0f;
+        //toggleSettingsOverlayVisibility(overlay);
+    };
+
+    clickable.onCancel =  [&playTransform] {
+        playTransform.scale = 1.0f;
+    };
+
 
     //SETTINGS
     //auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
