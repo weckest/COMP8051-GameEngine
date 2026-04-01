@@ -115,6 +115,7 @@ public:
             timer.stopTimer("pickUp");
             timer.startTimer("colliders");
             timer.startTimer("grid");
+            // std::cout << "Main Grid Update" << std::endl;
             gridSystem.update(entityGrid, entities, *this);
             timer.stopTimer("grid");
             timer.startTimer("collision");
@@ -124,11 +125,11 @@ public:
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
+            weaponFireSystem.update(*this, dt);
             spawnTimerSystem.update(entities, dt);
             destructionSystem.update(entities);
             levelUpSystem.update(entities, *this);
             healthSystem.update(entities, *this);
-            weaponFireSystem.update(*this, dt);
             lifetimeSystem.update(entities, dt);
             hudSystem.update(entities);
             timer.stopTimer("update");
@@ -143,6 +144,10 @@ public:
 
         synchronizeEntities();
         cleanup();
+        if (sceneType != SceneType::MainMenu && !isPaused) {
+            // std::cout << "Grid Update" << std::endl;
+            gridSystem.update(entityGrid, entities, *this);
+        }
     }
 
     void render() {

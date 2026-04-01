@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <weapons>
-<!--    <weapon-->
-<!--            name="shotgun"-->
-<!--            path = "../assets/sprites/Shotgun.png"-->
-<!--            fireRate="1.0"-->
-<!--            damageModifier="0.5"-->
-<!--            projectileSizeModifier="1.0"-->
-<!--            aoeModifier="1.0"-->
-<!--            critDamageModifier="2.0"-->
-<!--            critChanceModifier="0.1"-->
-<!--            spreadModifier="1.0"-->
-<!--            projectileModifier="1.0"-->
-<!--            projectileSpeedModifier="1.0"-->
-<!--            cooldown = "1.0"-->
-<!--    />-->
+    <weapon
+            name="shotgun"
+            path = "../assets/sprites/Shotgun.png"
+            fireRate="1.0"
+            damageModifier="0.5"
+            projectileSizeModifier="1.0"
+            aoeModifier="1.0"
+            critDamageModifier="2.0"
+            critChanceModifier="0.1"
+            spreadModifier="1.0"
+            projectileModifier="1.0"
+            projectileSpeedModifier="1.0"
+            cooldown = "1.0"
+    />
     <weapon
             name="bubblegun"
             path="../assets/sprites/BubbleGun.png"
             fireRate="1.0"
-            damageModifier="5.0"
+            damageModifier="1.0"
             projectileSizeModifier="1.0"
             projectileModifier="1.0"
             aoeModifier="1.3"
@@ -27,19 +27,19 @@
             projectileSpeedModifier="1.0"
             cooldown = "1.0"
     />
-<!--    <weapon-->
-<!--            name="RingofFire"-->
-<!--            path = "../assets/sprites/RingOfFire.png"-->
-<!--            fireRate="0.25"-->
-<!--            damageModifier="1.0"-->
-<!--            rangeModifier="1.0"-->
-<!--            projectileModifier="2.0"-->
-<!--            aoeModifier="1.0"-->
-<!--            lifetime = "0.2f"-->
-<!--            critDamageModifier="1.0"-->
-<!--            critChanceModifier="0.0"-->
-<!--            projectileSizeModifier="1.0"-->
-<!--            projectileSpeedModifier="0.0"-->
-<!--            cooldown="1.0"-->
-<!--    />-->
+    <weapon
+            name="RingofFire"
+            path = "../assets/sprites/RingOfFire.png"
+            fireRate="0.25"
+            damageModifier="1.0"
+            rangeModifier="1.0"
+            projectileModifier="2.0"
+            aoeModifier="1.0"
+            lifetime = "0.2f"
+            critDamageModifier="1.0"
+            critChanceModifier="0.0"
+            projectileSizeModifier="1.0"
+            projectileSpeedModifier="0.0"
+            cooldown="1.0"
+    />
 </weapons>

@@ -48,13 +48,16 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
     int sumColliders = 0;
     int sumItems = 0;
     int sumEnemies = 0;
+    std::vector<Entity*> sumFlagEntities;
     for (auto& e : entities) {
         if (e->hasComponent<Label>()) {
             if (e->getComponent<Label>().type == LabelType::DebugStats) {
                 updateDebugLabel(*e);
             }
         }
+        if (e->hasComponent<Clickable>()) continue;
         if (e->hasComponent<Collider>()) {
+            sumFlagEntities.push_back(e.get());
             sumColliders++;
         }
         if (e->hasComponent<ItemTag>()) {
@@ -65,38 +68,86 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
         }
     }
 
-    std::cout << sumColliders << " sum colliders" << std::endl;
-    std::cout << sumItems << " sum items" << std::endl;
-    std::cout << sumEnemies << " sum enemies" << std::endl;
+    // std::cout << sumColliders << " sum colliders" << std::endl;
+    // std::cout << sumItems << " sum items" << std::endl;
+    // std::cout << sumEnemies << " sum enemies" << std::endl;
+    //
+    // int sumGridColliders = 0;
+    // int sumGridItems = 0;
+    // int sumGridEnemies = 0;
+    // std::vector<Entity*> flaggedEntities;
+    // std::vector<Entity*> gridFlaggedEntities;
+    // for (int i = 0; i < grid.size(); i++) {
+    //     for (int j = 0; j < grid[i].size(); j++) {
+    //         auto& cell = grid[i][j];
+    //         for (auto& e : cell) {
+    //             auto it = std::find(flaggedEntities.begin(), flaggedEntities.end(), e);
+    //             if (it == flaggedEntities.end()) {
+    //                 if (e->hasComponent<Clickable>()) continue;
+    //                 flaggedEntities.push_back(e);
+    //                 if (e->hasComponent<Collider>()) {
+    //                     gridFlaggedEntities.push_back(e);
+    //                     sumGridColliders++;
+    //                 }
+    //                 if (e->hasComponent<ItemTag>()) {
+    //                     sumGridItems++;
+    //                 }
+    //                 if (e->hasComponent<EnemyTag>()) {
+    //                     sumGridEnemies++;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
-    int sumGridColliders = 0;
-    int sumGridItems = 0;
-    int sumGridEnemies = 0;
-    std::vector<Entity*> flaggedEntities;
-    for (int i = 0; i < grid.size(); i++) {
-        for (int j = 0; j < grid[i].size(); j++) {
-            auto& cell = grid[i][j];
-            for (auto& e : cell) {
-                auto it = std::find(flaggedEntities.begin(), flaggedEntities.end(), e);
-                if (it == flaggedEntities.end()) {
-                    flaggedEntities.push_back(e);
-                    if (e->hasComponent<Collider>()) {
-                        sumGridColliders++;
-                    }
-                    if (e->hasComponent<ItemTag>()) {
-                        sumGridItems++;
-                    }
-                    if (e->hasComponent<EnemyTag>()) {
-                        sumGridEnemies++;
-                    }
-                }
-            }
-        }
-    }
-
-    std::cout << sumGridColliders << " grid colliders" << std::endl;
-    std::cout << sumGridItems << " grid items" << std::endl;
-    std::cout << sumGridEnemies << " grid enemies" << std::endl;
+    // std::cout << sumGridColliders << " grid colliders" << std::endl;
+    // std::cout << sumGridItems << " grid items" << std::endl;
+    // std::cout << sumGridEnemies << " grid enemies" << std::endl;
+    //
+    // if (sumGridColliders != sumColliders || sumGridEnemies != sumEnemies) {
+    //     std::cout << "Sums" << std::endl;
+    //     for (auto& e : sumFlagEntities) {
+    //         std::cout << e << std::endl;
+    //     }
+    //
+    //     std::cout << "\nGrid" << std::endl;
+    //     for (auto& e : gridFlaggedEntities) {
+    //         std::cout << e << std::endl;
+    //     }
+    //
+    //     if (sumGridColliders > sumColliders) {
+    //         std::cout << "\nGrid Diffs" << std::endl;
+    //         for (auto& e: gridFlaggedEntities) {
+    //             if (std::find(sumFlagEntities.begin(), sumFlagEntities.end(), e) == sumFlagEntities.end()) {
+    //                 std::cout << e << std::endl;
+    //             }
+    //         }
+    //     } else if (sumColliders > sumGridColliders) {
+    //         std::cout << "\nSum Diffs" << std::endl;
+    //         for (auto& e: sumFlagEntities) {
+    //             if (std::find(gridFlaggedEntities.begin(), gridFlaggedEntities.end(), e) == gridFlaggedEntities.end()) {
+    //                 std::cout << e << std::endl;
+    //             }
+    //         }
+    //     } else if (sumGridEnemies > sumEnemies) {
+    //         std::cout << "\nGrid Enemy Diffs" << std::endl;
+    //         for (auto& e: gridFlaggedEntities) {
+    //             if (std::find(sumFlagEntities.begin(), sumFlagEntities.end(), e) == sumFlagEntities.end()) {
+    //                 std::cout << e << std::endl;
+    //             }
+    //         }
+    //     } else if (sumEnemies > sumGridEnemies) {
+    //         std::cout << "\nSum Enemy Diffs" << std::endl;
+    //         for (auto& e: sumFlagEntities) {
+    //             if (std::find(gridFlaggedEntities.begin(), gridFlaggedEntities.end(), e) == gridFlaggedEntities.end()) {
+    //                 std::cout << e << std::endl;
+    //             }
+    //         }
+    //     }
+    //
+    //
+    //     std::cout << "SHITS FUCKED!!!" << std::endl;
+    // }
 
 
     if (debugState.colliders) {

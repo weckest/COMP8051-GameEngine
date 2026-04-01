@@ -15,6 +15,7 @@ enum class EventType {
     ToggleDebug,
     SpawnEntity,
     Death,
+    Move,
     GridDebug,
     LevelUp,
     KeyPress,
@@ -77,6 +78,13 @@ struct DeathEvent : BaseEvent {
     Entity* entity = nullptr;
     DeathEvent(Entity* entity) : entity(entity) {
         type = EventType::Death;
+    }
+};
+
+struct MoveEvent : BaseEvent {
+    Entity* entity = nullptr;
+    MoveEvent(Entity* entity) : entity(entity) {
+        type = EventType::Move;
     }
 };
 

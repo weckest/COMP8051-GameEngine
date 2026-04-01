@@ -19,10 +19,10 @@ EventResponseSystem::EventResponseSystem(World &world) {
             //onCollision(collision, "player", "item", world);
 
             onCollision(collision, "player", "wall", world);
-            // onCollision(collision, "player", "enemy", world);
+            onCollision(collision, "enemy", "wall", world);
+            onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
             onCollision(collision, "RingoFire", "enemy", world);
-            onCollision(collision, "enemy", "wall", world);
         }
     );
 
@@ -86,7 +86,7 @@ void EventResponseSystem::onCollision(
 
         ///END OF TEST CODE
 
-        em.emit(DeathEvent(entityB));
+        // em.emit(DeathEvent(entityB));
         entityB->destroy();
 
 
@@ -108,14 +108,18 @@ void EventResponseSystem::onCollision(
         //t.position = t.oldPosition;
 
         auto& entityCollider = entityA->getComponent<Collider>();
+
+        // std::cout << "Collision: " << entityA << std::endl;
         auto& wallCollider = entityB->getComponent<Collider>();
+
+        Vector2D temp = t.oldPosition;
 
         //find overlaps
         float overlapX = std::min(entityCollider.rect.w + entityCollider.rect.x - wallCollider.rect.x,
             wallCollider.rect.w + wallCollider.rect.x - entityCollider.rect.x);
         float overlapY = std::min(entityCollider.rect.h + entityCollider.rect.y - wallCollider.rect.y,
             wallCollider.rect.h + wallCollider.rect.y - entityCollider.rect.y);
-
+        Vector2D oldTemp = t.position;
         //resolve
         if (overlapX < overlapY) {
             // Resolve X only → slide vertically
@@ -131,6 +135,12 @@ void EventResponseSystem::onCollision(
             else
                 t.position.y += overlapY; // moving up
         }
+
+        t.oldPosition = oldTemp;
+        // std::cout << "Updating: " << entityA << std::endl;
+        world.getEventManager().emit(MoveEvent(entityA));
+        t.oldPosition = temp;
+        // std::cout << "After: " << entityA << " " << entityA->getComponent<Transform>().oldPosition << std::endl;
 
     } else if (checkTagsFor(ATag, BTag, "enemy") && checkTagsFor(ATag, BTag, "player")) {
 
@@ -153,7 +163,7 @@ void EventResponseSystem::onCollision(
         bt.position += diff * 2;
 
         if (health.currentHealth <= 0) {
-            em.emit(DeathEvent(entityA));
+            // em.emit(DeathEvent(entityA));
             entityA->destroy();
             Game::onSceneChangeRequest("mainmenu");
         }
@@ -188,6 +198,7 @@ void EventResponseSystem::onCollision(
                  world.getEventManager().emit(SpawnPrefabEvent{"coin", center});
 
                  //destroy the enemy
+                 // std::cout << "Dead: " << entity << std::endl;
                  em.emit(DeathEvent(entity));
                  entity->destroy();
              }
@@ -215,7 +226,7 @@ void EventResponseSystem::onCollision(
          explosion.addComponent<EffectTag>();
 
         //destroy the bullet
-        em.emit(DeathEvent(entityA));
+        // em.emit(DeathEvent(entityA));
         entityA->destroy();
     } else if (entityA->hasComponent<RingFireTag>() && checkTagsFor(ATag, BTag, "enemy")) {
 
@@ -250,7 +261,7 @@ void EventResponseSystem::onCollision(
 
         // safely destroy all dead enemies after loop
         for (auto& enemy : toDestroy) {
-            world.getEventManager().emit(DeathEvent(enemy));
+            // world.getEventManager().emit(DeathEvent(enemy));
             enemy->destroy();
         }
     }

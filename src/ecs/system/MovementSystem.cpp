@@ -48,7 +48,6 @@ void MovementSystem::update(std::vector<std::unique_ptr<Entity>> &entities, floa
 
 
             Vector2D velocityVec1 = directionVec * v.speed;
-
             t.position += velocityVec1 * dt;
         }
     }

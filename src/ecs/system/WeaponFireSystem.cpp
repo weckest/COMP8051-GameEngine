@@ -24,7 +24,9 @@ void WeaponFireSystem::update(World &world, float dt) {
 			if (weapon.weaponStats["cooldown"] <= 0.0f) {
 
 				// Fire weapon
+				// std::cout << "Weapon System" << std::endl;
 				weapon.spawnFunction(weapon, *entity, world);
+				// std::cout << "Weapon System Done" << std::endl;
 
 
 				float baseFireRate = weapon.weaponStats["fireRate"];

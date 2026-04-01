@@ -24,7 +24,7 @@ void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World&
 
                 if (e->hasComponent<MagnetTag>()) {
                     world.getEventManager().emit(MagnetEvent{});
-                    world.getEventManager().emit(DeathEvent(e.get()));
+                    // world.getEventManager().emit(DeathEvent(e.get()));
                     e->destroy();
                     continue;
                 }
@@ -32,7 +32,7 @@ void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World&
                 if (e->hasComponent<FoodTag>()) {
                     player->getComponent<Health>().currentHealth += e->getComponent<FoodTag>().heal;
                     Game::gameState.playerHealth = player->getComponent<Health>().currentHealth;
-                    world.getEventManager().emit(DeathEvent(e.get()));
+                    // world.getEventManager().emit(DeathEvent(e.get()));
                     e->destroy();
                     continue;
                 }
@@ -46,7 +46,7 @@ void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World&
                 world.getAudioEventQueue().push(std::make_unique<AudioEvent>("collect"));
 
                 ///END OF TEST CODE
-                world.getEventManager().emit(DeathEvent(e.get()));
+                // world.getEventManager().emit(DeathEvent(e.get()));
                 e->destroy();
             }
         }

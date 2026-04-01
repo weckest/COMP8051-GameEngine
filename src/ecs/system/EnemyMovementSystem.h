@@ -50,6 +50,7 @@ public:
                 directionVec.normalize();
 
                 Vector2D velocityVec1 = directionVec * v.speed;
+                // std::cout << "Moving: " << e << " " << (velocityVec1 * dt).x << " " << (velocityVec1 * dt).y << std::endl;
 
                 t.position += velocityVec1 * dt;
             }

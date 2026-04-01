@@ -29,7 +29,6 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 shotsFired++;
 
                 auto &bullet = world.createDeferredEntity();
-                // std::cout << "Spawn Bubble " << &bullet << std::endl;
                 auto &t = entity.getComponent<Transform>();
                 auto &s = entity.getComponent<Sprite>();
 
@@ -59,10 +58,12 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
                 Entity* closestEntity = CollisionSystem::getClosestEntity(world, entity, 200);
                 if (!closestEntity) {
-                    world.getEventManager().emit(DeathEvent{&bullet});
+                    // world.getEventManager().emit(DeathEvent{&bullet});
                     bullet.destroy();
                     return;
                 }
+
+                // std::cout << "Spawn Bubble " << &bullet << std::endl;
 
                 auto& eT = closestEntity->getComponent<Transform>();
                 Vector2D dir = (eT.position - bT.position).normalize();

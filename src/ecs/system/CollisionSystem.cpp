@@ -215,12 +215,14 @@ Entity * CollisionSystem::getClosestEntity(World& world, Entity &entity, float r
                 if (xIndex < grid[0].size() && xIndex >= 0 && yIndex < grid.size() && yIndex >= 0) {
                     auto& cell = grid[yIndex][xIndex];
 
+                    // std::cout << "Checking: " <<  xIndex << " " << yIndex << std::endl;
+
                     for (auto& entityB : cell) {
                         if (entityB->hasComponent<Transform>() &&
                             (entityB->hasComponent<Sprite>() || entityB->hasComponent<Collider>()) &&
                             entityB->hasComponent<EnemyTag>()
                         ) {
-
+                            // std::cout << entityB << std::endl;
                             auto& bT = entityB->getComponent<Transform>();
                             Vector2D bCenterPoint = bT.position;
 
