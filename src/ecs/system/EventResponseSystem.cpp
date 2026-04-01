@@ -261,7 +261,7 @@ void EventResponseSystem::onCollision(
 
         // safely destroy all dead enemies after loop
         for (auto& enemy : toDestroy) {
-            // world.getEventManager().emit(DeathEvent(enemy));
+            world.getEventManager().emit(DeathEvent(enemy));
             enemy->destroy();
         }
     }
