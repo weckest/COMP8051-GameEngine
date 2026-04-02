@@ -54,6 +54,7 @@ private:
     void toggleSettingsOverlayVisibility(Entity& overlay);
 
     Entity& createPlayerPosLabel();
+    Entity& createPointsLabel();
 
     void createLevelUpUI(int windowWidth, int windowHeight);
     void createHealthBar(int windowWidth, int windowHeight);

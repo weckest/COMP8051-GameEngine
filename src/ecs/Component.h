@@ -68,6 +68,7 @@ struct Children {
 
 enum class LabelType {
     PlayerPosition,
+    PlayerPoints,
     Damage,
     Health,
     UI,
@@ -75,7 +76,8 @@ enum class LabelType {
     DebugStats,
     LevelUp,
     Weapons,
-    Times
+    Times,
+    EnemyInfo
 };
 
 struct Label {

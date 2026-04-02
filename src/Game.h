@@ -17,6 +17,8 @@
 
 struct GameState {
     int playerHealth;
+    int points;
+    float time;
 };
 
 class Game {

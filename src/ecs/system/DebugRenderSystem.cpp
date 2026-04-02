@@ -3,6 +3,8 @@
 //
 
 #include "DebugRenderSystem.h"
+
+#include "Game.h"
 #include "World.h"
 #include "manager/AssetManager.h"
 
@@ -244,13 +246,14 @@ void DebugRenderSystem::initDebugLabel() {
     auto& entity = world.createEntity();
     TextureManager::loadLabel(label);
     entity.addComponent<Label>(label);
-    entity.addComponent<Transform>(Vector2D(10.0f, 30.0f), 0.0f, 1.0f);
+    auto& entities = entity.addComponent<Transform>(Vector2D(10.0f, 50.0f), 0.0f, 1.0f);
     auto& children = entity.addComponent<Children>();
 
-    auto& levelUp = createChildDebugLabe(entity, LabelType::LevelUp, Vector2D(10.0f, 50.0f));
-    auto& health = createChildDebugLabe(entity, LabelType::Health, Vector2D(10.0f, 70.0f));
-    auto& weapons = createChildDebugLabe(entity, LabelType::Weapons, Vector2D(10.0f, 90.0f));
-    auto& times = createChildDebugLabe(entity, LabelType::Times, Vector2D(10.0f, 110.0f));
+    auto& levelUp = createChildDebugLabe(entity, LabelType::LevelUp, Vector2D(10.0f, entities.position.y + 20.0f)).getComponent<Transform>();
+    auto& enemyInfo = createChildDebugLabe(entity, LabelType::EnemyInfo, Vector2D(10.0f, levelUp.position.y + 20.0f)).getComponent<Transform>();
+    auto& health = createChildDebugLabe(entity, LabelType::Health, Vector2D(10.0f, enemyInfo.position.y + 20.0f)).getComponent<Transform>();
+    auto& weapons = createChildDebugLabe(entity, LabelType::Weapons, Vector2D(10.0f, health.position.y + 20.0f)).getComponent<Transform>();
+    auto& times = createChildDebugLabe(entity, LabelType::Times, Vector2D(10.0f, weapons.position.y + 20.0f));
     times.addComponent<Children>();
 }
 
@@ -271,6 +274,15 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
             label.text = "LevelUp: " + std::to_string((pt.xp / pt.level / 2));
             label.dirty = true;
 
+        } else if (label.type == LabelType::EnemyInfo) {
+            for (auto& e: world.getEntities()) {
+                if (e->hasComponent<TimedSpawner>() && !e->hasComponent<PlayerTag>() && !e->hasComponent<EnemyTag>()) {
+                    label.text = "eTime: " + std::to_string(e->getComponent<TimedSpawner>().spawnInterval);
+                    break;
+                }
+            }
+            label.text += " eHealth: " + std::to_string((100.0f * (1.0f + (Game::gameState.time / 1000.0f))));
+            label.dirty = true;
         } else if (label.type == LabelType::Health) {
             if (player->hasComponent<Health>()) {
                 auto& health = player->getComponent<Health>();

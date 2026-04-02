@@ -98,6 +98,7 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     AssetManager::loadFont("arial", "../assets/fonts/arial.ttf", 16);
     AssetManager::loadFont("bungee", "../assets/fonts/Bungee-Regular.ttf", 16);
     AssetManager::loadFont("bungeeSmall", "../assets/fonts/Bungee-Regular.ttf", 12);
+    AssetManager::loadFont("bungeeLarge", "../assets/fonts/Bungee-Regular.ttf", 20);
 
 
 

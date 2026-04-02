@@ -42,6 +42,8 @@ set(SRC_FILES
         src/manager/AudioManager.cpp
         src/ecs/system/HealthSystem.cpp
         src/ecs/system/OverlayRenderSystem.cpp
+        src/ecs/system/GameStateSystem.cpp
+        src/ecs/system/HUDSystem.cpp
 )
 
 # ALWAYS create the executable first

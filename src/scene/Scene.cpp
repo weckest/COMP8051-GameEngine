@@ -352,7 +352,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
             c.layer = CollisionLayer::ENEMY;
             c.mask = CollisionLayer::PLAYER | CollisionLayer::WALL | CollisionLayer::PROJECTILE;
 
-            e.addComponent<EnemyTag>(100.0f);
+            auto& h = e.addComponent<EnemyTag>(100.0f * (1.0f + (Game::gameState.time / 1000.0f)));
         });
         e.addComponent<Transform>(t);
     }
@@ -427,7 +427,8 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     auto& state(world.createEntity());
     state.addComponent<SceneState>();
 
-    createPlayerPosLabel();
+    // createPlayerPosLabel();
+    createPointsLabel();
     world.initDebug();
     createInventoryUI(windowWidth, windowHeight);
     createLevelUpUI(windowWidth, windowHeight);
@@ -891,7 +892,21 @@ Entity& Scene::createPlayerPosLabel() {
     playerPosLabel.addComponent<Label>(label);
     playerPosLabel.addComponent<Transform>(Vector2D(10, 10), 0.0f, 1.0f);
     return playerPosLabel;
+}
 
+Entity & Scene::createPointsLabel() {
+    auto& pointsLabel(world.createEntity());
+    Label label = {
+        "Test String",
+        AssetManager::getFont("bungeeLarge"),
+        {255,255,255,255},
+        LabelType::PlayerPoints,
+        "playerPoints"
+    };
+    TextureManager::loadLabel(label);
+    pointsLabel.addComponent<Label>(label);
+    pointsLabel.addComponent<Transform>(Vector2D(10.0f, 30.0f), 0.0f, 1.0f);
+    return pointsLabel;
 }
 
 void Scene::createLevelUpUI(int windowWidth, int windowHeight) {

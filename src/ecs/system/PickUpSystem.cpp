@@ -42,6 +42,8 @@ void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World&
                 auto& modifiers = player->getComponent<Stats>();
 
                 stats.xp += (10 * modifiers.xpModifier);
+                Game::gameState.points += 1;
+                std::cout << Game::gameState.points << std::endl;
 
                 world.getAudioEventQueue().push(std::make_unique<AudioEvent>("collect"));
 
