@@ -13,7 +13,7 @@ SpawnerSystem::SpawnerSystem(World &world) {
         spawners["coin"] = [&world](const Vector2D &v) {
                 auto& coin = world.createDeferredEntity();
                 // std::cout << "Coin " << &coin << std::endl;
-                auto& cT = coin.addComponent<Transform>(v, 0.0f, 1.0f);
+                auto& cT = coin.addComponent<Transform>(v, 0.0f, 0.5f);
                 cT.oldPosition = cT.position;
 
                 //adding texture to the coins

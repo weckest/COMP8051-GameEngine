@@ -90,6 +90,18 @@ struct Label {
     bool dirty = false;
 };
 
+struct Slider {
+    float min = 0.0f;
+    float max = 1.0f;
+    float value = 0.5f;
+
+    float width = 100.0f;
+
+    Entity* handle = nullptr;
+
+    std::function<void(float)> onValueChanged;
+};
+
 enum CollisionLayer {
     PLAYER = 1 << 0,
     ENEMY = 1 << 1,
