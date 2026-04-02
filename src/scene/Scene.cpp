@@ -422,8 +422,10 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon().weapon);
 
 
-    world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{200, 500}});
-    world.getEventManager().emit(SpawnPrefabEvent{"food", Vector2D{300, 500}});
+    world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{830, 120}});
+    world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{1180, 990}});
+    world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{1210, 280}});
+    world.getEventManager().emit(SpawnPrefabEvent{"food", Vector2D{190, 120}});
 
 
 

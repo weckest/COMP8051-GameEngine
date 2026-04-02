@@ -173,7 +173,6 @@ void EventResponseSystem::onCollision(
         if (e.state != CollisionState::Enter) return;
 
         auto& bTag = entityA->getComponent<ProjectileTag>();
-        std::cout << "getting entities for label making" << std::endl;
         std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
 
         Label damageLabel = {
@@ -184,12 +183,9 @@ void EventResponseSystem::onCollision(
         "damageLabel"
         };
         damageLabel.visible = true;
-        TextureManager::loadLabel(damageLabel);
 
         for (auto& entity: entities) {
             if (!entity->isActive()) continue;
-
-            std::cout << "doing damage to each entity" << std::endl;
 
             auto& eTag = entity->getComponent<EnemyTag>();
 
@@ -204,6 +200,8 @@ void EventResponseSystem::onCollision(
             }
 
             auto& label = world.createDeferredEntity();
+            damageLabel.textureCacheKey = "damageLabel" + damageLabel.text;
+            TextureManager::loadLabel(damageLabel);
             damageLabel.dirty = true;
             label.addComponent<Label>(damageLabel);
             label.addComponent<Transform>(entity->getComponent<Transform>().position, 0.0f, 1.0f);
