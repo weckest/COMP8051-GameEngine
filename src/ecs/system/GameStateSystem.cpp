@@ -12,7 +12,7 @@ void GameStateSystem::update(std::vector<std::unique_ptr<Entity> > &entities, fl
         //speed up the spawners as time goes on
         if (e->hasComponent<TimedSpawner>() && !e->hasComponent<PlayerTag>()) {
             auto& s = e->getComponent<TimedSpawner>();
-            s.spawnInterval *= (1.0f-(dt / 1000.0f));
+            s.spawnInterval *= (1.0f-(dt / 500.0f));
         }
     }
 }

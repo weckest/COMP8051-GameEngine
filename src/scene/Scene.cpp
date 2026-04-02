@@ -269,6 +269,10 @@ void Scene::createCreditsComponents(Entity &overlay) {
 
 void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidth, int windowHeight) {
 
+    Game::gameState.points = 0;
+    Game::gameState.time = 0.0f;
+
+
     world.getEventManager().subscribe([this, window](const BaseEvent& e) {
         if (e.type != EventType::ShowLevelUpMenu) return;
 
@@ -352,7 +356,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
             c.layer = CollisionLayer::ENEMY;
             c.mask = CollisionLayer::PLAYER | CollisionLayer::WALL | CollisionLayer::PROJECTILE;
 
-            auto& h = e.addComponent<EnemyTag>(100.0f * (1.0f + (Game::gameState.time / 1000.0f)));
+            auto& h = e.addComponent<EnemyTag>(100.0f * (1.0f + (Game::gameState.time / 500.0f)));
         });
         e.addComponent<Transform>(t);
     }

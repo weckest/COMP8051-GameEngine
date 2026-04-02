@@ -269,7 +269,10 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
 
     //update the children of the parent label
     for (auto& child: children.children) {
+        if (!child->hasComponent<Parent>()) continue;
+
         auto& label = child->getComponent<Label>();
+
         if (label.type == LabelType::LevelUp) {
             label.text = "LevelUp: " + std::to_string((pt.xp / pt.level / 2));
             label.dirty = true;

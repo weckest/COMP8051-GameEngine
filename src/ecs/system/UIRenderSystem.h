@@ -73,7 +73,7 @@ public:
                 dst.y = transform.position.y;
 
                 // Only debug labels follow camera
-                if (label.type == LabelType::Debug) {
+                if (label.type == LabelType::Debug || label.type == LabelType::Damage) {
                     dst.x -= cam.view.x;
                     dst.y -= cam.view.y;
                 }

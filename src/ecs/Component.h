@@ -158,6 +158,9 @@ struct Health {
 
 struct EffectTag{};
 struct MagnetTag{};
+struct DamageTag {
+    float timeLeft;
+};
 struct RingFireTag {
     float range;
 };

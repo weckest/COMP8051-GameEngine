@@ -172,60 +172,85 @@ void EventResponseSystem::onCollision(
 
         if (e.state != CollisionState::Enter) return;
 
-         auto& bTag = entityA->getComponent<ProjectileTag>();
-         std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
-         for (auto& entity: entities) {
-             if (!entity->isActive()) continue;
+        auto& bTag = entityA->getComponent<ProjectileTag>();
+        std::cout << "getting entities for label making" << std::endl;
+        std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
 
-             auto& eTag = entity->getComponent<EnemyTag>();
+        Label damageLabel = {
+         "0",
+        AssetManager::getFont("bungeeSmall"),
+        {255,0,0,255},
+        LabelType::Damage,
+        "damageLabel"
+        };
+        damageLabel.visible = true;
+        TextureManager::loadLabel(damageLabel);
 
-             if (entity != entityB) {
-                 float distanceToEnemy = (entityA->getComponent<Transform>().position - entity->getComponent<Transform>().position).length();
-                 float bulletDamage = bTag.damage * (bTag.aoe - distanceToEnemy) / bTag.aoe;
-                 eTag.health -= bulletDamage;
-             } else {
-                 eTag.health -= bTag.damage;
-             }
+        for (auto& entity: entities) {
+            if (!entity->isActive()) continue;
+
+            std::cout << "doing damage to each entity" << std::endl;
+
+            auto& eTag = entity->getComponent<EnemyTag>();
+
+            if (entity != entityB) {
+                float distanceToEnemy = (entityA->getComponent<Transform>().position - entity->getComponent<Transform>().position).length();
+                float bulletDamage = bTag.damage * (bTag.aoe - distanceToEnemy) / bTag.aoe;
+                eTag.health -= bulletDamage;
+                damageLabel.text = std::to_string((int)(bulletDamage * 10) / 10.0).substr(0, 5);
+            } else {
+                eTag.health -= bTag.damage;
+                damageLabel.text = std::to_string((int)(bTag.damage * 10) / 10.0).substr(0, 5);
+            }
+
+            auto& label = world.createDeferredEntity();
+            std::cout << &label << " " << damageLabel.text << std::endl;
+            damageLabel.dirty = true;
+            label.addComponent<Label>(damageLabel);
+            label.addComponent<Transform>(entity->getComponent<Transform>().position, 0.0f, 1.0f);
+            label.addComponent<Lifetime>(2.5f, true);
+            label.addComponent<Velocity>(Vector2D(0.0f, -1.0f), 25.0f);
 
 
 
-             if (eTag.health <= 0) {
-                 //replace with spawinging in a random object
-                 auto& entityT = entity->getComponent<Transform>();
-                 auto& entityS = entity->getComponent<Sprite>();
-                 Vector2D center = entityT.position;
-                 center.x += entityS.dst.w / 2;
-                 center.y += entityS.dst.h / 2;
-                 world.getEventManager().emit(SpawnPrefabEvent{"coin", center});
+            if (eTag.health <= 0) {
+                //replace with spawinging in a random object
+                auto& entityT = entity->getComponent<Transform>();
+                auto& entityS = entity->getComponent<Sprite>();
+                Vector2D center = entityT.position;
+                center.x += entityS.dst.w / 2;
+                center.y += entityS.dst.h / 2;
+                world.getEventManager().emit(SpawnPrefabEvent{"coin", center});
 
-                 //destroy the enemy
-                 // std::cout << "Dead: " << entity << std::endl;
-                 Game::gameState.points += 5;
-                 em.emit(DeathEvent(entity));
-                 entity->destroy();
-             }
-         }
+                //destroy the enemy
+                // std::cout << "Dead: " << entity << std::endl;
+                Game::gameState.points += 5;
+                em.emit(DeathEvent(entity));
+                entity->destroy();
+            }
+        }
 
-         //make explosion where the bullet hit the enemy
-         //add a little extra since the sprite is the full size
-         float explosionSize = bTag.aoe * 1.2;
-         auto& explosion = world.createDeferredEntity();
-         auto& bt = entityA->getComponent<Transform>();
-         auto& bs = entityA->getComponent<Sprite>();
-         auto& t = explosion.addComponent<Transform>(bt.position, 0.0f, 1.0f);
-         t.position.x = bt.position.x - bs.dst.w / 2 - (explosionSize / 2 - bs.dst.w / 2);
-         t.position.y = bt.position.y - bs.dst.h / 2 - (explosionSize / 2 - bs.dst.h / 2);
+        //make explosion where the bullet hit the enemy
+        //add a little extra since the sprite is the full size
+        float explosionSize = bTag.aoe * 1.2;
+        auto& explosion = world.createDeferredEntity();
+        auto& bt = entityA->getComponent<Transform>();
+        auto& bs = entityA->getComponent<Sprite>();
+        auto& t = explosion.addComponent<Transform>(bt.position, 0.0f, 1.0f);
+        t.position.x = bt.position.x - bs.dst.w / 2 - (explosionSize / 2 - bs.dst.w / 2);
+        t.position.y = bt.position.y - bs.dst.h / 2 - (explosionSize / 2 - bs.dst.h / 2);
 
-         auto& a = AssetManager::getAnimation("explosion");
-         auto& animation = explosion.addComponent<Animation>(a);
-         animation.speed = 0.075f;
+        auto& a = AssetManager::getAnimation("explosion");
+        auto& animation = explosion.addComponent<Animation>(a);
+        animation.speed = 0.075f;
 
-         SDL_Texture* tex = TextureManager::load("../assets/animations/explosion.png");
-         SDL_FRect src {0, 0, 85.33, 85.33};
-         SDL_FRect dst {t.position.x, t.position.y, explosionSize, explosionSize};
-         explosion.addComponent<Sprite>(tex, src, dst);
+        SDL_Texture* tex = TextureManager::load("../assets/animations/explosion.png");
+        SDL_FRect src {0, 0, 85.33, 85.33};
+        SDL_FRect dst {t.position.x, t.position.y, explosionSize, explosionSize};
+        explosion.addComponent<Sprite>(tex, src, dst);
 
-         explosion.addComponent<EffectTag>();
+        explosion.addComponent<EffectTag>();
+
 
         //destroy the bullet
         // em.emit(DeathEvent(entityA));
