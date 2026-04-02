@@ -99,8 +99,22 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     //     credSprite.texture = credNormal;
     // };
 
+    //COLLIDER HANDLING
+    menuButtonColliders.push_back(&playButton.getComponent<Collider>());
+    menuButtonColliders.push_back(&setButton.getComponent<Collider>());
+    menuButtonColliders.push_back(&credButton.getComponent<Collider>());
+    menuButtonColliders.push_back(&quitButton.getComponent<Collider>());
+
     auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
     createCogButton(windowWidth, windowHeight, settingsOverlay);
+}
+
+void Scene::toggleColliders(bool isVisible) {
+    if (menuButtonColliders.empty()) return;
+
+    for (auto& e : menuButtonColliders) {
+        e->enabled = !isVisible;
+    }
 }
 
 Entity& Scene::makeGenericButton(const std::string& color, int buttonHeight, int windowWidth) {
@@ -160,7 +174,7 @@ void Scene::createSettingsComponents(Entity &overlay) {
     float baseY = overlayTrans.position.y;
 
     auto& closeButton = world.createEntity();
-    auto& closeTransform = closeButton.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40,baseY + 10), 0.0f, 0.0f);
+    auto& closeTransform = closeButton.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40,baseY + 10), 0.0f, 1.0f);
 
     SDL_Texture* tex = TextureManager::load("../assets/ui/close.png");
     SDL_FRect closeSrc = {0, 0, 32, 32};
@@ -168,7 +182,7 @@ void Scene::createSettingsComponents(Entity &overlay) {
 
     closeButton.addComponent<Sprite>(tex, closeSrc, closeDst, RenderLayer::UI, false);
 
-    closeButton.addComponent<Collider>("ui", closeDst);
+    closeButton.addComponent<Collider>("ui", closeDst, false);
 
     auto& clickable = closeButton.addComponent<Clickable>();
 
@@ -421,6 +435,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
 
 }
 
+//LECTURE
 Entity& Scene::createSettingsOverlay(int windowWidth, int windowHeight) {
 
     auto& overlay(world.createEntity());
@@ -474,6 +489,7 @@ Entity& Scene::createCogButton(int windowWidth, int windowHeight, Entity& overla
 
 }
 
+//LECTURE
 void Scene::createSettingsUIComponents(Entity& overlay) {
 
     if (!overlay.hasComponent<Children>() ) {
@@ -526,6 +542,8 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
     //auto& children = overlay.getComponent<Children>().children;
 
     bool newVisibility = !sprite.visible;
+
+    toggleColliders(newVisibility);
 
     sprite.visible = newVisibility;
 

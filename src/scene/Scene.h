@@ -44,6 +44,10 @@ private:
     Entity& createCreditsBox(int windowWidth, int windowHeight);
     void createCreditsComponents(Entity& overlay);
 
+    std::vector<Collider*> menuButtonColliders;
+    void toggleColliders(bool isVisible);
+
+    //LECTURE
     Entity& createSettingsOverlay(int windowWidth, int windowHeight);
     Entity& createCogButton(int windowWidth, int windowHeight, Entity& overlay);
     void createSettingsUIComponents(Entity& overlay);
