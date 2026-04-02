@@ -23,11 +23,14 @@ public:
 
     void loadAudio(const std::string& name, const char* path) const;
 
-    void playMusic(const std::string& name) const;
+    void playMusic(const std::string& name);
     void stopMusic() const;
 
     static void playSfx(const std::string& name);
     static void playWeaponSfx(const std::string& name);
+private:
+    std::string currentTrack;
+
 };
 
 #endif //INC_8051TUTORIAL_AUDIOMANAGER_H

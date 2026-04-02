@@ -50,8 +50,10 @@ void AudioManager::loadAudio(const std::string& name, const char* path) const
     audio.emplace(name, audioPtr);
 }
 
-void AudioManager::playMusic(const std::string& name) const
+void AudioManager::playMusic(const std::string& name)
 {
+    if (name == currentTrack) return; //playing same track
+
     if (MIX_SetTrackAudio(musicTrack, audio[name]) == 0) {
         std::cout << "MIX_SetTrackAudio() failed" << std::endl;
         return;
@@ -61,7 +63,11 @@ void AudioManager::playMusic(const std::string& name) const
     SDL_SetNumberProperty(props, MIX_PROP_PLAY_LOOPS_NUMBER, -1);
 
     MIX_PlayTrack(musicTrack, props); //loop endlessly
-    std::cout << "Playing Music" << std::endl;
+    std::cout << "Playing Music: " << name << std::endl;
+
+    SDL_DestroyProperties(props);
+    currentTrack = name;
+
 }
 
 void AudioManager::stopMusic() const
