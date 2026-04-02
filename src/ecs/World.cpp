@@ -137,7 +137,7 @@ World::World() {
                                     c.mask = CollisionLayer::ENEMY;
 
                                 float damage =
-                                    entity->getComponent<EnemyTag>().health + 5.0f;
+                                    entity->getComponent<EnemyTag>().health * 5.0f;
 
                                 // float aoe = 100.0f * getStat(weapon, "aoeModifier", 1.0f);
 

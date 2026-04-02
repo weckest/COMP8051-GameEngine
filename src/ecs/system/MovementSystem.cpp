@@ -12,7 +12,7 @@ MovementSystem::MovementSystem(World& world) : world(world) {
         auto& pT = player->getComponent<Transform>();
 
         for (auto& entity : world.getEntities()) {
-            if (entity->hasComponent<ItemTag>() && entity->hasComponent<Transform>()) {
+            if (entity->hasComponent<ItemTag>() && entity->hasComponent<Transform>() && !entity->hasComponent<MagnetTag>() && !entity->hasComponent<FoodTag>()) {
                 auto& t = entity->getComponent<Transform>();
                 entity->addComponent<Velocity>(pT.position - t.position, 500.0f);
             }
