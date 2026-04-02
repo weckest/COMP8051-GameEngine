@@ -32,7 +32,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     auto& menu(world.createEntity());
     auto& menuTransform = menu.addComponent<Transform>(Vector2D(0,0), 0.0f, 1.0f);
 
-    SDL_Texture* tex = TextureManager::load("../assets/mainmenu/TFC-BG.png");
+    SDL_Texture* tex = TextureManager::load("../assets/menu/TFC-BG.png");
     SDL_FRect src = {0, 0, 2304, 1296};
     SDL_FRect dst = {menuTransform.position.x, menuTransform.position.y, (float)windowWidth, (float)windowHeight};
 
@@ -44,7 +44,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     auto& title = world.createEntity();
     auto& titleTransform = title.addComponent<Transform>(Vector2D((windowWidth / 4.0f), 30), 0.0f, 1.0f);
 
-    SDL_Texture* titleTex = TextureManager::load("../assets/mainmenu/TFC-Title.png");
+    SDL_Texture* titleTex = TextureManager::load("../assets/menu/TFC-Title.png");
     SDL_FRect titleSrc = {0, 0, 1280, 720};
     SDL_FRect titleDst = {titleTransform.position.x, titleTransform.position.y, (float)windowWidth / 2, (float)windowHeight / 3};
     title.addComponent<Sprite>(titleTex, titleSrc, titleDst);
