@@ -19,6 +19,7 @@ struct GameState {
     int playerHealth;
     int points;
     float time;
+    std::unordered_map<std::string, float>WeaponDamage{};
 };
 
 class Game {

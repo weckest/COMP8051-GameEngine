@@ -23,7 +23,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
         entity.addComponent<TimedSpawner>(
             delayBetweenShots,
-            [&, entity,weapon,count, shotsFired = 0]() mutable {
+            [&, entity,count, shotsFired = 0]() mutable {
 
                 if (shotsFired >= count) return;
                 shotsFired++;
@@ -76,13 +76,19 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     c.layer = CollisionLayer::PROJECTILE;
                     c.mask = CollisionLayer::ENEMY;
 
+                auto& stats = entity.getComponent<Stats>();
+
                 float damage =
-                    50.0f * (getStat(weapon, "damageModifier", 1.0f) +
-                    (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier));
+                    50.0f *
+                    (getStat(weapon, "damageModifier", 1.0f) +
+                     (1.0f + 0.05f * stats.damageModifier));
 
                 float aoe = 100.0f * getStat(weapon, "aoeModifier", 1.0f);
 
                 bullet.addComponent<ProjectileTag>(damage, aoe);
+                bullet.addComponent<Weapon>(weapon);
+
+                bullet.addComponent<weaponOrigin>(&weapon);
             }
         );
         }
@@ -96,7 +102,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
         entity.addComponent<TimedSpawner>(
             1.0f / fireRate + (1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier),
-            [&entity, &world, weapon] {
+            [&entity, &world, &weapon] {
 
                 int count = std::max(1, (int)(getStat(weapon, "projectileModifier", 1.0f) * 3));
 
@@ -154,13 +160,19 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 c.layer = CollisionLayer::PROJECTILE;
                 c.mask = CollisionLayer::ENEMY;
 
-                    float damage =
-                        50.0f * (getStat(weapon, "damageModifier", 1.0f) +
-                        (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier));
+                    auto& stats = entity.getComponent<Stats>();
+
+
+                     float damage =
+                         50.0f *
+                         (getStat(weapon, "damageModifier", 1.0f) +
+                          (1.0f + 0.05f * stats.damageModifier));
 
                     float aoe = 100.0f * getStat(weapon, "aoeModifier", 1.0f);
 
                     bullet.addComponent<ProjectileTag>(damage, aoe);
+                    bullet.addComponent<Weapon>(weapon);
+                    bullet.addComponent<weaponOrigin>(&weapon);
                 }
             }
         );
@@ -180,7 +192,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
             entity.addComponent<TimedSpawner>(
                 delayBetweenShots,
-                [&, entity,weapon,count, shotsFired = 0]() mutable {
+                [&, entity,count, shotsFired = 0]() mutable {
 
                     if (shotsFired >= count) return;
                     shotsFired++;
@@ -217,10 +229,19 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     // lifetime instead of nested spawner
                     ring.addComponent<Lifetime>(getStat(weapon, "lifetime", 0.1f));
 
+                    auto& stats = entity.getComponent<Stats>();
+
+                    float damage =
+                        25.0f *
+                        (getStat(weapon, "damageModifier", 1.0f) +
+                         (1.0f + 0.05f * stats.damageModifier));
+
                     ring.addComponent<ProjectileTag>(
-                        25.0f * (getStat(weapon, "damageModifier", 1.0f) + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier)),
+                        damage,
                         0.0f
                         );
+                    ring.addComponent<Weapon>(weapon);
+                    ring.addComponent<weaponOrigin>(&weapon);
 
                 }
             );
