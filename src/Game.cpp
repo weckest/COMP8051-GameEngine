@@ -21,9 +21,9 @@ GameState Game::gameState{};
 std::function<void(std::string)> Game::onSceneChangeRequest;
 
 Game::Game() {
-    r = 255;
-    g = 255;
-    b = 255;
+    r = 0;
+    g = 0;
+    b = 0;
     a = 255;
 
     // 2. Define the distribution (e.g., uniform integer distribution)
