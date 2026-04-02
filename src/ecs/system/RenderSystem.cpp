@@ -5,7 +5,7 @@
 #include "RenderSystem.h"
 #include "World.h"
 
-void RenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entities) {
+void RenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entities, bool humanoidsOnly) {
     Entity* cameraEntity = nullptr;
 
     //Find camera
@@ -21,6 +21,10 @@ void RenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entities) 
     auto& cam = cameraEntity->getComponent<Camera>();
 
     for (auto& entity : entities) {
+
+        bool isHumanoid = entity->hasComponent<EnemyTag>() || entity->hasComponent<PlayerTag>();
+        if (humanoidsOnly != isHumanoid) continue;
+
         if (entity->hasComponent<Transform>() && entity->hasComponent<Sprite>()) {
             auto& t = entity->getComponent<Transform>();
             auto& sprite = entity->getComponent<Sprite>();

@@ -32,6 +32,7 @@
 #include "Map.h"
 #include "MouseInputSystem.h"
 #include "MovementSystem.h"
+#include "OverlayRenderSystem.h"
 #include "PickUpSystem.h"
 #include "PlayerStatListener.h"
 #include "PreRenderSystem.h"
@@ -90,6 +91,7 @@ class World {
     HUDSystem hudSystem;
     PreRenderSystem preRenderSystem;
     AudioEventQueue audioEventQueue;
+    OverlayRenderSystem overlayRenderSystem;
 
 
 public:
@@ -155,7 +157,29 @@ public:
 
         for (auto& e : entities) {
             if (e->hasComponent<Camera>()) {
-                map.draw(e->getComponent<Camera>());
+                auto& camera = e->getComponent<Camera>();
+
+                map.draw(camera);
+                // if (debugState.debug && debugState.grid) {
+                //     gridSystem.draw(e->getComponent<Camera>());
+                //     gridSystem.updateCellLabels(*this);
+                // }
+            }
+        }
+
+        timer.startTimer("render humanoids");
+        renderSystem.render(entities, true);
+        timer.stopTimer("render humanoids");
+
+        //perform handover
+        if (!overlayRenderSystem.hasData) {
+            overlayRenderSystem.receiveData(map.overlayTileData, map.width, map.height, map.scale, map.tileset);
+        }
+        for (auto& e : entities) {
+            if (e->hasComponent<Camera>()) {
+                auto& camera = e->getComponent<Camera>();
+
+                overlayRenderSystem.draw(camera);
                 if (debugState.debug && debugState.grid) {
                     gridSystem.draw(e->getComponent<Camera>());
                     gridSystem.updateCellLabels(*this);
@@ -163,9 +187,10 @@ public:
             }
         }
 
-        timer.startTimer("render");
-        renderSystem.render(entities);
-        timer.stopTimer("render");
+        timer.startTimer("render others");
+        renderSystem.render(entities, false);
+        timer.stopTimer("render others");
+
         timer.startTimer("debug");
         if (debugState.debug) {
             debugRenderSystem.render(entities, debugState);

@@ -20,7 +20,7 @@ class RenderSystem {
     World& world;
 public:
     RenderSystem(World& world) : world(world) {}
-    void render(const std::vector<std::unique_ptr<Entity>>& entities);
+    void render(const std::vector<std::unique_ptr<Entity>>& entities, bool isHumanoid);
 };
 
 #endif //INC_8051TUTORIAL_RENDERSYSTEM_H
