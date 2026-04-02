@@ -99,6 +99,9 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     AssetManager::loadFont("bungee", "../assets/fonts/Bungee-Regular.ttf", 16);
     AssetManager::loadFont("bungeeSmall", "../assets/fonts/Bungee-Regular.ttf", 12);
     AssetManager::loadFont("bungeeLarge", "../assets/fonts/Bungee-Regular.ttf", 20);
+    AssetManager::loadFont("monogram", "../assets/fonts/monogram.ttf", 16);
+    AssetManager::loadFont("monogram-medium", "../assets/fonts/monogram.ttf", 40);
+    AssetManager::loadFont("monogram-title", "../assets/fonts/monogram.ttf", 72);
 
 
 
@@ -150,7 +153,7 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
         }
 
         if (sceneName == "gameover") {
-            audioManager.stopMusic();
+            audioManager.playMusic("musicMainMenu");
         }
 
         if (sceneName == "mainmenu")

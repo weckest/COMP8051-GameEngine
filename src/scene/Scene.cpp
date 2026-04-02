@@ -128,6 +128,87 @@ void Scene::initGameOver(int windowWidth, int windowHeight) {
     SDL_FRect dst = {menuTransform.position.x, menuTransform.position.y, (float)windowWidth, (float)windowHeight};
 
     menu.addComponent<Sprite>(tex, src, dst);
+
+    //Header
+    auto& titleText = world.createEntity();
+    titleText.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 120, windowHeight / 6.0f), 0.0f, 1.0f);
+    Label tLabel = {
+        "Game Over",
+        AssetManager::getFont("monogram-title"),
+        {255,255,255,255},
+        LabelType::UI,
+        "gameovertitle"
+    };
+    auto& titleLabel = titleText.addComponent<Label>(tLabel);
+    titleLabel.dirty = true;
+    TextureManager::loadLabel(tLabel);
+
+    //Stat 1
+    auto& stat1Text = world.createEntity();
+    stat1Text.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 146, windowHeight / 3.0f), 0.0f, 1.0f);
+
+    int totalSeconds = static_cast<int>(Game::gameState.time / 1000.0f);
+    int remainder = totalSeconds % 60;
+
+
+    Label s1Label = {
+        "Time Survived: " + std::to_string(totalSeconds / 60) + ":" + (remainder < 10 ? "0" : "") + std::to_string(remainder),
+        AssetManager::getFont("monogram-medium"),
+        {255,255,255,255},
+        LabelType::UI,
+        "gameoverstat1"
+    };
+    auto& stat1Label = stat1Text.addComponent<Label>(s1Label);
+    stat1Label.dirty = true;
+    TextureManager::loadLabel(stat1Label);
+
+    //Stat 2
+    auto& stat2Text = world.createEntity();
+    stat2Text.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 131, windowHeight / 3.0f + 50), 0.0f, 1.0f);
+
+    float totalDamage = 0;
+    for (const auto& e : Game::gameState.WeaponDamage) {
+        totalDamage += e.second;
+    }
+
+    Label s2Label = {
+        "Total Damage: " + std::format("{:.2f}", totalDamage),
+        AssetManager::getFont("monogram-medium"),
+        {255,255,255,255},
+        LabelType::UI,
+        "gameoverstat2"
+    };
+    auto& stat2Label = stat2Text.addComponent<Label>(s2Label);
+    stat2Label.dirty = true;
+    TextureManager::loadLabel(stat2Label);
+
+    //Stat 3
+    auto& stat3Text = world.createEntity();
+    stat3Text.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 116, windowHeight / 3.0f + 150), 0.0f, 1.0f);
+    Label s3Label = {
+        "Total Score: " + std::to_string(Game::gameState.points),
+        AssetManager::getFont("monogram-medium"),
+        {255,255,255,255},
+        LabelType::UI,
+        "gameoverstat3"
+    };
+    auto& stat3Label = stat3Text.addComponent<Label>(s3Label);
+    stat3Label.dirty = true;
+    TextureManager::loadLabel(stat3Label);
+
+    //Continue
+    auto& continueText = world.createEntity();
+    continueText.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 305, windowHeight / 5.0f * 3.5f), 0.0f, 1.0f);
+    Label contLabel = {
+        "Press Space To Continue",
+        AssetManager::getFont("monogram-title"),
+        {255,255,255,255},
+        LabelType::UI,
+        "gameovercontinue"
+    };
+    auto& continueLabel = continueText.addComponent<Label>(contLabel);
+    continueLabel.dirty = true;
+    TextureManager::loadLabel(continueLabel);
 }
 
 void Scene::toggleColliders(bool isVisible) {
