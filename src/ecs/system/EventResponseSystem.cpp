@@ -204,7 +204,6 @@ void EventResponseSystem::onCollision(
             }
 
             auto& label = world.createDeferredEntity();
-            std::cout << &label << " " << damageLabel.text << std::endl;
             damageLabel.dirty = true;
             label.addComponent<Label>(damageLabel);
             label.addComponent<Transform>(entity->getComponent<Transform>().position, 0.0f, 1.0f);
@@ -275,11 +274,29 @@ void EventResponseSystem::onCollision(
         std::vector<Entity*> enemies = CollisionSystem::getAllWithin(world, *player, range);
         std::vector<Entity*> toDestroy;
 
+        Label damageLabel = {
+            "0",
+           AssetManager::getFont("bungeeSmall"),
+           {255,0,0,255},
+           LabelType::Damage,
+           "damageLabel"
+           };
+        damageLabel.visible = true;
+        TextureManager::loadLabel(damageLabel);
+
         for (auto& enemy : enemies) {
             if (!enemy->hasComponent<EnemyTag>()) continue;
 
             auto& eTag = enemy->getComponent<EnemyTag>();
             eTag.health -= projectileInfo.damage;
+            damageLabel.text = std::to_string((int)(projectileInfo.damage * 10) / 10.0).substr(0, 5);
+
+            auto& label = world.createDeferredEntity();
+            damageLabel.dirty = true;
+            label.addComponent<Label>(damageLabel);
+            label.addComponent<Transform>(enemy->getComponent<Transform>().position, 0.0f, 1.0f);
+            label.addComponent<Lifetime>(2.5f, true);
+            label.addComponent<Velocity>(Vector2D(0.0f, -1.0f), 25.0f);
 
             if (eTag.health <= 0) {
                 Vector2D center{};
