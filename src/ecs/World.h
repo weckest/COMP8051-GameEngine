@@ -28,7 +28,7 @@
 #include "LevelUpSystem.hpp"
 #include "LifetimeSystem.h"
 #include "event/EventManager.h"
-#include "MainMenuSystem.h"
+#include "GameOverSystem.h"
 #include "Map.h"
 #include "MouseInputSystem.h"
 #include "MovementSystem.h"
@@ -77,7 +77,7 @@ class World {
     BobbingSystem bobbingSystem;
     EffectSystem effectSystem;
     EventResponseSystem eventResponseSystem{*this};
-    MainMenuSystem mainMenuSystem;
+    GameOverSystem gameOverSystem;
     SpawnerSystem spawnerSystem{*this};
     LevelUpSystem levelUpSystem;
     HealthSystem healthSystem;
@@ -100,9 +100,11 @@ public:
     void update(float dt, SDL_Event& event, SceneType sceneType, SDL_Renderer* renderer) {
 
         if (sceneType == SceneType::MainMenu) {
-            //main menu system
-            mainMenuSystem.update(event);
-        } else if (isPaused) {
+            //pass through
+        } else if (sceneType == SceneType::GameOver) {
+            gameOverSystem.update(event);
+        }
+        else if (isPaused) {
             keyboardInputSystem.update(*this, entities, event);
         } else {
             timer.startTimer("update");

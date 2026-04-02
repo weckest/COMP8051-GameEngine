@@ -6,7 +6,7 @@
 #define INC_8051TUTORIAL_MAINMENUSYSTEM_H
 #include "SDL3/SDL_events.h"
 
-class MainMenuSystem {
+class GameOverSystem {
 public:
     void update(const SDL_Event& event);
 };

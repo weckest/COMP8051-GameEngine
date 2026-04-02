@@ -122,6 +122,7 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
     //load scenes
     sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, width, height, window);
+    sceneManager.loadScene(SceneType::GameOver, "gameover", nullptr, width, height, window);
     sceneManager.loadScene(SceneType::Gameplay, "level1", "../assets/map.tmx", width, height, window);
     sceneManager.loadScene(SceneType::Gameplay, "level2", "../assets/map2/map2.tmx", width, height, window);
     sceneManager.loadScene(SceneType::Gameplay, "gameplay", "../assets/map-tlc/TLC-MapUpdated.tmx", width, height, window);
@@ -149,9 +150,7 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
         }
 
         if (sceneName == "gameover") {
-            std::cout << "Game Over" << std::endl;
-            isRunning = false;
-            return;
+            audioManager.stopMusic();
         }
 
         if (sceneName == "mainmenu")
@@ -168,7 +167,7 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
         if (sceneName == "quit")
         {
             std::cout << "Player Quit from Main Menu." << std::endl;
-            destroy();
+            isRunning = false;
             return;
         }
 

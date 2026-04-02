@@ -34,6 +34,7 @@ private:
     void createProjectile(Vector2D pos, Vector2D dir, int speed);
 
     void initMainMenu(int windowWidth, int windowHeight);
+    void initGameOver(int windowWidth, int windowHeight);
     void initGameplay(SDL_Window *window, const char *mapPath, int windowWidth, int windowHeight);
 
     Entity& makeGenericButton(const std::string& color, int buttonHeight, int windowWidth);

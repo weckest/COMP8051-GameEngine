@@ -17,7 +17,7 @@ set(SRC_FILES
         src/manager/AssetManager.cpp
         src/scene/Scene.cpp
         src/ecs/system/EventResponseSystem.cpp
-        src/ecs/system/MainMenuSystem.cpp
+        src/ecs/system/GameOverSystem.cpp
         src/ecs/system/KeyboardInputSystem.cpp
         src/ecs/system/RenderSystem.cpp
         src/ecs/system/SpawnerSystem.cpp

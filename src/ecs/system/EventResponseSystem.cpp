@@ -165,7 +165,7 @@ void EventResponseSystem::onCollision(
         if (health.currentHealth <= 0) {
             // em.emit(DeathEvent(entityA));
             entityA->destroy();
-            Game::onSceneChangeRequest("mainmenu");
+            Game::onSceneChangeRequest("gameover");
         }
 
     } else if (checkTagsFor(ATag, BTag, "bullet") && checkTagsFor(ATag, BTag, "enemy")) {

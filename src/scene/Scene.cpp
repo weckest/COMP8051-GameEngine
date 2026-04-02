@@ -19,6 +19,11 @@ Scene::Scene(SceneType sceneType, const char* sceneName, const char* mapPath,
         return;
     }
 
+    if (sceneType == SceneType::GameOver) {
+        initGameOver(windowWidth, windowHeight);
+        return;
+    }
+
     initGameplay(window, mapPath, windowWidth, windowHeight); // now works
 }
 
@@ -107,6 +112,22 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 
     auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
     createCogButton(windowWidth, windowHeight, settingsOverlay);
+}
+
+void Scene::initGameOver(int windowWidth, int windowHeight) {
+    //camera
+    auto& cam = world.createEntity();
+    cam.addComponent<Camera>();
+
+    //menu
+    auto& menu(world.createEntity());
+    auto& menuTransform = menu.addComponent<Transform>(Vector2D(0,0), 0.0f, 1.0f);
+
+    SDL_Texture* tex = TextureManager::load("../assets/menu/TFC-GameOverBG.png");
+    SDL_FRect src = {0, 0, 2304, 1296};
+    SDL_FRect dst = {menuTransform.position.x, menuTransform.position.y, (float)windowWidth, (float)windowHeight};
+
+    menu.addComponent<Sprite>(tex, src, dst);
 }
 
 void Scene::toggleColliders(bool isVisible) {
