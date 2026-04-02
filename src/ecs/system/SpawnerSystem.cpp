@@ -31,11 +31,11 @@ SpawnerSystem::SpawnerSystem(World &world) {
         spawners["magnet"] = [&world](const Vector2D &v) {
                 auto& magnet = world.createDeferredEntity();
                 // std::cout << "Spawn Magnet: " << &magnet << std::endl;
-                auto& mT = magnet.addComponent<Transform>(v, 0.0f, 0.5f);
+                auto& mT = magnet.addComponent<Transform>(v, 0.0f, 0.75f);
                 mT.oldPosition = mT.position;
 
-                SDL_Texture* tex = TextureManager::load("../assets/mario.png");
-                SDL_FRect tileSrc {0, 0, 32, 44};
+                SDL_Texture* tex = TextureManager::load("../assets/sprites/Magnet.png");
+                SDL_FRect tileSrc {0, 0, 32, 32};
                 SDL_FRect tileDst {mT.position.x, mT.position.y, tileSrc.w, tileSrc.h};
 
                 mT.position.x -= tileSrc.w / 2;
