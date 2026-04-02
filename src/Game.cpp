@@ -164,6 +164,13 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
             audioManager.playMusic("musicGameplay");
         }
 
+        if (sceneName == "quit")
+        {
+            std::cout << "Player Quit from Main Menu." << std::endl;
+            destroy();
+            return;
+        }
+
         sceneManager.changeSceneDeferred(sceneName);
     };
 

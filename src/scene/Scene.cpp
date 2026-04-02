@@ -52,46 +52,83 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     title.addComponent<ItemTag>();
 
     //PLAY
-    auto& playButton = world.createEntity();
-    auto& playTransform = playButton.addComponent<Transform>(Vector2D((windowWidth / 2.0f), windowHeight / 2.0f), 0.0f, 1.0f);
+    auto& playButton = makeGenericButton("green", windowHeight / 2.0f, windowWidth);
+    auto& playSprite = playButton.getComponent<Sprite>();
+    SDL_Texture *playNormal = playSprite.texture;
+    auto& pClick = playButton.getComponent<Clickable>();
 
-    SDL_Texture* playTex = TextureManager::load("../assets/ui/buttons/green/normal.png");
-    SDL_FRect playSrc = {0, 0, 48, 16};
-    SDL_FRect playDst = {playTransform.position.x, playTransform.position.y, (float)playSrc.w * 2.5f, (float)playSrc.h * 2.5f};
-    playTransform.position.x -= playDst.w / 2; //center it
-    playDst.x -= playDst.w / 2; //center it
-    playButton.addComponent<Sprite>(playTex, playSrc, playDst, RenderLayer::UI);
-    playButton.addComponent<Collider>("ui", playDst);
-
-    auto& clickable = playButton.addComponent<Clickable>();
-
-    clickable.onPressed =  [&playTransform] {
-        playTransform.scale = 1.1f;
-    };
-
-    clickable.onReleased =  [this, &playTransform] {
+    pClick.onReleased = [&playSprite, playNormal] {
+        playSprite.texture = playNormal;
         Game::onSceneChangeRequest("gameplay");
-        playTransform.scale = 1.0f;
-        //toggleSettingsOverlayVisibility(overlay);
     };
-
-    clickable.onCancel =  [&playTransform] {
-        playTransform.scale = 1.0f;
-    };
-
 
     //SETTINGS
+    auto& setButton = makeGenericButton("grey", windowHeight / 2.0f + 70, windowWidth);
+    auto& setSprite = setButton.getComponent<Sprite>();
+    SDL_Texture *setNormal = setSprite.texture;
+    auto& setClick = setButton.getComponent<Clickable>();
+
+    setClick.onReleased = [&setSprite, setNormal] {
+        //Game::onSceneChangeRequest("gameplay");
+        //toggleSettingsOverlayVisibility(overlay);
+        setSprite.texture = setNormal;
+    };
     //auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
     //createSettingsButton(windowWidth, windowHeight, settingsOverlay);
 
     //CREDITS
     //auto& creditsOverlay = createCreditsOverlay(windowWidth, windowHeight);
     //createCreditsButton(windowWidth, windowHeight, creditsOverlay);
+    auto& credButton = makeGenericButton("grey", windowHeight / 2.0f + 140, windowWidth);
+    auto& credSprite = credButton.getComponent<Sprite>();
+    SDL_Texture *credNormal = credSprite.texture;
+    auto& credClick = credButton.getComponent<Clickable>();
+
+    credClick.onReleased = [&credSprite, credNormal] {
+        //Game::onSceneChangeRequest("gameplay");
+        //toggleCreditsOverlayVisibility(overlay);
+        credSprite.texture = credNormal;
+    };
 
     //QUIT
+    auto& quitButton = makeGenericButton("red", windowHeight / 2.0f + 210, windowWidth);
+    auto& quitSprite = quitButton.getComponent<Sprite>();
+    SDL_Texture *quitNormal = quitSprite.texture;
+    auto& quitClick = quitButton.getComponent<Clickable>();
+
+    quitClick.onReleased = [&quitSprite, quitNormal] {
+        quitSprite.texture = quitNormal;
+        Game::onSceneChangeRequest("quit");
+    };
 
     auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
     createCogButton(windowWidth, windowHeight, settingsOverlay);
+}
+
+Entity& Scene::makeGenericButton(const std::string& color, int buttonHeight, int windowWidth) {
+    auto& button = world.createEntity();
+    auto& bt = button.addComponent<Transform>(Vector2D((windowWidth / 2.0f), buttonHeight), 0.0f, 1.0f);
+
+    SDL_Texture* bTexNormal = TextureManager::load(("../assets/ui/buttons/" + color + "/normal.png").c_str());
+    SDL_FRect bSrc = {0, 0, 48, 16};
+    SDL_FRect bDst = {bt.position.x, bt.position.y, (float)bSrc.w * 2.5f, (float)bSrc.h * 2.5f};
+    bt.position.x -= bDst.w / 2; //center it
+    bDst.x -= bDst.w / 2; //center it
+    auto& bs = button.addComponent<Sprite>(bTexNormal, bSrc, bDst, RenderLayer::UI);
+    button.addComponent<Collider>("ui", bDst);
+
+    auto& bc = button.addComponent<Clickable>();
+    SDL_Texture* bTexPressed = TextureManager::load(("../assets/ui/buttons/" + color + "/clicked.png").c_str());
+
+    bc.onPressed =  [&bs, bTexPressed] {
+        bs.texture = bTexPressed;
+    };
+
+    bc.onCancel =  [&bs, bTexNormal] {
+        bs.texture = bTexNormal;
+    };
+
+    return button;
 }
 
 void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidth, int windowHeight) {
@@ -366,7 +403,7 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 
     auto& sprite = overlay.getComponent<Sprite>();
 
-    auto& children = overlay.getComponent<Children>().children;
+    //auto& children = overlay.getComponent<Children>().children;
 
     bool newVisibility = !sprite.visible;
 
