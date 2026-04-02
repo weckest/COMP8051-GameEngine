@@ -16,6 +16,8 @@ struct DebugState {
     bool colliders = false;
     bool grid = false;
     bool range = false;
+    bool stopSpawn = false;
+    bool stopEnemies = false;
 };
 
 #endif //INC_8051TUTORIAL_DEBUGSTATE_H

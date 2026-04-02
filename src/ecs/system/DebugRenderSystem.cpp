@@ -106,10 +106,10 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
     //         }
     //     }
     // }
-
     // std::cout << sumGridColliders << " grid colliders" << std::endl;
     // std::cout << sumGridItems << " grid items" << std::endl;
     // std::cout << sumGridEnemies << " grid enemies" << std::endl;
+    // std::cout << std::endl;
     //
     // if (sumGridColliders != sumColliders || sumGridEnemies != sumEnemies) {
     //     std::cout << "Sums" << std::endl;

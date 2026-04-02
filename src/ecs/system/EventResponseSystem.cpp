@@ -175,6 +175,7 @@ void EventResponseSystem::onCollision(
          auto& bTag = entityA->getComponent<ProjectileTag>();
          std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
          for (auto& entity: entities) {
+             if (!entity->isActive()) continue;
 
              auto& eTag = entity->getComponent<EnemyTag>();
 
@@ -200,7 +201,6 @@ void EventResponseSystem::onCollision(
                  //destroy the enemy
                  // std::cout << "Dead: " << entity << std::endl;
                  Game::gameState.points += 5;
-                 std::cout << Game::gameState.points << std::endl;
                  em.emit(DeathEvent(entity));
                  entity->destroy();
              }
@@ -274,7 +274,6 @@ void EventResponseSystem::onCollision(
         // safely destroy all dead enemies after loop
         for (auto& enemy : toDestroy) {
             Game::gameState.points += 5;
-            std::cout << Game::gameState.points << std::endl;
             world.getEventManager().emit(DeathEvent(enemy));
             enemy->destroy();
         }

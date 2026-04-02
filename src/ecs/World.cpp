@@ -4,6 +4,8 @@
 
 #include "World.h"
 
+#include "WeaponBehaviours.h"
+
 World::World() {
     entityGrid = std::vector<std::vector<std::vector<Entity*>>>(
             rows,
@@ -69,6 +71,79 @@ World::World() {
                     case SDLK_R:
                         debugState.range = !debugState.range;
                         std::cout << "Debug Range: " << debugState.range << std::endl;
+                        break;
+                    case SDLK_M:
+                        getEventManager().emit(SpawnPrefabEvent{"magnet", getPlayer()->getComponent<Transform>().position});
+                        break;
+                    case SDLK_SLASH:
+                        debugState.stopSpawn = !debugState.stopSpawn;
+                        std::cout << "Debug Stop Spawn: " << debugState.stopSpawn << std::endl;
+                        break;
+                    case SDLK_PERIOD:
+                        debugState.stopEnemies = !debugState.stopEnemies;
+                        std::cout << "Debug Stop Enemies: " << debugState.stopEnemies << std::endl;
+                        break;
+                    case SDLK_N:
+                        //kill all enemies by spawning a bubble on them
+                        for (auto& entity : entities) {
+                            if (entity->hasComponent<EnemyTag>()) {
+                                //spawn bubble
+                                auto &bullet = this->createDeferredEntity();
+                                auto &t = entity->getComponent<Transform>();
+                                auto &s = entity->getComponent<Sprite>();
+
+                                SDL_Texture *tex = TextureManager::load("../assets/bubble.png");
+
+                                SDL_FRect src = {0,0,32,32};
+
+                                float sizeMod = 1.0f;
+
+                                SDL_FRect dst = {
+                                    t.position.x,
+                                    t.position.y,
+                                    src.w * sizeMod,
+                                    src.h * sizeMod,
+                                };
+
+                                bullet.addComponent<Sprite>(tex, src, dst);
+
+                                auto& bT = bullet.addComponent<Transform>(
+                                    Vector2D(
+                                        t.position.x + s.dst.w/2 - dst.w/2,
+                                        t.position.y + s.dst.h/2 - dst.h/2
+                                    ),
+                                    0.0f,
+                                    1.0f
+                                );
+
+                                Entity* closestEntity = CollisionSystem::getClosestEntity(*this, *entity, 200);
+                                if (!closestEntity) {
+                                    // world.getEventManager().emit(DeathEvent{&bullet});
+                                    bullet.destroy();
+                                    return;
+                                }
+
+                                // std::cout << "Spawn Bubble " << &bullet << std::endl;
+
+                                auto& eT = closestEntity->getComponent<Transform>();
+                                Vector2D dir = (eT.position - bT.position).normalize();
+
+                                // bullet.addComponent<Velocity>(dir, 200.0f);
+
+                                auto &c = bullet.addComponent<Collider>("bullet");
+                                c.rect.w = dst.w;
+                                c.rect.h = dst.h;
+                                    c.layer = CollisionLayer::PROJECTILE;
+                                    c.mask = CollisionLayer::ENEMY;
+
+                                float damage =
+                                    entity->getComponent<EnemyTag>().health + 5.0f;
+
+                                // float aoe = 100.0f * getStat(weapon, "aoeModifier", 1.0f);
+
+                                bullet.addComponent<ProjectileTag>(damage, 100.0f);
+                            }
+                        }
                         break;
                     default:
                         break;

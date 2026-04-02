@@ -94,7 +94,7 @@ void CollisionSystem::update(World &world, Timer& timer) {
                         if (entityA == entityB) continue;
                         //dont do collisions if the entity is dead
                         if (!entityB->isActive()) continue;
-                        if (!entityB->hasComponent<Collider>()) continue;
+                        // if (!entityB->hasComponent<Collider>()) continue;
 
                         if (colliderA.mask & colliderB.layer) {
                             if (Collision::AABB(colliderA, colliderB)) {

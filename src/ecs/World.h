@@ -112,7 +112,9 @@ public:
             timer.startTimer("movement");
             movementSystem.update(entities, dt);
             timer.stopTimer("movement");
-            enemyMovementSystem.update(entities, dt);
+            if (!debugState.stopEnemies) {
+                enemyMovementSystem.update(entities, dt);
+            }
             timer.startTimer("pickUp");
             pickUpSystem.update(entities, *this);
             timer.stopTimer("pickUp");
@@ -128,8 +130,10 @@ public:
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
-            weaponFireSystem.update(*this, dt);
-            spawnTimerSystem.update(entities, dt);
+            if (!debugState.stopSpawn) {
+                weaponFireSystem.update(*this, dt);
+                spawnTimerSystem.update(entities, dt);
+            }
             destructionSystem.update(entities);
             levelUpSystem.update(entities, *this);
             healthSystem.update(entities, *this);
@@ -241,7 +245,7 @@ public:
                 if (!e->isActive()) {
                     //print the entity address we are cleaning up
                     // std::cout << "Entity " << e << " destroyed" << std::endl;
-                    //remove the entity from the grid
+                    //remove the eaantity from the grid
                     eventManager.emit(DeathEvent{e.get()});
                     return !e->isActive();
                 }
