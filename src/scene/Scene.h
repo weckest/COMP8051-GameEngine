@@ -38,6 +38,12 @@ private:
 
     Entity& makeGenericButton(const std::string& color, int buttonHeight, int windowWidth);
 
+    Entity& createSettingsBox(int windowWidth, int windowHeight);
+    void createSettingsComponents(Entity& overlay);
+
+    Entity& createCreditsBox(int windowWidth, int windowHeight);
+    void createCreditsComponents(Entity& overlay);
+
     Entity& createSettingsOverlay(int windowWidth, int windowHeight);
     Entity& createCogButton(int windowWidth, int windowHeight, Entity& overlay);
     void createSettingsUIComponents(Entity& overlay);

@@ -68,27 +68,11 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     SDL_Texture *setNormal = setSprite.texture;
     auto& setClick = setButton.getComponent<Clickable>();
 
-    setClick.onReleased = [&setSprite, setNormal] {
-        //Game::onSceneChangeRequest("gameplay");
-        //toggleSettingsOverlayVisibility(overlay);
-        setSprite.texture = setNormal;
-    };
-    //auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
-    //createSettingsButton(windowWidth, windowHeight, settingsOverlay);
-
     //CREDITS
-    //auto& creditsOverlay = createCreditsOverlay(windowWidth, windowHeight);
-    //createCreditsButton(windowWidth, windowHeight, creditsOverlay);
     auto& credButton = makeGenericButton("grey", windowHeight / 2.0f + 140, windowWidth);
     auto& credSprite = credButton.getComponent<Sprite>();
     SDL_Texture *credNormal = credSprite.texture;
     auto& credClick = credButton.getComponent<Clickable>();
-
-    credClick.onReleased = [&credSprite, credNormal] {
-        //Game::onSceneChangeRequest("gameplay");
-        //toggleCreditsOverlayVisibility(overlay);
-        credSprite.texture = credNormal;
-    };
 
     //QUIT
     auto& quitButton = makeGenericButton("red", windowHeight / 2.0f + 210, windowWidth);
@@ -100,6 +84,20 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
         quitSprite.texture = quitNormal;
         Game::onSceneChangeRequest("quit");
     };
+
+    //OVERLAYS
+    auto& setBox = createSettingsBox(windowWidth, windowHeight);
+
+    setClick.onReleased = [this, &setSprite, setNormal, &setBox] {
+        toggleSettingsOverlayVisibility(setBox);
+        setSprite.texture = setNormal;
+    };
+
+    // credClick.onReleased = [this, &credSprite, credNormal, &credBox] {
+    //     //Game::onSceneChangeRequest("gameplay");
+    //     //toggleCreditsOverlayVisibility(overlay);
+    //     credSprite.texture = credNormal;
+    // };
 
     auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
     createCogButton(windowWidth, windowHeight, settingsOverlay);
@@ -129,6 +127,130 @@ Entity& Scene::makeGenericButton(const std::string& color, int buttonHeight, int
     };
 
     return button;
+}
+
+Entity& Scene::createSettingsBox(int windowWidth, int windowHeight) {
+    auto& overlay(world.createEntity());
+    SDL_Texture *overlayTex = TextureManager::load("../assets/ui/TFC-MenuBox.png");
+
+    SDL_FRect overlaySrc = {0,0,windowWidth*0.60f,windowHeight*0.80f};
+    SDL_FRect overlayDst = {
+        (float)windowWidth/2 - overlaySrc.w/2,
+        (float)windowHeight/2 - overlaySrc.h / 2,
+        overlaySrc.w,
+        overlaySrc.h};
+
+    overlay.addComponent<Transform>(Vector2D(overlayDst.x, overlayDst.y), 0.0f, 1.0f);
+    overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDst, RenderLayer::UI,false);
+
+    createSettingsComponents(overlay);
+
+    return overlay;
+}
+
+void Scene::createSettingsComponents(Entity &overlay) {
+    if (!overlay.hasComponent<Children>() ) {
+        overlay.addComponent<Children>();
+    }
+
+    auto& overlayTrans = overlay.getComponent<Transform>();
+    auto& overlaySprite = overlay.getComponent<Sprite>();
+
+    float baseX = overlayTrans.position.x;
+    float baseY = overlayTrans.position.y;
+
+    auto& closeButton = world.createEntity();
+    auto& closeTransform = closeButton.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40,baseY + 10), 0.0f, 0.0f);
+
+    SDL_Texture* tex = TextureManager::load("../assets/ui/close.png");
+    SDL_FRect closeSrc = {0, 0, 32, 32};
+    SDL_FRect closeDst = {closeTransform.position.x, closeTransform.position.y, closeSrc.w, closeSrc.h};
+
+    closeButton.addComponent<Sprite>(tex, closeSrc, closeDst, RenderLayer::UI, false);
+
+    closeButton.addComponent<Collider>("ui", closeDst);
+
+    auto& clickable = closeButton.addComponent<Clickable>();
+
+    clickable.onPressed = [&closeTransform] {
+        closeTransform.scale = 0.5f;
+    };
+
+    clickable.onReleased = [this, &overlay, &closeTransform] {
+        closeTransform.scale = 1.0f;
+        toggleSettingsOverlayVisibility(overlay);
+    };
+
+    clickable.onCancel = [&closeTransform] {
+        closeTransform.scale = 1.0f;
+    };
+
+    closeButton.addComponent<Parent>(&overlay);
+    auto& parentChildren = overlay.getComponent<Children>();
+
+    parentChildren.children.push_back(&closeButton);
+}
+
+Entity& Scene::createCreditsBox(int windowWidth, int windowHeight) {
+    auto& overlay(world.createEntity());
+    SDL_Texture *overlayTex = TextureManager::load("../assets/ui/TFC-MenuBox.jpg");
+
+    SDL_FRect overlaySrc = {0,0,windowWidth*0.85f,windowHeight*0.85f};
+    SDL_FRect overlayDst = {
+        (float)windowWidth/2 - overlaySrc.w/2,
+        (float)windowHeight/2 - overlaySrc.h / 2,
+        overlaySrc.w,
+        overlaySrc.h};
+
+    overlay.addComponent<Transform>(Vector2D(overlayDst.x, overlayDst.y), 0.0f, 1.0f);
+    overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDst, RenderLayer::UI,false);
+
+    createSettingsUIComponents(overlay);
+
+    return overlay;
+}
+
+void Scene::createCreditsComponents(Entity &overlay) {
+    if (!overlay.hasComponent<Children>() ) {
+        overlay.addComponent<Children>();
+    }
+
+    auto& overlayTrans = overlay.getComponent<Transform>();
+    auto& overlaySprite = overlay.getComponent<Sprite>();
+
+    float baseX = overlayTrans.position.x;
+    float baseY = overlayTrans.position.y;
+
+    auto& closeButton = world.createEntity();
+    auto& closeTransform = closeButton.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40,baseY + 10), 0.0f, 0.0f);
+
+    SDL_Texture* tex = TextureManager::load("../assets/ui/close.png");
+    SDL_FRect closeSrc = {0, 0, 32, 32};
+    SDL_FRect closeDst = {closeTransform.position.x, closeTransform.position.y, closeSrc.w, closeSrc.h};
+
+    closeButton.addComponent<Sprite>(tex, closeSrc, closeDst, RenderLayer::UI, false);
+
+    closeButton.addComponent<Collider>("ui", closeDst);
+
+    auto& clickable = closeButton.addComponent<Clickable>();
+
+    clickable.onPressed = [&closeTransform] {
+        closeTransform.scale = 0.5f;
+    };
+
+    clickable.onReleased = [this, &overlay, &closeTransform] {
+        closeTransform.scale = 1.0f;
+        toggleSettingsOverlayVisibility(overlay);
+    };
+
+    clickable.onCancel = [&closeTransform] {
+        closeTransform.scale = 1.0f;
+    };
+
+    closeButton.addComponent<Parent>(&overlay);
+    auto& parentChildren = overlay.getComponent<Children>();
+
+    parentChildren.children.push_back(&closeButton);
 }
 
 void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidth, int windowHeight) {
@@ -317,8 +439,6 @@ Entity& Scene::createSettingsOverlay(int windowWidth, int windowHeight) {
     createSettingsUIComponents(overlay);
 
     return overlay;
-
-
 }
 
 Entity& Scene::createCogButton(int windowWidth, int windowHeight, Entity& overlay) {
@@ -375,7 +495,7 @@ void Scene::createSettingsUIComponents(Entity& overlay) {
 
     closeButton.addComponent<Sprite>(tex, closeSrc, closeDst, RenderLayer::UI, false);
 
-    closeButton.addComponent<Collider>("ui", closeDst);
+    closeButton.addComponent<Collider>("ui", closeDst, false);
 
     auto& clickable = closeButton.addComponent<Clickable>();
 
