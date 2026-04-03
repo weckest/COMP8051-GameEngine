@@ -178,11 +178,6 @@ void EventResponseSystem::onCollision(
 
         if (e.state != CollisionState::Enter) return;
 
-        auto& weaponInfo = entityA->getComponent<Weapon>();
-
-        float critChance = getStat(weaponInfo, "critChanceModifier", 0.0f) ;
-        float critMultiplier = getStat(weaponInfo, "critDamageModifier", 1.5f);
-
 
         auto& bTag = entityA->getComponent<ProjectileTag>();
         std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
@@ -196,10 +191,20 @@ void EventResponseSystem::onCollision(
         };
         damageLabel.visible = true;
 
+        float critChance = 0.0f;
+        float critMultiplier = 1.0f;
+
+        if (entityA->hasComponent<ProjectileTag>() && entityA->hasComponent<Weapon>())  {
+            auto& weaponInfo = entityA->getComponent<Weapon>();
+            critChance = getStat(weaponInfo, "critChanceModifier", 0.0f) ;
+            critMultiplier = getStat(weaponInfo, "critDamageModifier", 1.5f);
+        }
+
         for (auto& entity: entities) {
             if (!entity->isActive()) continue;
 
             auto& eTag = entity->getComponent<EnemyTag>();
+
 
             bool isCrit = (static_cast<float>(rand()) / RAND_MAX) <= critChance;
 
@@ -209,11 +214,19 @@ void EventResponseSystem::onCollision(
                 float bulletDamage = (bTag.damage * (isCrit ? critMultiplier : 1.0f)) * (bTag.aoe - distanceToEnemy) / bTag.aoe;
                 eTag.health -= bulletDamage;
                 damageLabel.text = std::to_string((int)(bulletDamage * 10) / 10.0).substr(0, 5);
-                entityA->getComponent<weaponOrigin>().origin->totalDamage += bTag.damage * (isCrit ? critMultiplier : 1.0f);
+
+                if (entityA->hasComponent<ProjectileTag>() && entityA->hasComponent<Weapon>()) {
+                    entityA->getComponent<weaponOrigin>().origin->totalDamage += bTag.damage * (isCrit ? critMultiplier : 1.0f);
+                }
+
             } else {
                 eTag.health -= bTag.damage * (isCrit ? critMultiplier : 1.0f);
                 damageLabel.text = std::to_string((int)((bTag.damage * (isCrit ? critMultiplier : 1.0f)) * 10) / 10.0).substr(0, 5);
-                entityA->getComponent<weaponOrigin>().origin->totalDamage += bTag.damage * (isCrit ? critMultiplier : 1.0f);
+
+                if (entityA->hasComponent<ProjectileTag>() && entityA->hasComponent<Weapon>()) {
+                    entityA->getComponent<weaponOrigin>().origin->totalDamage += bTag.damage * (isCrit ? critMultiplier : 1.0f);
+                }
+
             }
 
             auto& label = world.createDeferredEntity();
