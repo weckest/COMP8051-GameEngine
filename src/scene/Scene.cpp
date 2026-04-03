@@ -131,7 +131,7 @@ void Scene::initGameOver(int windowWidth, int windowHeight) {
 
     //Header
     auto& titleText = world.createEntity();
-    titleText.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 120, windowHeight / 6.0f), 0.0f, 1.0f);
+    titleText.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 120, windowHeight / 7.0f), 0.0f, 1.0f);
     Label tLabel = {
         "Game Over",
         AssetManager::getFont("monogram-title"),
@@ -145,7 +145,7 @@ void Scene::initGameOver(int windowWidth, int windowHeight) {
 
     //Stat 1
     auto& stat1Text = world.createEntity();
-    stat1Text.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 146, windowHeight / 3.0f), 0.0f, 1.0f);
+    stat1Text.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 151, windowHeight / 3.0f), 0.0f, 1.0f);
 
     int totalSeconds = static_cast<int>(Game::gameState.time);
     int remainder = totalSeconds % 60;
@@ -163,7 +163,7 @@ void Scene::initGameOver(int windowWidth, int windowHeight) {
 
     //Stat 2
     auto& stat2Text = world.createEntity();
-    stat2Text.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 131, windowHeight / 3.0f + 50), 0.0f, 1.0f);
+    stat2Text.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 136, windowHeight / 3.0f + 50), 0.0f, 1.0f);
 
     float totalDamage = 0;
     for (const auto& e : Game::gameState.WeaponDamage) {
@@ -181,9 +181,59 @@ void Scene::initGameOver(int windowWidth, int windowHeight) {
     stat2Label.dirty = true;
     TextureManager::loadLabel(stat2Label);
 
+    //sub damages
+    if (Game::gameState.WeaponDamage["bubblegun"] > 0) {
+        auto& bubbleText = world.createEntity();
+        bubbleText.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 91, windowHeight / 3.0f + 95), 0.0f, 1.0f);
+
+        Label bubLabel = {
+            "Bubble Gun: " + std::format("{:.2f}", Game::gameState.WeaponDamage["bubblegun"]),
+            AssetManager::getFont("monogram"),
+            {255,255,255,255},
+            LabelType::UI,
+            "gameoverbubble"
+        };
+        auto& bubbleLabel = bubbleText.addComponent<Label>(bubLabel);
+        bubbleLabel.dirty = true;
+        TextureManager::loadLabel(bubbleLabel);
+    }
+
+    if (Game::gameState.WeaponDamage["shotgun"] > 0) {
+        auto& shotgunText = world.createEntity();
+        shotgunText.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 67, windowHeight / 3.0f + 120), 0.0f, 1.0f);
+
+        Label shotLabel = {
+            "Shotgun: " + std::format("{:.2f}", Game::gameState.WeaponDamage["shotgun"]),
+            AssetManager::getFont("monogram"),
+            {255,255,255,255},
+            LabelType::UI,
+            "gameovershotgun"
+        };
+        auto& shotgunLabel = shotgunText.addComponent<Label>(shotLabel);
+        shotgunLabel.dirty = true;
+        TextureManager::loadLabel(shotgunLabel);
+    }
+
+    if (Game::gameState.WeaponDamage["RingofFire"] > 0) {
+        auto& rofText = world.createEntity();
+        rofText.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 107, windowHeight / 3.0f + 145), 0.0f, 1.0f);
+
+        Label fireLabel = {
+            "Ring of Fire: " + std::format("{:.2f}", Game::gameState.WeaponDamage["RingofFire"]),
+            AssetManager::getFont("monogram"),
+            {255,255,255,255},
+            LabelType::UI,
+            "gameoverrof"
+        };
+        auto& rofLabel = rofText.addComponent<Label>(fireLabel);
+        rofLabel.dirty = true;
+        TextureManager::loadLabel(rofLabel);
+    }
+
+
     //Stat 3
     auto& stat3Text = world.createEntity();
-    stat3Text.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 116, windowHeight / 3.0f + 150), 0.0f, 1.0f);
+    stat3Text.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 121, windowHeight / 3.0f + 170), 0.0f, 1.0f);
     Label s3Label = {
         "Total Score: " + std::to_string(Game::gameState.points),
         AssetManager::getFont("monogram-medium"),
@@ -197,7 +247,7 @@ void Scene::initGameOver(int windowWidth, int windowHeight) {
 
     //Continue
     auto& continueText = world.createEntity();
-    continueText.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 305, windowHeight / 5.0f * 3.5f), 0.0f, 1.0f);
+    continueText.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 305, windowHeight / 5.0f * 4.0f), 0.0f, 1.0f);
     Label contLabel = {
         "Press Space To Continue",
         AssetManager::getFont("monogram-title"),
