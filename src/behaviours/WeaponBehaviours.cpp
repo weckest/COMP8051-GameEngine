@@ -240,7 +240,9 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                         damage,
                         0.0f
                         );
-                    ring.addComponent<Weapon>(weapon);
+
+                    auto weaponCopy = weapon; // make a copy of Weapon
+                    ring.addComponent<Weapon>(weaponCopy); // safe copy
                     ring.addComponent<weaponOrigin>(&weapon);
 
                 }
