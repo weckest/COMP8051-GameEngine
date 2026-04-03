@@ -33,15 +33,6 @@ public:
 
 		    	e->destroy();
 
-			} else if (e->hasComponent<Label>()) {
-				auto& label = e->getComponent<Label>();
-
-				float currentValue = label.color.a;
-				float timeLeftScalar = currentValue / 255.0f;
-				float originalTime = oldTime / timeLeftScalar;
-				float newTimeLeftScalar = lifetime.time / originalTime;
-				label.color.a = (currentValue / timeLeftScalar) * newTimeLeftScalar;
-				label.dirty = true;
 			}
 	  	}
     	}

@@ -182,15 +182,6 @@ void EventResponseSystem::onCollision(
         auto& bTag = entityA->getComponent<ProjectileTag>();
         std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
 
-        Label damageLabel = {
-         "0",
-        AssetManager::getFont("bungeeSmall"),
-        {255,0,0,255},
-        LabelType::Damage,
-        "damageLabel"
-        };
-        damageLabel.visible = true;
-
         float critChance = 0.0f;
         float critMultiplier = 1.0f;
 
@@ -213,7 +204,6 @@ void EventResponseSystem::onCollision(
                 float distanceToEnemy = (entityA->getComponent<Transform>().position - entity->getComponent<Transform>().position).length();
                 float bulletDamage = (bTag.damage * (isCrit ? critMultiplier : 1.0f)) * (bTag.aoe - distanceToEnemy) / bTag.aoe;
                 eTag.health -= bulletDamage;
-                damageLabel.text = std::to_string((int)(bulletDamage * 10) / 10.0).substr(0, 5);
 
                 if (entityA->hasComponent<ProjectileTag>() && entityA->hasComponent<Weapon>()) {
                     entityA->getComponent<weaponOrigin>().origin->totalDamage += bTag.damage * (isCrit ? critMultiplier : 1.0f);
@@ -221,24 +211,12 @@ void EventResponseSystem::onCollision(
 
             } else {
                 eTag.health -= bTag.damage * (isCrit ? critMultiplier : 1.0f);
-                damageLabel.text = std::to_string((int)((bTag.damage * (isCrit ? critMultiplier : 1.0f)) * 10) / 10.0).substr(0, 5);
 
                 if (entityA->hasComponent<ProjectileTag>() && entityA->hasComponent<Weapon>()) {
                     entityA->getComponent<weaponOrigin>().origin->totalDamage += bTag.damage * (isCrit ? critMultiplier : 1.0f);
                 }
 
             }
-
-            auto& label = world.createDeferredEntity();
-            damageLabel.textureCacheKey = "damageLabel" + damageLabel.text;
-            TextureManager::loadLabel(damageLabel);
-            damageLabel.dirty = true;
-            label.addComponent<Label>(damageLabel);
-            label.addComponent<Transform>(entity->getComponent<Transform>().position, 0.0f, 1.0f);
-            label.addComponent<Lifetime>(2.5f, true);
-            label.addComponent<Velocity>(Vector2D(0.0f, -1.0f), 25.0f);
-
-
 
             if (eTag.health <= 0) {
                 //replace with spawinging in a random object
@@ -305,16 +283,6 @@ void EventResponseSystem::onCollision(
         float critChance = ringFire.critChance;
         float critMultiplier = ringFire.critMultiplier;
 
-        Label damageLabel = {
-            "0",
-           AssetManager::getFont("bungeeSmall"),
-           {255,0,0,255},
-           LabelType::Damage,
-           "damageLabel"
-           };
-        damageLabel.visible = true;
-        TextureManager::loadLabel(damageLabel);
-
         for (auto& enemy : enemies) {
             if (!enemy->hasComponent<EnemyTag>()) continue;
 
@@ -322,16 +290,9 @@ void EventResponseSystem::onCollision(
 
             auto& eTag = enemy->getComponent<EnemyTag>();
             eTag.health -= projectileInfo.damage * (isCrit ? critMultiplier : 1.0f);
-            damageLabel.text = std::to_string((int)((projectileInfo.damage * (isCrit ? critMultiplier : 1.0f))* 10) / 10.0).substr(0, 5);
 
             entityA->getComponent<weaponOrigin>().origin->totalDamage += projectileInfo.damage * (isCrit ? critMultiplier : 1.0f);
 
-            auto& label = world.createDeferredEntity();
-            damageLabel.dirty = true;
-            label.addComponent<Label>(damageLabel);
-            label.addComponent<Transform>(enemy->getComponent<Transform>().position, 0.0f, 1.0f);
-            label.addComponent<Lifetime>(2.5f, true);
-            label.addComponent<Velocity>(Vector2D(0.0f, -1.0f), 25.0f);
 
             if (eTag.health <= 0) {
                 Vector2D center{};

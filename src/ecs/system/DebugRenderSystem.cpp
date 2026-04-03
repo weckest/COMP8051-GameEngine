@@ -249,11 +249,11 @@ void DebugRenderSystem::initDebugLabel() {
     auto& entities = entity.addComponent<Transform>(Vector2D(10.0f, 50.0f), 0.0f, 1.0f);
     auto& children = entity.addComponent<Children>();
 
-    auto& levelUp = createChildDebugLabe(entity, LabelType::LevelUp, Vector2D(10.0f, entities.position.y + 20.0f)).getComponent<Transform>();
-    auto& enemyInfo = createChildDebugLabe(entity, LabelType::EnemyInfo, Vector2D(10.0f, levelUp.position.y + 20.0f)).getComponent<Transform>();
-    auto& health = createChildDebugLabe(entity, LabelType::Health, Vector2D(10.0f, enemyInfo.position.y + 20.0f)).getComponent<Transform>();
-    auto& weapons = createChildDebugLabe(entity, LabelType::Weapons, Vector2D(10.0f, health.position.y + 20.0f)).getComponent<Transform>();
-    auto& times = createChildDebugLabe(entity, LabelType::Times, Vector2D(10.0f, weapons.position.y + 20.0f));
+    auto& levelUp = createChildDebugLabel(entity, LabelType::LevelUp, Vector2D(10.0f, entities.position.y + 20.0f)).getComponent<Transform>();
+    auto& enemyInfo = createChildDebugLabel(entity, LabelType::EnemyInfo, Vector2D(10.0f, levelUp.position.y + 20.0f)).getComponent<Transform>();
+    auto& health = createChildDebugLabel(entity, LabelType::Health, Vector2D(10.0f, enemyInfo.position.y + 20.0f)).getComponent<Transform>();
+    auto& weapons = createChildDebugLabel(entity, LabelType::Weapons, Vector2D(10.0f, health.position.y + 20.0f)).getComponent<Transform>();
+    auto& times = createChildDebugLabel(entity, LabelType::Times, Vector2D(10.0f, weapons.position.y + 20.0f));
     times.addComponent<Children>();
 }
 
@@ -307,7 +307,7 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
             auto& timerChildren = child->getComponent<Children>();
             if (timerChildren.children.empty()) {
                 for (int i = 0; i < timers.size(); i++) {
-                    createChildDebugLabe(*child, LabelType::Times, Vector2D(20.0f, t.position.y + 20.0f * (i + 1)))
+                    createChildDebugLabel(*child, LabelType::Times, Vector2D(20.0f, t.position.y + 20.0f * (i + 1)), timers[i])
                     .getComponent<Label>().visible = true;
 
                 }
@@ -321,7 +321,7 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
     }
 }
 
-Entity& DebugRenderSystem::createChildDebugLabe(Entity &parent, LabelType type, Vector2D position) {
+Entity& DebugRenderSystem::createChildDebugLabel(Entity &parent, LabelType type, Vector2D position, std::string key) {
     auto& children = parent.getComponent<Children>();
 
     Label label = {
@@ -329,7 +329,7 @@ Entity& DebugRenderSystem::createChildDebugLabe(Entity &parent, LabelType type, 
         AssetManager::getFont("arial"),
         {255,255,255,255},
         type,
-        "debugLabel"
+        "debugLabel" + key
     };
     label.visible = false;
 

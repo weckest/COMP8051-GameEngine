@@ -126,10 +126,15 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
     timer.startTimer("activeCollisions");
     for (auto& key: activeCollisions) {
-        if (!currentCollisions.contains(key)) {
-            if (key.first->isActive() == 1 && key.second->isActive() == 1) {
-                world.getEventManager().emit(CollisionEvent{key.first, key.second, CollisionState::Exit});
+        try {
+            if (!currentCollisions.contains(key)) {
+                if (key.first->isActive() == 1 && key.second->isActive() == 1) {
+                    world.getEventManager().emit(CollisionEvent{key.first, key.second, CollisionState::Exit});
+                }
             }
+        }
+        catch (std::exception& e) {
+            std::cerr << e.what() << std::endl;
         }
     }
     timer.stopTimer("activeCollisions");
