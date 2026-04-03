@@ -53,13 +53,13 @@ void CollisionSystem::update(World &world, Timer& timer) {
         c.rect.x = t.position.x;
         c.rect.y = t.position.y;
 
-        //FOR THE GAME
-        if (entity->hasComponent<PlayerTag>()) {
+        //have to resize due to how the spritesheet is set up
+        if (entity->hasComponent<PlayerTag>() || entity->hasComponent<EnemyTag>()) {
 
-            auto& playerSprite = entity->getComponent<Sprite>();
+            auto& spr = entity->getComponent<Sprite>();
 
-            c.rect.x += playerSprite.dst.w / 4;
-            c.rect.y += playerSprite.dst.h / 4;
+            c.rect.x += spr.dst.w / 4;
+            c.rect.y += spr.dst.h / 4 * 2;
         }
 
     }
@@ -88,33 +88,34 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
                     //check for the collider collision
                     //inner loop
-                    timer.startTimer("innerLoop");
                     for (auto& entityB : cell) {
                         auto& colliderB = entityB->getComponent<Collider>();
 
                         if (entityA == entityB) continue;
                         //dont do collisions if the entity is dead
                         if (!entityB->isActive()) continue;
-                        if (!entityB->hasComponent<Collider>()) continue;
+                        // if (!entityB->hasComponent<Collider>()) continue;
+                        try {
+                            if (colliderA.mask & colliderB.layer) {
+                                if (Collision::AABB(colliderA, colliderB)) {
+                                    CollisionKey key = makeKey(entityA, entityB);
+                                    if (currentCollisions.contains(key)) continue;
+                                    currentCollisions.insert(key);
 
-                        if (colliderA.mask & colliderB.layer) {
-                            if (Collision::AABB(colliderA, colliderB)) {
-                                CollisionKey key = makeKey(entityA, entityB);
-                                if (currentCollisions.contains(key)) continue;
-                                currentCollisions.insert(key);
-
-                                if (!activeCollisions.contains(key)) {
-                                    events.emplace_back(entityA, entityB, CollisionState::Enter);
-                                } else {
-                                    events.emplace_back(entityA, entityB, CollisionState::Stay);
+                                    if (!activeCollisions.contains(key)) {
+                                        events.emplace_back(entityA, entityB, CollisionState::Enter);
+                                    } else {
+                                        events.emplace_back(entityA, entityB, CollisionState::Stay);
+                                    }
                                 }
+                                break;
                             }
-                            break;
+                        } catch (std::exception& e) {
+                            std::cerr << e.what() << std::endl;
                         }
 
 
                     }
-                    timer.stopTimer("innerLoop");
                 }
             }
         }
@@ -128,17 +129,23 @@ void CollisionSystem::update(World &world, Timer& timer) {
 
     timer.startTimer("activeCollisions");
     for (auto& key: activeCollisions) {
-        if (!currentCollisions.contains(key)) {
-            if (key.first->isActive() == 1 && key.second->isActive() == 1) {
-                world.getEventManager().emit(CollisionEvent{key.first, key.second, CollisionState::Exit});
+        try {
+            if (!currentCollisions.contains(key)) {
+                if (key.first->isActive() == 1 && key.second->isActive() == 1) {
+                    world.getEventManager().emit(CollisionEvent{key.first, key.second, CollisionState::Exit});
+                }
             }
+        }
+        catch (std::exception& e) {
+            std::cerr << e.what() << std::endl;
         }
     }
     timer.stopTimer("activeCollisions");
-
-    timer.startTimer("moveCollisions");
-    activeCollisions = std::move(currentCollisions); //update with current collisions
-    timer.stopTimer("moveCollisions");
+    try {
+        activeCollisions = std::move(currentCollisions); //update with current collisions
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 std::vector<Entity*> CollisionSystem::getAllWithin(World &world, Entity &entity, float distance) {
@@ -219,33 +226,39 @@ Entity * CollisionSystem::getClosestEntity(World& world, Entity &entity, float r
                 if (xIndex < grid[0].size() && xIndex >= 0 && yIndex < grid.size() && yIndex >= 0) {
                     auto& cell = grid[yIndex][xIndex];
 
+                    // std::cout << "Checking: " <<  xIndex << " " << yIndex << std::endl;
+
                     for (auto& entityB : cell) {
                         if (entityB->hasComponent<Transform>() &&
                             (entityB->hasComponent<Sprite>() || entityB->hasComponent<Collider>()) &&
                             entityB->hasComponent<EnemyTag>()
                         ) {
+                            // std::cout << entityB << std::endl;
+                            auto& bT = entityB->getComponent<Transform>();
+                            try {
+                                Vector2D bCenterPoint = bT.position;
 
-                            auto& t = entityB->getComponent<Transform>();
-                            Vector2D bCenterPoint = t.position;
+                                if (entityB->hasComponent<Sprite>()) {
+                                    auto& s = entityB->getComponent<Sprite>();
+                                    bCenterPoint.x += s.dst.w / 2;
+                                    bCenterPoint.y += s.dst.h / 2;
+                                } else {
+                                    auto& c = entityB->getComponent<Collider>();
+                                    bCenterPoint.x -= c.rect.w / 2;
+                                    bCenterPoint.y -= c.rect.h / 2;
+                                }
 
-                            if (entityB->hasComponent<Sprite>()) {
-                                auto& s = entityB->getComponent<Sprite>();
-                                bCenterPoint.x += s.dst.w / 2;
-                                bCenterPoint.y += s.dst.h / 2;
-                            } else {
-                                auto& c = entityB->getComponent<Collider>();
-                                bCenterPoint.x -= c.rect.w / 2;
-                                bCenterPoint.y -= c.rect.h / 2;
-                            }
+                                if ((bCenterPoint - centerPoint).length() > radius) continue;
 
-                            if ((bCenterPoint - centerPoint).length() > radius) continue;
-
-                            if (closestEntity == nullptr) {
-                                closestEntity = entityB;
-                                distance = (centerPoint - bCenterPoint).length();
-                            } else if ((centerPoint - bCenterPoint).length() < distance) {
-                                closestEntity = entityB;
-                                distance = (centerPoint - bCenterPoint).length();
+                                if (closestEntity == nullptr) {
+                                    closestEntity = entityB;
+                                    distance = (centerPoint - bCenterPoint).length();
+                                } else if ((centerPoint - bCenterPoint).length() < distance) {
+                                    closestEntity = entityB;
+                                    distance = (centerPoint - bCenterPoint).length();
+                                }
+                            } catch (std::exception& e) {
+                                continue;
                             }
                         }
                     }

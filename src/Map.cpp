@@ -44,7 +44,8 @@ void Map::load(const char *path, SDL_Texture *ts) {
     }
 
     //parse building layer data
-    if (auto* buildingLayer = layer->NextSiblingElement("layer"); buildingLayer != nullptr) {
+    auto* buildingLayer = layer->NextSiblingElement("layer");
+    if (buildingLayer != nullptr) {
         auto* buildingData = buildingLayer->FirstChildElement("data");
         std::string buildingCsv = buildingData->GetText();
 
@@ -53,10 +54,29 @@ void Map::load(const char *path, SDL_Texture *ts) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 std::string building_val;
-                //read chars from ss into val until it hits a comma,, or is at the end of the stream
+                //read chars from ss into val until it hits a comma, or is at the end of the stream
 
                 if (!std::getline(building_ss, building_val, ',')) break;
                 buildingTileData[i][j] = std::stoi(building_val); //string to int converter
+            }
+        }
+
+        //parse overlay layer data
+        auto* overLayer = buildingLayer->NextSiblingElement("layer");
+        if (overLayer != nullptr) {
+            auto* overData = overLayer->FirstChildElement("data");
+            std::string overCsv = overData->GetText();
+
+            std::stringstream over_ss(overCsv);
+            overlayTileData = std::vector(height, std::vector<int>(width));
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    std::string over_val;
+                    //read chars from ss into val until it hits a comma, or is at the end of the stream
+
+                    if (!std::getline(over_ss, over_val, ',')) break;
+                    overlayTileData[i][j] = std::stoi(over_val); //string to int converter
+                }
             }
         }
     }
@@ -190,9 +210,6 @@ void Map::draw(const Camera& cam) {
 
             //FOR THE GAME
             int tileX = (type-1) % 20; // -1 because TMX start from 1 but pixels are 0
-            // if (tileX == 0) {
-            //     tileX = 20;
-            // }
             int tileY = type / 20;
             if (tileX == 19) { //handle tileX -1
                 tileY -= 1;

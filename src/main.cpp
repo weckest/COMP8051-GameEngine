@@ -24,6 +24,13 @@ int main() {
         ticks = now;
 
         game->handleEvents();
+
+        if (game->isFullscreen) {
+            SDL_SetWindowFullscreen(game->getWindow(), SDL_WINDOW_FULLSCREEN);
+        } else {
+            SDL_SetWindowFullscreen(game->getWindow(), 0); // windowed
+        }
+
         game->update(deltaTime);
         game->render();
 

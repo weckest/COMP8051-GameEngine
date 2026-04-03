@@ -26,17 +26,27 @@ public:
                 //state system
                 std::string newClip;
 
-                if (velocity.direction.x > 0.0f) {
-                    newClip = "walk_right";
-                } else if (velocity.direction.x < 0.0f) {
-                    newClip = "walk_left";
-                } else if (velocity.direction.y > 0.0f) {
-                    newClip = "walk_down";
-                } else if (velocity.direction.y < 0.0f) {
-                    newClip = "walk_up";
+                if (velocity.direction.x != 0.0f) {
+                    newClip = (velocity.direction.x > 0.0f) ? "walk_right" : "walk_left";
+                } else if (velocity.direction.x == 0.0f && velocity.direction.y != 0.0f) {
+                    //player is only moving north/south, use facing data
+                    newClip = (velocity.facingRight) ? "walk_right" : "walk_left";
                 } else {
-                    newClip = "idle_down";
+                    newClip = (velocity.facingRight) ? "idle_right" : "idle_left";
                 }
+
+
+                // if (velocity.direction.x > 0.0f) {
+                //     newClip = "walk_right";
+                // } else if (velocity.direction.x < 0.0f) {
+                //     newClip = "walk_left";
+                // } else if (velocity.direction.y > 0.0f) {
+                //     newClip = "walk_down";
+                // } else if (velocity.direction.y < 0.0f) {
+                //     newClip = "walk_up";
+                // } else {
+                //     newClip = "idle_down";
+                // }
 
                 //check if the animation has switched
                 //if the chosen clip is different from the current one, switch to new clip

@@ -35,15 +35,16 @@ void PlayerStatListener::applyChanges(const CalculateStatsEvent &e) {
     //Get Item list.
 
     auto& stats = player->getComponent<Stats>();
+    auto& transform = player->getComponent<Transform>();
     auto& itemList = player->getComponent<ItemList>().items;
 
 
     //Reset values of each stat.
-    stats.damageModifier = 1.0f;
+    stats.damageModifier = 0.0f;
     stats.speedModifier = 1.0f;
-    stats.fireRateModifier = 1.0f;
+    stats.fireRateModifier = 0.0f;
     stats.playerSizeModifier = 1.0f;
-    stats.projectileSizeModifier = 1.0f;
+    stats.projectileSizeModifier = 0.0f;
     stats.aoeModifier = 1.0f;
     stats.xpModifier = 1.0f;
 
@@ -58,6 +59,8 @@ void PlayerStatListener::applyChanges(const CalculateStatsEvent &e) {
         stats.aoeModifier           += (item.aoeModifier - 1.0f) * level;
         stats.xpModifier            += (item.xpModifier - 1.0f) * level;
     }
+
+    transform.scale = stats.playerSizeModifier;
 
     std::cout << "Damage mod: " << stats.damageModifier << std::endl;
     std::cout << "Speed mod: " << stats.speedModifier << std::endl;

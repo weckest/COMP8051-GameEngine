@@ -15,6 +15,7 @@ enum class EventType {
     ToggleDebug,
     SpawnEntity,
     Death,
+    Move,
     GridDebug,
     LevelUp,
     KeyPress,
@@ -80,6 +81,13 @@ struct DeathEvent : BaseEvent {
     }
 };
 
+struct MoveEvent : BaseEvent {
+    Entity* entity = nullptr;
+    MoveEvent(Entity* entity) : entity(entity) {
+        type = EventType::Move;
+    }
+};
+
 struct GridDebugEvent : BaseEvent {
     Entity* entity = nullptr;
     GridDebugEvent(Entity* entity) : entity(entity) {
@@ -128,17 +136,17 @@ struct MagnetEvent : BaseEvent {
 
 struct LevelUpChoiceEvent : BaseEvent {
     bool choseWeapon;
-    Weapon weapon;
+    dataBundle bundle;
     Item item;
-    LevelUpChoiceEvent(bool choseWeapon, Weapon weapon, Item item) : choseWeapon(choseWeapon), weapon(weapon), item(item) {
+    LevelUpChoiceEvent(bool choseWeapon, dataBundle data, Item item) : choseWeapon(choseWeapon), bundle(data), item(item) {
         type = EventType::LevelUpChoice;
     }
 };
 
 struct ShowLevelUpMenuEvent :BaseEvent {
-    Weapon weapon;
+    dataBundle bundle;
     Item item;
-    ShowLevelUpMenuEvent(Weapon weapon, Item item): weapon(weapon), item(item) {
+    ShowLevelUpMenuEvent(dataBundle data, Item item): bundle(data), item(item) {
         type = EventType::ShowLevelUpMenu;
     }
 };

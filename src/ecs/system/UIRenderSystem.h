@@ -4,6 +4,7 @@
 
 #ifndef INC_8051TUTORIAL_UIRENDERSYSTEM_H
 #define INC_8051TUTORIAL_UIRENDERSYSTEM_H
+
 #include <vector>
 #include <memory>
 #include "Entity.h"
@@ -11,56 +12,80 @@
 #include "RenderUtils.h"
 #include "../../manager/TextureManager.h"
 
-
 class UIRenderSystem {
 public:
 
-	void render(const std::vector<std::unique_ptr<Entity>>& entities) {
-		Entity* camera = nullptr;
-		for (auto& e: entities) {
-			if (e->hasComponent<Camera>()) {
-				camera = e.get();
-			}
-		}
-		if (!camera) return;
-		auto& cam = camera->getComponent<Camera>();
+    void render(const std::vector<std::unique_ptr<Entity>>& entities) {
+        Entity* camera = nullptr;
 
-		for (auto& e : entities) {
-			if (e->hasComponent<Transform>()) {
-				auto& transform = e->getComponent<Transform>();
+        // Find camera (only needed for debug labels)
+        for (auto& e : entities) {
+            if (e->hasComponent<Camera>()) {
+                camera = e.get();
+                break;
+            }
+        }
 
-				if (e->hasComponent<Sprite>()) {
-					auto& sprite = e->getComponent<Sprite>();
+        if (!camera) return;
+        auto& cam = camera->getComponent<Camera>();
 
-					if (sprite.renderLayer != RenderLayer::UI) continue;
+        for (auto& e : entities) {
 
-					// no converting from world space to screen space
-					sprite.dst.x = transform.position.x;
-					sprite.dst.y = transform.position.y;
+            if (!e->hasComponent<Transform>()) continue;
+            auto& transform = e->getComponent<Transform>();
 
-					if (sprite.visible) {
-						SDL_FRect scaledDest = RenderUtils::getScaledDest(sprite.dst, transform.scale);
-						TextureManager::draw(sprite.texture, &sprite.src, &scaledDest);
-					}
-				} else if (e->hasComponent<Label>()) {
-					auto& label = e->getComponent<Label>();
+            //
+            // ===== SPRITES (UI) =====
+            //
+            if (e->hasComponent<Sprite>()) {
+                auto& sprite = e->getComponent<Sprite>();
 
-					label.dst.x = transform.position.x;
-					label.dst.y = transform.position.y;
+                if (sprite.renderLayer != RenderLayer::UI) continue;
+                if (!sprite.visible) continue;
 
-					if (label.type == LabelType::Debug) {
-						label.dst.x -= cam.view.x;
-						label.dst.y -= cam.view.y;
-					}
+                // COPY, do NOT modify original
+                SDL_FRect dst = sprite.dst;
 
-					if (label.visible) {
-						SDL_FRect scaledDest = RenderUtils::getScaledDest(label.dst, transform.scale);
-						TextureManager::draw(label.texture, nullptr, &scaledDest);
-					}
-				}
-			}
-		}
-	}
+                // Apply transform position (UI = no camera)
+                dst.x = transform.position.x;
+                dst.y = transform.position.y;
+
+                // Apply scale
+                SDL_FRect scaledDest = RenderUtils::getScaledDest(dst, transform.scale);
+
+                // Draw
+                TextureManager::draw(sprite.texture, &sprite.src, &scaledDest);
+            }
+
+            //
+            // ===== LABELS =====
+            //
+            else if (e->hasComponent<Label>()) {
+                auto& label = e->getComponent<Label>();
+
+                if (!label.visible) continue;
+
+                // COPY, do NOT modify original
+                SDL_FRect dst = label.dst;
+
+                // Apply transform
+                dst.x = transform.position.x;
+                dst.y = transform.position.y;
+
+                // Only debug labels follow camera
+                if (label.type == LabelType::Debug || label.type == LabelType::Damage) {
+                    dst.x -= cam.view.x;
+                    dst.y -= cam.view.y;
+                }
+
+                // Apply scale
+                SDL_FRect scaledDest = RenderUtils::getScaledDest(dst, transform.scale);
+
+                // Draw
+                TextureManager::draw(label.texture, nullptr, &scaledDest);
+            }
+        }
+    }
 };
 
 #endif //INC_8051TUTORIAL_UIRENDERSYSTEM_H

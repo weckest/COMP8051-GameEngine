@@ -21,6 +21,7 @@ public:
     int width{}, height{}, scale{32};
     std::vector<std::vector<int>> tileData;
     std::vector<std::vector<int>> buildingTileData;
+    std::vector<std::vector<int>> overlayTileData;
     std::vector<Collider> colliders;
     std::vector<Collider> items;
     std::vector<Transform> spawners;

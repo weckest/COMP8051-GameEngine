@@ -3,10 +3,12 @@
 //
 
 #include "EventResponseSystem.h"
-
+#include "vector"
 #include "Game.h"
+#include "WeaponBehaviours.h"
 #include "World.h"
 #include "manager/AssetManager.h"
+
 
 EventResponseSystem::EventResponseSystem(World &world) {
     world.getEventManager().subscribe(
@@ -19,10 +21,10 @@ EventResponseSystem::EventResponseSystem(World &world) {
             //onCollision(collision, "player", "item", world);
 
             onCollision(collision, "player", "wall", world);
+            onCollision(collision, "enemy", "wall", world);
             onCollision(collision, "player", "enemy", world);
             onCollision(collision, "bullet", "enemy", world);
             onCollision(collision, "RingoFire", "enemy", world);
-            onCollision(collision, "enemy", "wall", world);
         }
     );
 
@@ -74,33 +76,7 @@ void EventResponseSystem::onCollision(
 
     if (!getCollisionEntities(e, ATag, BTag, entityA, entityB)) return;
 
-    if (checkTagsFor(ATag, BTag, "item") && checkTagsFor(ATag, BTag, "player")) {
-
-
-        if (e.state != CollisionState::Enter) return;
-
-
-        ///TEST CODE. NEED TO REMOVE LATER
-        auto& stats = entityA->getComponent<PlayerTag>();
-        stats.xp += 101;
-
-        ///END OF TEST CODE
-
-        em.emit(DeathEvent(entityB));
-        entityB->destroy();
-
-
-
-        // for (auto& entity: world.getEntities()) {
-        //     if (!entity->hasComponent<SceneState>()) continue;
-        //
-        //     auto& sceneState = entity->getComponent<SceneState>();
-        //     sceneState.coinsCollected++;
-        //     if (sceneState.coinsCollected > 1) {
-        //         Game::onSceneChangeRequest("level2");
-        //     }
-        // }
-    } else if ((checkTagsFor(ATag, BTag, "player") || checkTagsFor(ATag, BTag, "enemy")) && checkTagsFor(ATag, BTag, "wall")) {
+    if ((checkTagsFor(ATag, BTag, "player") || checkTagsFor(ATag, BTag, "enemy")) && checkTagsFor(ATag, BTag, "wall")) {
 
         if (e.state != CollisionState::Stay) return;
 
@@ -108,14 +84,18 @@ void EventResponseSystem::onCollision(
         //t.position = t.oldPosition;
 
         auto& entityCollider = entityA->getComponent<Collider>();
+
+        // std::cout << "Collision: " << entityA << std::endl;
         auto& wallCollider = entityB->getComponent<Collider>();
+
+        Vector2D temp = t.oldPosition;
 
         //find overlaps
         float overlapX = std::min(entityCollider.rect.w + entityCollider.rect.x - wallCollider.rect.x,
             wallCollider.rect.w + wallCollider.rect.x - entityCollider.rect.x);
         float overlapY = std::min(entityCollider.rect.h + entityCollider.rect.y - wallCollider.rect.y,
             wallCollider.rect.h + wallCollider.rect.y - entityCollider.rect.y);
-
+        Vector2D oldTemp = t.position;
         //resolve
         if (overlapX < overlapY) {
             if (t.position.x > t.oldPosition.x)
@@ -129,6 +109,12 @@ void EventResponseSystem::onCollision(
             else
                 t.position.y += overlapY; // moving up
         }
+
+        t.oldPosition = oldTemp;
+        // std::cout << "Updating: " << entityA << std::endl;
+        world.getEventManager().emit(MoveEvent(entityA));
+        t.oldPosition = temp;
+        // std::cout << "After: " << entityA << " " << entityA->getComponent<Transform>().oldPosition << std::endl;
 
     } else if (checkTagsFor(ATag, BTag, "enemy") && checkTagsFor(ATag, BTag, "player")) {
 
@@ -151,85 +137,134 @@ void EventResponseSystem::onCollision(
         bt.position += diff * 2;
 
         if (health.currentHealth <= 0) {
-            em.emit(DeathEvent(entityA));
+            // em.emit(DeathEvent(entityA));
+            for (auto& weapon: entityA->getComponent<WeaponList>().weapons) {
+                std::cout << "Weapon: " << weapon.name << " Total Damage: " << weapon.totalDamage << std::endl;
+                Game::gameState.WeaponDamage[weapon.name] = weapon.totalDamage;
+            }
             entityA->destroy();
-            Game::onSceneChangeRequest("mainmenu");
+            Game::onSceneChangeRequest("gameover");
         }
 
     } else if (checkTagsFor(ATag, BTag, "bullet") && checkTagsFor(ATag, BTag, "enemy")) {
 
         if (e.state != CollisionState::Enter) return;
 
-         auto& bTag = entityA->getComponent<ProjectileTag>();
-         std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
-         for (auto& entity: entities) {
 
-             auto& eTag = entity->getComponent<EnemyTag>();
+        auto& bTag = entityA->getComponent<ProjectileTag>();
+        std::vector<Entity*> entities = CollisionSystem::getAllWithin(world, *entityA, bTag.aoe);
 
-             if (entity != entityB) {
-                 float distanceToEnemy = (entityA->getComponent<Transform>().position - entity->getComponent<Transform>().position).length();
-                 float bulletDamage = bTag.damage * (bTag.aoe - distanceToEnemy) / bTag.aoe;
-                 eTag.health -= bulletDamage;
-             } else {
-                 eTag.health -= bTag.damage;
-             }
+        float critChance = 0.0f;
+        float critMultiplier = 1.0f;
+
+        if (entityA->hasComponent<ProjectileTag>() && entityA->hasComponent<Weapon>())  {
+            auto& weaponInfo = entityA->getComponent<Weapon>();
+            critChance = getStat(weaponInfo, "critChanceModifier", 0.0f) ;
+            critMultiplier = getStat(weaponInfo, "critDamageModifier", 1.5f);
+        }
+
+        for (auto& entity: entities) {
+            if (!entity->isActive()) continue;
+
+            auto& eTag = entity->getComponent<EnemyTag>();
 
 
+            bool isCrit = (static_cast<float>(rand()) / RAND_MAX) <= critChance;
 
-             if (eTag.health <= 0) {
-                 //replace with spawinging in a random object
-                 auto& entityT = entity->getComponent<Transform>();
-                 auto& entityS = entity->getComponent<Sprite>();
-                 Vector2D center = entityT.position;
-                 center.x += entityS.dst.w / 2;
-                 center.y += entityS.dst.h / 2;
-                 world.getEventManager().emit(SpawnPrefabEvent{"coin", center});
+            if (entity != entityB) {
 
-                 //destroy the enemy
-                 em.emit(DeathEvent(entity));
-                 entity->destroy();
-             }
-         }
+                float distanceToEnemy = (entityA->getComponent<Transform>().position - entity->getComponent<Transform>().position).length();
+                float bulletDamage = (bTag.damage * (isCrit ? critMultiplier : 1.0f)) * (bTag.aoe - distanceToEnemy) / bTag.aoe;
+                eTag.health -= bulletDamage;
 
-         //make explosion where the bullet hit the enemy
-         //add a little extra since the sprite is the full size
-         float explosionSize = bTag.aoe * 1.2;
-         auto& explosion = world.createDeferredEntity();
-         auto& bt = entityA->getComponent<Transform>();
-         auto& bs = entityA->getComponent<Sprite>();
-         auto& t = explosion.addComponent<Transform>(bt.position, 0.0f, 1.0f);
-         t.position.x = bt.position.x - bs.dst.w / 2 - (explosionSize / 2 - bs.dst.w / 2);
-         t.position.y = bt.position.y - bs.dst.h / 2 - (explosionSize / 2 - bs.dst.h / 2);
+                if (entityA->hasComponent<ProjectileTag>() && entityA->hasComponent<Weapon>()) {
+                    entityA->getComponent<weaponOrigin>().origin->totalDamage += bTag.damage * (isCrit ? critMultiplier : 1.0f);
+                }
 
-         auto& a = AssetManager::getAnimation("explosion");
-         auto& animation = explosion.addComponent<Animation>(a);
-         animation.speed = 0.075f;
+            } else {
+                eTag.health -= bTag.damage * (isCrit ? critMultiplier : 1.0f);
 
-         SDL_Texture* tex = TextureManager::load("../assets/animations/explosion.png");
-         SDL_FRect src {0, 0, 85.33, 85.33};
-         SDL_FRect dst {t.position.x, t.position.y, explosionSize, explosionSize};
-         explosion.addComponent<Sprite>(tex, src, dst);
+                if (entityA->hasComponent<ProjectileTag>() && entityA->hasComponent<Weapon>()) {
+                    entityA->getComponent<weaponOrigin>().origin->totalDamage += bTag.damage * (isCrit ? critMultiplier : 1.0f);
+                }
 
-         explosion.addComponent<EffectTag>();
+            }
+
+            if (eTag.health <= 0) {
+                //replace with spawinging in a random object
+                auto& entityT = entity->getComponent<Transform>();
+                auto& entityS = entity->getComponent<Sprite>();
+                Vector2D center = entityT.position;
+                center.x += entityS.dst.w / 2;
+                center.y += entityS.dst.h / 2;
+                world.getEventManager().emit(SpawnPrefabEvent{"coin", center});
+
+                //destroy the enemy
+                // std::cout << "Dead: " << entity << std::endl;
+                Game::gameState.points += 5;
+                em.emit(DeathEvent(entity));
+                entity->destroy();
+            }
+        }
+
+        //make explosion where the bullet hit the enemy
+        //add a little extra since the sprite is the full size
+        float explosionSize = bTag.aoe * 1.2;
+        auto& explosion = world.createDeferredEntity();
+        auto& bt = entityA->getComponent<Transform>();
+        auto& bs = entityA->getComponent<Sprite>();
+        auto& t = explosion.addComponent<Transform>(bt.position, 0.0f, 1.0f);
+        t.position.x = bt.position.x - bs.dst.w / 2 - (explosionSize / 2 - bs.dst.w / 2);
+        t.position.y = bt.position.y - bs.dst.h / 2 - (explosionSize / 2 - bs.dst.h / 2);
+
+        auto& a = AssetManager::getAnimation("explosion");
+        auto& animation = explosion.addComponent<Animation>(a);
+        animation.speed = 0.075f;
+
+        SDL_Texture* tex = TextureManager::load("../assets/animations/explosion.png");
+        SDL_FRect src {0, 0, 85.33, 85.33};
+        SDL_FRect dst {t.position.x, t.position.y, explosionSize, explosionSize};
+        explosion.addComponent<Sprite>(tex, src, dst);
+
+        explosion.addComponent<EffectTag>();
+
 
         //destroy the bullet
-        em.emit(DeathEvent(entityA));
+        // em.emit(DeathEvent(entityA));
         entityA->destroy();
     } else if (entityA->hasComponent<RingFireTag>() && checkTagsFor(ATag, BTag, "enemy")) {
 
+        //find player
+        Entity* player = nullptr;
+        for (auto& e: world.getEntities()) {
+            if (e->hasComponent<PlayerTag>()) {
+                player = e.get();
+                break;
+            }
+        }
         auto& ringFire = entityA->getComponent<RingFireTag>();
         auto& projectileInfo = entityA->getComponent<ProjectileTag>();
         float range = ringFire.range;
 
         // find all enemies within range
-        std::vector<Entity*> enemies = CollisionSystem::getAllWithin(world, *entityA, range);
+        if (!player) return;
+
+        std::vector<Entity*> enemies = CollisionSystem::getAllWithin(world, *player, range);
         std::vector<Entity*> toDestroy;
+
+        float critChance = ringFire.critChance;
+        float critMultiplier = ringFire.critMultiplier;
 
         for (auto& enemy : enemies) {
             if (!enemy->hasComponent<EnemyTag>()) continue;
 
+            bool isCrit = (static_cast<float>(rand()) / RAND_MAX) < critChance;
+
             auto& eTag = enemy->getComponent<EnemyTag>();
-            eTag.health -= projectileInfo.damage;
+            eTag.health -= projectileInfo.damage * (isCrit ? critMultiplier : 1.0f);
+
+            entityA->getComponent<weaponOrigin>().origin->totalDamage += projectileInfo.damage * (isCrit ? critMultiplier : 1.0f);
+
 
             if (eTag.health <= 0) {
                 Vector2D center{};
@@ -248,6 +283,7 @@ void EventResponseSystem::onCollision(
 
         // safely destroy all dead enemies after loop
         for (auto& enemy : toDestroy) {
+            Game::gameState.points += 5;
             world.getEventManager().emit(DeathEvent(enemy));
             enemy->destroy();
         }

@@ -10,11 +10,15 @@ MovementSystem::MovementSystem(World& world) : world(world) {
        if (e.type != EventType::Magnet) return;
         Entity* player = world.getPlayer();
         auto& pT = player->getComponent<Transform>();
+        auto& pS = player->getComponent<Sprite>();
+        Vector2D center = pT.position;
+        center.x += pS.dst.w / 2.0f;
+        center.y += pS.dst.h / 2.0f;
 
         for (auto& entity : world.getEntities()) {
-            if (entity->hasComponent<ItemTag>() && entity->hasComponent<Transform>()) {
+            if (entity->hasComponent<ItemTag>() && entity->hasComponent<Transform>() && !entity->hasComponent<MagnetTag>() && !entity->hasComponent<FoodTag>()) {
                 auto& t = entity->getComponent<Transform>();
-                entity->addComponent<Velocity>(pT.position - t.position, 500.0f);
+                entity->addComponent<Velocity>(center - t.position, 500.0f);
             }
         }
     });
@@ -31,20 +35,29 @@ void MovementSystem::update(std::vector<std::unique_ptr<Entity>> &entities, floa
 
             Vector2D directionVec = v.direction;
 
+            if (v.direction.x != 0.0f) {
+                v.facingRight = v.direction.x > 0.0f;
+            }
+
             if (entity->hasComponent<ItemTag>()) {
-                directionVec = world.getPlayer()->getComponent<Transform>().position - t.position;
+                Entity* player = world.getPlayer();
+                auto& pT = player->getComponent<Transform>();
+                auto& pS = player->getComponent<Sprite>();
+                Vector2D center = pT.position;
+                center.x += pS.dst.w / 2.0f;
+                center.y += pS.dst.h / 2.0f;
+                directionVec = center - t.position;
             }
 
             //normalizing
             directionVec.normalize();
 
             if (entity->hasComponent<PlayerTag>()) {
-                directionVec *= entity->getComponent<Stats>().speedModifier;
+                directionVec *= (1.0f * entity->getComponent<Stats>().speedModifier);
             }
 
 
             Vector2D velocityVec1 = directionVec * v.speed;
-
             t.position += velocityVec1 * dt;
         }
     }

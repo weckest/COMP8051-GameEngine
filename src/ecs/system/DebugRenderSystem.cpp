@@ -3,6 +3,8 @@
 //
 
 #include "DebugRenderSystem.h"
+
+#include "Game.h"
 #include "World.h"
 #include "manager/AssetManager.h"
 
@@ -42,16 +44,117 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
     playerCenter.y -= cam.view.y;
 
     if (debugState.range) {
-        TextureManager::drawCircle(playerCenter, 200.0f, 0, 255, 200);
+
+        for (auto& e : entities) {
+            if (e->hasComponent<RingFireTag>()) {
+                TextureManager::drawCircle(playerCenter, e->getComponent<RingFireTag>().range, 0, 255, 200);
+            }
+        }
     }
 
+    int sumColliders = 0;
+    int sumItems = 0;
+    int sumEnemies = 0;
+    std::vector<Entity*> sumFlagEntities;
     for (auto& e : entities) {
         if (e->hasComponent<Label>()) {
             if (e->getComponent<Label>().type == LabelType::DebugStats) {
                 updateDebugLabel(*e);
             }
         }
+        if (e->hasComponent<Clickable>()) continue;
+        if (e->hasComponent<Collider>()) {
+            sumFlagEntities.push_back(e.get());
+            sumColliders++;
+        }
+        if (e->hasComponent<ItemTag>()) {
+            sumItems++;
+        }
+        if (e->hasComponent<EnemyTag>()) {
+            sumEnemies++;
+        }
     }
+
+    // std::cout << sumColliders << " sum colliders" << std::endl;
+    // std::cout << sumItems << " sum items" << std::endl;
+    // std::cout << sumEnemies << " sum enemies" << std::endl;
+    //
+    // int sumGridColliders = 0;
+    // int sumGridItems = 0;
+    // int sumGridEnemies = 0;
+    // std::vector<Entity*> flaggedEntities;
+    // std::vector<Entity*> gridFlaggedEntities;
+    // for (int i = 0; i < grid.size(); i++) {
+    //     for (int j = 0; j < grid[i].size(); j++) {
+    //         auto& cell = grid[i][j];
+    //         for (auto& e : cell) {
+    //             auto it = std::find(flaggedEntities.begin(), flaggedEntities.end(), e);
+    //             if (it == flaggedEntities.end()) {
+    //                 if (e->hasComponent<Clickable>()) continue;
+    //                 flaggedEntities.push_back(e);
+    //                 if (e->hasComponent<Collider>()) {
+    //                     gridFlaggedEntities.push_back(e);
+    //                     sumGridColliders++;
+    //                 }
+    //                 if (e->hasComponent<ItemTag>()) {
+    //                     sumGridItems++;
+    //                 }
+    //                 if (e->hasComponent<EnemyTag>()) {
+    //                     sumGridEnemies++;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    // std::cout << sumGridColliders << " grid colliders" << std::endl;
+    // std::cout << sumGridItems << " grid items" << std::endl;
+    // std::cout << sumGridEnemies << " grid enemies" << std::endl;
+    // std::cout << std::endl;
+    //
+    // if (sumGridColliders != sumColliders || sumGridEnemies != sumEnemies) {
+    //     std::cout << "Sums" << std::endl;
+    //     for (auto& e : sumFlagEntities) {
+    //         std::cout << e << std::endl;
+    //     }
+    //
+    //     std::cout << "\nGrid" << std::endl;
+    //     for (auto& e : gridFlaggedEntities) {
+    //         std::cout << e << std::endl;
+    //     }
+    //
+    //     if (sumGridColliders > sumColliders) {
+    //         std::cout << "\nGrid Diffs" << std::endl;
+    //         for (auto& e: gridFlaggedEntities) {
+    //             if (std::find(sumFlagEntities.begin(), sumFlagEntities.end(), e) == sumFlagEntities.end()) {
+    //                 std::cout << e << std::endl;
+    //             }
+    //         }
+    //     } else if (sumColliders > sumGridColliders) {
+    //         std::cout << "\nSum Diffs" << std::endl;
+    //         for (auto& e: sumFlagEntities) {
+    //             if (std::find(gridFlaggedEntities.begin(), gridFlaggedEntities.end(), e) == gridFlaggedEntities.end()) {
+    //                 std::cout << e << std::endl;
+    //             }
+    //         }
+    //     } else if (sumGridEnemies > sumEnemies) {
+    //         std::cout << "\nGrid Enemy Diffs" << std::endl;
+    //         for (auto& e: gridFlaggedEntities) {
+    //             if (std::find(sumFlagEntities.begin(), sumFlagEntities.end(), e) == sumFlagEntities.end()) {
+    //                 std::cout << e << std::endl;
+    //             }
+    //         }
+    //     } else if (sumEnemies > sumGridEnemies) {
+    //         std::cout << "\nSum Enemy Diffs" << std::endl;
+    //         for (auto& e: sumFlagEntities) {
+    //             if (std::find(gridFlaggedEntities.begin(), gridFlaggedEntities.end(), e) == gridFlaggedEntities.end()) {
+    //                 std::cout << e << std::endl;
+    //             }
+    //         }
+    //     }
+    //
+    //
+    //     std::cout << "SHITS FUCKED!!!" << std::endl;
+    // }
 
 
     if (debugState.colliders) {
@@ -143,20 +246,16 @@ void DebugRenderSystem::initDebugLabel() {
     auto& entity = world.createEntity();
     TextureManager::loadLabel(label);
     entity.addComponent<Label>(label);
-    entity.addComponent<Transform>(Vector2D(10.0f, 30.0f), 0.0f, 1.0f);
+    auto& entities = entity.addComponent<Transform>(Vector2D(10.0f, 50.0f), 0.0f, 1.0f);
     auto& children = entity.addComponent<Children>();
 
-    auto& levelUp = createChildDebugLabe(entity, LabelType::LevelUp, Vector2D(10.0f, 50.0f));
-    auto& health = createChildDebugLabe(entity, LabelType::Health, Vector2D(10.0f, 70.0f));
-    auto& weapons = createChildDebugLabe(entity, LabelType::Weapons, Vector2D(10.0f, 90.0f));
-    auto& memory = createChildDebugLabe(entity, LabelType::Memory, Vector2D(10.0f, 110.0f));
-
-
-
-
+    auto& levelUp = createChildDebugLabel(entity, LabelType::LevelUp, Vector2D(10.0f, entities.position.y + 20.0f), "levelUp").getComponent<Transform>();
+    auto& enemyInfo = createChildDebugLabel(entity, LabelType::EnemyInfo, Vector2D(10.0f, levelUp.position.y + 20.0f), "enemyInfo").getComponent<Transform>();
+    auto& health = createChildDebugLabel(entity, LabelType::Health, Vector2D(10.0f, enemyInfo.position.y + 20.0f), "health").getComponent<Transform>();
+    auto& weapons = createChildDebugLabel(entity, LabelType::Weapons, Vector2D(10.0f, health.position.y + 20.0f), "weapons").getComponent<Transform>();
+    auto& times = createChildDebugLabel(entity, LabelType::Times, Vector2D(10.0f, weapons.position.y + 20.0f), "times");
+    times.addComponent<Children>();
 }
-
-
 
 void DebugRenderSystem::updateDebugLabel(Entity& entity) {
     auto& parent = entity.getComponent<Label>();
@@ -170,11 +269,23 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
 
     //update the children of the parent label
     for (auto& child: children.children) {
+        if (!child->hasComponent<Parent>()) continue;
+
         auto& label = child->getComponent<Label>();
+
         if (label.type == LabelType::LevelUp) {
-            label.text = "LevelUp: " + std::to_string((pt.xp / pt.level));
+            label.text = "LevelUp: " + std::to_string((pt.xp / pt.level / 2));
             label.dirty = true;
 
+        } else if (label.type == LabelType::EnemyInfo) {
+            for (auto& e: world.getEntities()) {
+                if (e->hasComponent<TimedSpawner>() && !e->hasComponent<PlayerTag>() && !e->hasComponent<EnemyTag>()) {
+                    label.text = "eTime: " + std::to_string(e->getComponent<TimedSpawner>().spawnInterval);
+                    break;
+                }
+            }
+            label.text += " eHealth: " + std::to_string((100.0f * (1.0f + (Game::gameState.time / 1000.0f))));
+            label.dirty = true;
         } else if (label.type == LabelType::Health) {
             if (player->hasComponent<Health>()) {
                 auto& health = player->getComponent<Health>();
@@ -188,20 +299,29 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
                 label.text += w.name + ", ";
                 label.dirty = true;
             }
-        } else if (label.type == LabelType::Memory) {
-            Uint64 size = 0;
-            for (auto& e : world.getEntities()) {
-                size += sizeof(*e.get());
-
-                // std::cout << sizeof(*e.get()) << std::endl;
-            }
-            label.text = "Memory: " + std::to_string((size * 1.0f) / 10000);
+        } else if (label.type == LabelType::Times) {
+            std::vector<std::string> timers = world.getTimer().getTimers();
+            label.text = "Timers: " + std::to_string(timers.size());
             label.dirty = true;
+            auto& t = child->getComponent<Transform>();
+            auto& timerChildren = child->getComponent<Children>();
+            if (timerChildren.children.empty()) {
+                for (int i = 0; i < timers.size(); i++) {
+                    createChildDebugLabel(*child, LabelType::Times, Vector2D(20.0f, t.position.y + 20.0f * (i + 1)), timers[i])
+                    .getComponent<Label>().visible = true;
+
+                }
+            }
+            for (int i = 0; i < timers.size(); i++) {
+                auto& childLabel = timerChildren.children[i]->getComponent<Label>();
+                childLabel.text = timers[i] + ": " + std::to_string(world.getTimer().getAvgResult(timers[i])) + "ms";
+                childLabel.dirty = true;
+            }
         }
     }
 }
 
-Entity& DebugRenderSystem::createChildDebugLabe(Entity &parent, LabelType type, Vector2D position) {
+Entity& DebugRenderSystem::createChildDebugLabel(Entity &parent, LabelType type, Vector2D position, std::string key) {
     auto& children = parent.getComponent<Children>();
 
     Label label = {
@@ -209,7 +329,7 @@ Entity& DebugRenderSystem::createChildDebugLabe(Entity &parent, LabelType type, 
         AssetManager::getFont("arial"),
         {255,255,255,255},
         type,
-        "debugLabel"
+        "debugLabel" + key
     };
     label.visible = false;
 

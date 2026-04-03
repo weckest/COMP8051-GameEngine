@@ -14,30 +14,29 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
              if (!entity.hasComponent<Collider>())
             return;
 
-        int count = std::max(1, (int)getStat(weapon, "projectileModifier", 1.0f));
+        // int count = std::max(1, (int)getStat(weapon, "projectileModifier", 1.0f));
 
         float fireRate = getStat(weapon, "fireRate", 1.0f);
-        float fireRateMod = 1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier;
+        // float cooldown = getStat(weapon, "cooldown", 1.0f);
+        float fireRateMod = entity.getComponent<Stats>().fireRateModifier;
 
-        float delayBetweenShots = 0.15f / (fireRate * fireRateMod);
+        float delayBetweenShots = 1.0f / WeaponManager::applyItemUpgrade(fireRate, fireRateMod);
 
         entity.addComponent<TimedSpawner>(
             delayBetweenShots,
-            [&, count, shotsFired = 0]() mutable {
-
-                if (shotsFired >= count) return;
-                shotsFired++;
+            [&weapon, &entity, &world]() mutable {
 
                 auto &bullet = world.createDeferredEntity();
-                // std::cout << "Spawn Bubble " << &bullet << std::endl;
                 auto &t = entity.getComponent<Transform>();
                 auto &s = entity.getComponent<Sprite>();
+                auto& stats = entity.getComponent<Stats>();
 
                 SDL_Texture *tex = TextureManager::load("../assets/bubble.png");
 
                 SDL_FRect src = {0,0,32,32};
 
-                float sizeMod = getStat(weapon, "projectileSizeModifier", 1.0f);
+                float sizeMod = WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSizeModifier", 1.0f),
+                    stats.projectileSizeModifier);
 
                 SDL_FRect dst = {
                     t.position.x,
@@ -59,15 +58,18 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
                 Entity* closestEntity = CollisionSystem::getClosestEntity(world, entity, 200);
                 if (!closestEntity) {
-                    world.getEventManager().emit(DeathEvent{&bullet});
+                    // world.getEventManager().emit(DeathEvent{&bullet});
                     bullet.destroy();
                     return;
                 }
 
+                // std::cout << "Spawn Bubble " << &bullet << std::endl;
+
                 auto& eT = closestEntity->getComponent<Transform>();
                 Vector2D dir = (eT.position - bT.position).normalize();
 
-                bullet.addComponent<Velocity>(dir, 200.0f);
+                bullet.addComponent<Velocity>(dir, 200.0f *
+                    WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSpeedModifier", 1.0f), 0.0f));
 
                 auto &c = bullet.addComponent<Collider>("bullet");
                 c.rect.w = dst.w;
@@ -75,13 +77,21 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     c.layer = CollisionLayer::PROJECTILE;
                     c.mask = CollisionLayer::ENEMY;
 
-                float damage =
-                    50.0f * getStat(weapon, "damageModifier", 1.0f) +
-                    (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier);
 
-                float aoe = 100.0f * getStat(weapon, "aoeModifier", 1.0f);
+
+                float damage =
+                    50.0f *
+                    WeaponManager::applyItemUpgrade(
+                        getStat(weapon, "damageModifier", 1.0f),
+                        stats.damageModifier
+                    );
+
+                float aoe = 100.0f * WeaponManager::applyItemUpgrade(getStat(weapon, "aoeModifier", 1.0f), stats.aoeModifier);
 
                 bullet.addComponent<ProjectileTag>(damage, aoe);
+                bullet.addComponent<Weapon>(weapon);
+
+                bullet.addComponent<weaponOrigin>(&weapon);
             }
         );
         }
@@ -95,7 +105,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
         entity.addComponent<TimedSpawner>(
             1.0f / fireRate + (1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier),
-            [&entity, &world, weapon] {
+            [&entity, &world, &weapon] {
 
                 int count = std::max(1, (int)(getStat(weapon, "projectileModifier", 1.0f) * 3));
 
@@ -105,6 +115,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 auto &t = entity.getComponent<Transform>();
                 auto &s = entity.getComponent<Sprite>();
                 auto &v = entity.getComponent<Velocity>();
+                auto& stats = entity.getComponent<Stats>();
 
                 Vector2D forward = v.direction;
                 if (forward.length() == 0) forward = Vector2D(1, 0);
@@ -113,7 +124,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 SDL_Texture *tex = TextureManager::load("../assets/bullet.png");
                 SDL_FRect src = {0, 0, 32, 32};
 
-                float sizeMod = getStat(weapon, "projectileSizeModifier", 1.0f);
+                float sizeMod = WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSizeModifier", 1.0f),
+                    stats.projectileSizeModifier);
 
                 for (int i = 0; i < count; i++) {
 
@@ -145,7 +157,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                         forward.x * sin(angle) + forward.y * cos(angle)
                     );
 
-                    bullet.addComponent<Velocity>(dir, 300.0f);
+                    bullet.addComponent<Velocity>(dir, 300.0f * WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSpeedModifier", 1.0f), 0.0f));
 
                     auto &c = bullet.addComponent<Collider>("bullet");
                     c.rect.w = dst.w;
@@ -153,13 +165,22 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 c.layer = CollisionLayer::PROJECTILE;
                 c.mask = CollisionLayer::ENEMY;
 
-                    float damage =
-                        50.0f * getStat(weapon, "damageModifier", 1.0f) +
-                        (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier);
 
-                    float aoe = 100.0f * getStat(weapon, "aoeModifier", 1.0f);
+
+
+                    float damage =
+                        50.0f *
+                        WeaponManager::applyItemUpgrade(getStat(weapon, "damageModifier", 1.0f),
+                            stats.damageModifier);
+
+                    float aoe =
+                        100.0f *
+                        WeaponManager::applyItemUpgrade(getStat(weapon, "aoeModifier", 1.0f),
+                            stats.aoeModifier);
 
                     bullet.addComponent<ProjectileTag>(damage, aoe);
+                    bullet.addComponent<Weapon>(weapon);
+                    bullet.addComponent<weaponOrigin>(&weapon);
                 }
             }
         );
@@ -179,7 +200,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
             entity.addComponent<TimedSpawner>(
                 delayBetweenShots,
-                [&, count, shotsFired = 0]() mutable {
+                [&weapon, &entity,&world,count, shotsFired = 0]() mutable {
 
                     if (shotsFired >= count) return;
                     shotsFired++;
@@ -194,10 +215,10 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     auto& c = ring.addComponent<Collider>("RingoFire");
                     // std::cout << "RoF " << &c << std::endl;
 
-                    float radius = 100.0f * getStat(weapon, "rangeModifier", 1.0f);
+                    float radius = 50.0f * getStat(weapon, "rangeModifier", 1.0f);
 
-                    c.rect.w = radius * 2;
-                    c.rect.h = radius * 2;
+                    c.rect.w = radius;
+                    c.rect.h = radius;
                     c.layer = CollisionLayer::PROJECTILE;
                     c.mask = CollisionLayer::ENEMY;
 
@@ -211,15 +232,29 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                         centerPos.y - c.rect.h / 2.0f
                     };
 
-                    ring.addComponent<RingFireTag>(radius * 2);
+                    ring.addComponent<RingFireTag>();
+                    RingFireTag& RFT = ring.getComponent<RingFireTag>();
+
+                    RFT.range = radius;
+                    RFT.critMultiplier = getStat(weapon, "critDamageModifier", 1.5f);
+                    RFT.critChance = getStat(weapon, "critChanceModifier", 0.0f);
 
                     // lifetime instead of nested spawner
                     ring.addComponent<Lifetime>(getStat(weapon, "lifetime", 0.1f));
 
+                    auto& stats = entity.getComponent<Stats>();
+
+                    float damage =
+                        25.0f *
+                            WeaponManager::applyItemUpgrade(getStat(weapon, "damageModifier", 1.0f),
+                                stats.damageModifier);
+
                     ring.addComponent<ProjectileTag>(
-                        50.0f * getStat(weapon, "damageModifier", 1.0f) + (1.0f + 0.05f * entity.getComponent<Stats>().damageModifier),
+                        damage,
                         0.0f
                         );
+
+                    ring.addComponent<weaponOrigin>(&weapon);
 
                 }
             );
@@ -229,9 +264,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
             // do damage
 
             //destroy itself
-
-
-        }
+    }
     }
 
 };

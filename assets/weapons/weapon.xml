@@ -18,30 +18,28 @@
             name="bubblegun"
             path="../assets/sprites/BubbleGun.png"
             fireRate="1.0"
-            damageModifier="0.5"
+            damageModifier="1.0"
             projectileSizeModifier="1.0"
             projectileModifier="1.0"
-            aoeModifier="1.3"
+            aoeModifier="0.0"
             critDamageModifier="2.0"
             critChanceModifier="0.15"
             projectileSpeedModifier="1.0"
-            cooldown = "1.0"
+            cooldown = "0.15"
     />
     <weapon
             name="RingofFire"
             path = "../assets/sprites/RingOfFire.png"
-            fireRate="1.0"
+            fireRate="0.25"
             damageModifier="1.0"
-            rangeModifier="1.0"
+            rangeModifier="2.0"
             projectileModifier="2.0"
             aoeModifier="1.0"
             lifetime = "0.2f"
-            critDamageModifier="1.0"
-            critChanceModifier="0.0"
+            critDamageModifier="1.25"
+            critChanceModifier="0.15"
             projectileSizeModifier="1.0"
             projectileSpeedModifier="0.0"
-            cooldown="10.0"
+            cooldown="1.0"
     />
-
-
 </weapons>

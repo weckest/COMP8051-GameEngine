@@ -19,17 +19,20 @@
 #include "EnemyMovementSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
+#include "GameStateSystem.h"
 #include "GridSystem.h"
+#include "HeathSystem.h"
 #include "HUDSystem.h"
 #include "KeyboardInputSystem.h"
 #include "LevelUpHandler.h"
 #include "LevelUpSystem.hpp"
 #include "LifetimeSystem.h"
 #include "event/EventManager.h"
-#include "MainMenuSystem.h"
+#include "GameOverSystem.h"
 #include "Map.h"
 #include "MouseInputSystem.h"
 #include "MovementSystem.h"
+#include "OverlayRenderSystem.h"
 #include "PickUpSystem.h"
 #include "PlayerStatListener.h"
 #include "PreRenderSystem.h"
@@ -60,6 +63,7 @@ class World {
     ItemManager itemManager;
     LifetimeSystem lifetimeSystem;
     WeaponManager weaponManager;
+    GameStateSystem gameStateSystem;
     RenderSystem renderSystem{*this};
     MovementSystem movementSystem{*this};
     KeyBoardInputSystem keyboardInputSystem;
@@ -73,9 +77,10 @@ class World {
     BobbingSystem bobbingSystem;
     EffectSystem effectSystem;
     EventResponseSystem eventResponseSystem{*this};
-    MainMenuSystem mainMenuSystem;
+    GameOverSystem gameOverSystem;
     SpawnerSystem spawnerSystem{*this};
     LevelUpSystem levelUpSystem;
+    HealthSystem healthSystem;
     WeaponFireSystem weaponFireSystem;
     LevelUpHandler levelUpHandler{*this};
     UIRenderSystem uiRenderSystem;
@@ -86,31 +91,38 @@ class World {
     HUDSystem hudSystem;
     PreRenderSystem preRenderSystem;
     AudioEventQueue audioEventQueue;
+    OverlayRenderSystem overlayRenderSystem;
 
 
 public:
     World();
 
-    void update(float dt, SDL_Event& event, SceneType sceneType) {
+    void update(float dt, SDL_Event& event, SceneType sceneType, SDL_Renderer* renderer) {
 
         if (sceneType == SceneType::MainMenu) {
-            //main menu system
-            mainMenuSystem.update(event);
-        } else if (isPaused) {
+            //pass through
+        } else if (sceneType == SceneType::GameOver) {
+            gameOverSystem.update(event);
+        }
+        else if (isPaused) {
             keyboardInputSystem.update(*this, entities, event);
         } else {
             timer.startTimer("update");
             keyboardInputSystem.update(*this, entities, event);
+            gameStateSystem.update(entities, dt);
             bobbingSystem.update(entities, dt);
             timer.startTimer("movement");
             movementSystem.update(entities, dt);
             timer.stopTimer("movement");
-            enemyMovementSystem.update(entities, dt);
+            if (!debugState.stopEnemies) {
+                enemyMovementSystem.update(entities, dt);
+            }
             timer.startTimer("pickUp");
             pickUpSystem.update(entities, *this);
             timer.stopTimer("pickUp");
             timer.startTimer("colliders");
             timer.startTimer("grid");
+            // std::cout << "Main Grid Update" << std::endl;
             gridSystem.update(entityGrid, entities, *this);
             timer.stopTimer("grid");
             timer.startTimer("collision");
@@ -120,15 +132,19 @@ public:
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
-            spawnTimerSystem.update(entities, dt);
+            if (!debugState.stopSpawn) {
+                weaponFireSystem.update(*this, dt);
+                spawnTimerSystem.update(entities, dt);
+            }
             destructionSystem.update(entities);
             levelUpSystem.update(entities, *this);
-            weaponFireSystem.update(*this, dt);
+            healthSystem.update(entities, *this);
             lifetimeSystem.update(entities, dt);
             hudSystem.update(entities);
             timer.stopTimer("update");
         }
-        mouseInputSystem.update(*this, event);
+        bobbingSystem.update(entities, dt);
+        mouseInputSystem.update(*this, event,renderer);
         audioEventQueue.process(); //process all audio events
         timer.startTimer("prerender");
         preRenderSystem.update(entities);
@@ -137,13 +153,39 @@ public:
 
         synchronizeEntities();
         cleanup();
+        if (sceneType != SceneType::MainMenu && !isPaused) {
+            // std::cout << "Grid Update" << std::endl;
+            gridSystem.update(entityGrid, entities, *this);
+        }
     }
 
     void render() {
 
         for (auto& e : entities) {
             if (e->hasComponent<Camera>()) {
-                map.draw(e->getComponent<Camera>());
+                auto& camera = e->getComponent<Camera>();
+
+                map.draw(camera);
+                // if (debugState.debug && debugState.grid) {
+                //     gridSystem.draw(e->getComponent<Camera>());
+                //     gridSystem.updateCellLabels(*this);
+                // }
+            }
+        }
+
+        timer.startTimer("render humanoids");
+        renderSystem.render(entities, true);
+        timer.stopTimer("render humanoids");
+
+        //perform handover
+        if (!overlayRenderSystem.hasData) {
+            overlayRenderSystem.receiveData(map.overlayTileData, map.width, map.height, map.scale, map.tileset);
+        }
+        for (auto& e : entities) {
+            if (e->hasComponent<Camera>()) {
+                auto& camera = e->getComponent<Camera>();
+
+                overlayRenderSystem.draw(camera);
                 if (debugState.debug && debugState.grid) {
                     gridSystem.draw(e->getComponent<Camera>());
                     gridSystem.updateCellLabels(*this);
@@ -151,18 +193,17 @@ public:
             }
         }
 
-        timer.startTimer("render");
-        renderSystem.render(entities);
-        timer.stopTimer("render");
+        timer.startTimer("render others");
+        renderSystem.render(entities, false);
+        timer.stopTimer("render others");
+
+        timer.startTimer("debug");
         if (debugState.debug) {
             debugRenderSystem.render(entities, debugState);
         }
+        timer.stopTimer("debug");
         uiRenderSystem.render(entities);
 
-        if (debugState.debug && debugState.timer && !isPaused) {
-            timer.printResults();
-            // std::cout << "Entity#: " <<  entities.size() << "\n" << std::endl;
-        }
     }
 
     Entity& createEntity() {
@@ -206,7 +247,7 @@ public:
                 if (!e->isActive()) {
                     //print the entity address we are cleaning up
                     // std::cout << "Entity " << e << " destroyed" << std::endl;
-                    //remove the entity from the grid
+                    //remove the eaantity from the grid
                     eventManager.emit(DeathEvent{e.get()});
                     return !e->isActive();
                 }
@@ -263,6 +304,10 @@ public:
 
     void setPlayer(Entity* player) {
         this->player = player;
+    }
+
+    Timer& getTimer() {
+        return timer;
     }
 
     void togglePaused() {

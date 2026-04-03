@@ -26,7 +26,7 @@ public:
 	  			lifetime.justSpawned = false;
 	  			continue;
 	  		}
-
+			float oldTime = lifetime.time;
 			lifetime.time -= dt;
 
 			if (lifetime.time <= 0) {

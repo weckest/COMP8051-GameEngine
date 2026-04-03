@@ -21,7 +21,7 @@ public:
     void render(const std::vector<std::unique_ptr<Entity>>& entities, DebugState debugState);
     void initDebugLabel();
     void updateDebugLabel(Entity& entity);
-    Entity& createChildDebugLabe(Entity& parent, LabelType type, Vector2D position);
+    Entity& createChildDebugLabel(Entity& parent, LabelType type, Vector2D position, std::string key = "");
 };
 
 #endif //INC_8051TUTORIAL_DEBUGRENDERSYSTEM_H

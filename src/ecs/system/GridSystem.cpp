@@ -23,23 +23,41 @@ GridSystem::GridSystem(World &world) : world(world) {
             //remove entity from the grid system
             auto& entity = death.entity;
 
+
             if (entity->hasComponent<Collider>() && entity->hasComponent<Transform>()) {
                 auto& t = entity->getComponent<Transform>();
 
+                Vector2D br = t.position;
+
+                if (entity->hasComponent<Sprite>()) {
+                        auto& s = entity->getComponent<Sprite>();
+                        br.x += s.dst.w;
+                        br.y += s.dst.h;
+                    } else if (entity->hasComponent<Collider>()) {
+                        auto& c = entity->getComponent<Collider>();
+                        br.x += c.rect.w;
+                        br.y += c.rect.h;
+                    }
+
+                // std::cout << "Death: " << entity << " " << t.position << std::endl;
                 GridPosition gridPosition{};
 
-                getGridIndex(entity, width, height, grid[0].size(), grid.size(), &gridPosition);
+                getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &gridPosition.tl);
+                getGridIndex(&br, width, height, grid[0].size(), grid.size(), &gridPosition.br);
+
+                // std::cout << gridPosition.tl << " " << gridPosition.br << std::endl;
 
                 //check if the top left is outside the grid
                 if (!(gridPosition.tl.x < grid[0].size() && gridPosition.tl.x >= 0) || !(gridPosition.tl.y < grid.size() && gridPosition.tl.y >= 0)) {
                     //outside world. use the old position
+                    // std::cout << "top left outside the grid" << std::endl;
                     getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.tl);
 
                 }
 
                 //check if the bottom right is outside the grid
                 if (!(gridPosition.br.x < grid[0].size() && gridPosition.br.x >= 0) || !(gridPosition.br.y < grid.size() && gridPosition.br.y >= 0)) {
-
+                    // std::cout << "bottom right outside the grid" << std::endl;
                     Vector2D oldPosition = t.oldPosition;
                     if (entity->hasComponent<Sprite>()) {
                         auto& s = entity->getComponent<Sprite>();
@@ -55,20 +73,83 @@ GridSystem::GridSystem(World &world) : world(world) {
                 }
 
                 //remove the entity from all cells
+                // std::cout << "Removing " << entity << " from: " << gridPosition.tl << " to " << gridPosition.br << std::endl;
                 for (int xIndex = (int)gridPosition.tl.x; xIndex <= gridPosition.br.x; xIndex++) {
                     for (int yIndex = (int)gridPosition.tl.y; yIndex <= gridPosition.br.y; yIndex++) {
                         if (xIndex >= grid[0].size() || yIndex >= grid.size() || xIndex < 0 || yIndex < 0) {
                             continue;
                         }
+                        // std::cout << "Removing: " << entity  << " (" << xIndex << "," << yIndex << ")" << std::endl;
                         removeEntity(entity, xIndex, yIndex);
                     }
                 }
-
             }
         }
     );
 
+    world.getEventManager().subscribe(
+        [this, &world](const BaseEvent& event) {
+            if (event.type != EventType::Move) return;
 
+            const auto& move = static_cast<const MoveEvent&>(event);
+            auto& e = move.entity;
+
+            auto& map = world.getMap();
+            int scale = map.scale;
+            int width = map.width * scale;
+            int height = map.height * scale;
+
+            auto& grid = world.getEntityGrid();
+
+            if (e->hasComponent<Transform>() && e->hasComponent<Collider>() && e->isActive() && !e->hasComponent<Clickable>()) {
+                auto& t = e->getComponent<Transform>();
+                auto& c = e->getComponent<Collider>();
+
+                Vector2D entityWH{t.position.x + c.rect.w, t.position.y + c.rect.h};
+                Vector2D oldEntityWH{t.oldPosition.x + c.rect.w, t.oldPosition.y + c.rect.h};
+
+                if (e->hasComponent<Sprite>()) {
+                    auto& s = e->getComponent<Sprite>();
+                    entityWH.x = t.position.x + s.dst.w;
+                    entityWH.y = t.position.y + s.dst.h;
+                    oldEntityWH.x = t.oldPosition.x + s.dst.w;
+                    oldEntityWH.y = t.oldPosition.y + s.dst.h;
+                }
+
+                // std::cout << "New: " << t.position.x << " " << t.position.y << " " << entityWH << std::endl;
+                // std::cout << "Old: " << t.oldPosition.x << " " << t.oldPosition.y << " " << oldEntityWH << std::endl;
+
+                GridPosition gridPosition{};
+                GridPosition oldGridPosition{};
+
+                //want to get the grid position of the transform and then also the bottom right of the sprite
+                //then loop over each position and insert the entity into the cell
+                //this also has to be done for the old position
+                //then loop over each cell and remove the ones that arent overlapping
+
+                getGridIndex(&entityWH, width, height, grid[0].size(), grid.size(), &gridPosition.br);
+                getGridIndex(&oldEntityWH, width, height, grid[0].size(), grid.size(), &oldGridPosition.br);
+                getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &gridPosition.tl);
+                getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &oldGridPosition.tl);
+
+                if (gridPosition.tl != oldGridPosition.tl || gridPosition.br != oldGridPosition.br) {
+                    //remove the entity from the cells
+                    removeEntity(&*e, &oldGridPosition);
+                }
+
+                //inserts the entity into the cells
+                insertEntity(&*e, &gridPosition);
+
+                float rangeY = 255.0f / grid.size();
+                float rangeX = 255.0f / grid[0].size();
+                // std::cout << rangeX << " " << rangeY << std::endl;
+                c.r = rangeX * gridPosition.tl.x;
+                c.g = rangeY * gridPosition.tl.y;
+                // c.b = range * gridPosition.br.x;
+
+            }
+        }
+    );
 }
 
 void GridSystem::update(
@@ -76,13 +157,15 @@ void GridSystem::update(
     std::vector<std::unique_ptr<Entity>>& entities,
     World &world
 ) {
+    // std::cout << "Updating Grid " << entities.size() << std::endl;
     auto& map = world.getMap();
     int scale = map.scale;
     int width = map.width * scale;
     int height = map.height * scale;
 
     for (auto& e: entities) {
-        if (e->hasComponent<Transform>() && e->hasComponent<Collider>()) {
+        // std::cout << "Grid: " << e << std::endl;
+        if (e->hasComponent<Transform>() && e->hasComponent<Collider>() && e->isActive() && !e->hasComponent<Clickable>()) {
             auto& t = e->getComponent<Transform>();
             auto& c = e->getComponent<Collider>();
 
@@ -97,6 +180,9 @@ void GridSystem::update(
                 oldEntityWH.y = t.oldPosition.y + s.dst.h;
             }
 
+            // std::cout << "New: " << t.position.x << " " << t.position.y << " " << entityWH << std::endl;
+            // std::cout << "Old: " << t.oldPosition.x << " " << t.oldPosition.y << " " << oldEntityWH << std::endl;
+
             GridPosition gridPosition{};
             GridPosition oldGridPosition{};
 
@@ -110,17 +196,21 @@ void GridSystem::update(
             getGridIndex(&t.position, width, height, grid[0].size(), grid.size(), &gridPosition.tl);
             getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &oldGridPosition.tl);
 
-            //remove the entity from the cells
-            removeEntity(&*e, &oldGridPosition);
+            if (gridPosition.tl != oldGridPosition.tl || gridPosition.br != oldGridPosition.br) {
+                //remove the entity from the cells
+                removeEntity(&*e, &oldGridPosition);
+            }
 
-            //inserts the entity into the cells
-            insertEntity(&*e, &gridPosition);
-            float rangeY = 255.0f / grid.size();
-            float rangeX = 255.0f / grid[0].size();
-            // std::cout << rangeX << " " << rangeY << std::endl;
-            c.r = rangeX * gridPosition.tl.x;
-            c.g = rangeY * gridPosition.tl.y;
-            // c.b = range * gridPosition.br.x;
+                //inserts the entity into the cells
+                insertEntity(&*e, &gridPosition);
+
+                float rangeY = 255.0f / grid.size();
+                float rangeX = 255.0f / grid[0].size();
+                // std::cout << rangeX << " " << rangeY << std::endl;
+                c.r = rangeX * gridPosition.tl.x;
+                c.g = rangeY * gridPosition.tl.y;
+                // c.b = range * gridPosition.br.x;
+
         }
     }
 }
@@ -133,6 +223,7 @@ bool GridSystem::moveEntity(Entity *entity, int oldX, int oldY, int newX, int ne
 
 bool GridSystem::removeEntity(Entity *entity, GridPosition *gridPosition) {
     auto& grid = world.getEntityGrid();
+    // std::cout << "Removing " << entity << " from: " << gridPosition->tl << " to " << gridPosition->br << std::endl;
     for (int oldXIndex = gridPosition->tl.x; oldXIndex <= gridPosition->br.x; oldXIndex++) {
         for (int oldYIndex = gridPosition->tl.y; oldYIndex <= gridPosition->br.y; oldYIndex++) {
             if ((oldXIndex < grid[0].size() && oldXIndex >= 0) && (oldYIndex < grid.size() && oldYIndex >= 0)) {
@@ -145,6 +236,7 @@ bool GridSystem::removeEntity(Entity *entity, GridPosition *gridPosition) {
 
 bool GridSystem::removeEntity(Entity *entity, int x, int y) {
     auto& grid = world.getEntityGrid();
+
     //make sure position is in the grid
     if (x >= grid[0].size() || x < 0 || y >= grid.size() || y < 0) return false;
 
@@ -153,6 +245,7 @@ bool GridSystem::removeEntity(Entity *entity, int x, int y) {
     auto it = std::find(cell.begin(), cell.end(), entity);
 
     if (it != cell.end()) {
+        // std::cout << "Removing: " << entity  << " (" << x << "," << y << ")" << std::endl;
         cell.erase(it);
     } else {
         return false;
@@ -163,12 +256,13 @@ bool GridSystem::removeEntity(Entity *entity, int x, int y) {
 
 bool GridSystem::insertEntity(Entity *entity, GridPosition *gridPosition) {
     auto& grid = world.getEntityGrid();
+    // std::cout << "Inserting " << entity << " into: " << gridPosition->tl << " " << gridPosition->br << std::endl;
     for (int xIndex = gridPosition->tl.x; xIndex <= gridPosition->br.x; xIndex++) {
         for (int yIndex = gridPosition->tl.y; yIndex <= gridPosition->br.y; yIndex++) {
             //only do this if the entity is with in the world bounds
             if ((xIndex < grid[0].size() && xIndex >= 0) && (yIndex < grid.size() && yIndex >= 0)) {
                 //add to the list of entities in the cell if it doesnt already exist
-                if (!insertEntity(entity, xIndex, yIndex)) return false;
+                insertEntity(entity, xIndex, yIndex);
             }
         }
     }
@@ -185,6 +279,7 @@ bool GridSystem::insertEntity(Entity *entity, int x, int y) {
     auto it = std::find(cell.begin(), cell.end(), entity);
 
     if (it == cell.end()) {
+        // std::cout << "Inserting: " << entity  << " (" << x << "," << y << ")"  << std::endl;
         cell.push_back(entity);
     } else {
         return false;
@@ -249,6 +344,7 @@ void GridSystem::getGridIndex(Vector2D *position, int worldWidth, int worldHeigh
 
     //widths of the columns as a float
     float columnSize = worldWidth / (gridX * 1.0f);
+
 
     index->x = (int)(position->x / columnSize);
     index->y = (int)(position->y / rowSize);

@@ -36,6 +36,7 @@ enum class RenderLayer {
 struct Velocity {
     Vector2D direction{};
     float speed{};
+    bool facingRight = true;
 };
 
 struct Sprite {
@@ -67,6 +68,7 @@ struct Children {
 
 enum class LabelType {
     PlayerPosition,
+    PlayerPoints,
     Damage,
     Health,
     UI,
@@ -74,7 +76,8 @@ enum class LabelType {
     DebugStats,
     LevelUp,
     Weapons,
-    Memory
+    Times,
+    EnemyInfo
 };
 
 struct Label {
@@ -87,6 +90,18 @@ struct Label {
     SDL_FRect dst{};
     bool visible = true;
     bool dirty = false;
+};
+
+struct Slider {
+    float min = 0.0f;
+    float max = 1.0f;
+    float value = 0.5f;
+
+    float width = 100.0f;
+
+    Entity* handle = nullptr;
+
+    std::function<void(float)> onValueChanged;
 };
 
 enum CollisionLayer {
@@ -143,7 +158,12 @@ struct Health {
 
 struct EffectTag{};
 struct MagnetTag{};
+struct DamageTag {
+    float timeLeft;
+};
 struct RingFireTag {
+    float critMultiplier;
+    float critChance;
     float range;
 };
 struct FoodTag {
@@ -180,6 +200,11 @@ struct Weapon {
     // a function that takes in the above modifiers and spawns a projectile with those modifiers applied
     //  the entity representing the player so we can get the player's transform and direction to spawn the projectile in the right place and direction
     std::function<void( Weapon&, Entity& , World&)> spawnFunction;
+    float totalDamage = 0.0f;
+};
+
+struct weaponOrigin {
+    Weapon* origin;
 };
 
 struct Item {
@@ -193,6 +218,7 @@ struct Item {
     float aoeModifier=1;
     float xpModifier = 1;
     std::string path = "test";
+    std::string statName{};
 
 };
 
@@ -204,13 +230,13 @@ struct PlayerTag {
 };
 
 struct Stats {
-    float damageModifier = 1;
-    float speedModifier = 1;
-    float fireRateModifier = 1;
-    float playerSizeModifier = 1;
-    float projectileSizeModifier = 1;
-    float aoeModifier = 1;
-    float xpModifier = 1;
+    float damageModifier = 0.0f;
+    float speedModifier = 1.0f;
+    float fireRateModifier = 0.0f;
+    float playerSizeModifier = 1.0f;
+    float projectileSizeModifier = 0.0f;
+    float aoeModifier = 1.0f;
+    float xpModifier = 1.0f;
 };
 
 struct ItemList {
@@ -227,5 +253,13 @@ struct WeaponList {
 };
 
 struct InventoryUI{};
+
+struct LevelUpBar{};
+struct HealthBar{};
+
+struct dataBundle {
+    std::string name;
+    Weapon &weapon;
+};
 
 #endif //INC_8051TUTORIAL_COMPONENT_H

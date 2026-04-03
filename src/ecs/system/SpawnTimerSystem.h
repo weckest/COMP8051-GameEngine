@@ -28,7 +28,6 @@ public:
         if (!player) return;
         auto& cam = camera->getComponent<Camera>();
         auto& pt = player->getComponent<Transform>();
-
         for (auto& entity: entities) {
             if (entity->hasComponent<TimedSpawner>() && entity->hasComponent<Transform>()) {
                 auto& spawner = entity->getComponent<TimedSpawner>();
