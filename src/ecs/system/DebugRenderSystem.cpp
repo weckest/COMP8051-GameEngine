@@ -249,11 +249,11 @@ void DebugRenderSystem::initDebugLabel() {
     auto& entities = entity.addComponent<Transform>(Vector2D(10.0f, 50.0f), 0.0f, 1.0f);
     auto& children = entity.addComponent<Children>();
 
-    auto& levelUp = createChildDebugLabel(entity, LabelType::LevelUp, Vector2D(10.0f, entities.position.y + 20.0f)).getComponent<Transform>();
-    auto& enemyInfo = createChildDebugLabel(entity, LabelType::EnemyInfo, Vector2D(10.0f, levelUp.position.y + 20.0f)).getComponent<Transform>();
-    auto& health = createChildDebugLabel(entity, LabelType::Health, Vector2D(10.0f, enemyInfo.position.y + 20.0f)).getComponent<Transform>();
-    auto& weapons = createChildDebugLabel(entity, LabelType::Weapons, Vector2D(10.0f, health.position.y + 20.0f)).getComponent<Transform>();
-    auto& times = createChildDebugLabel(entity, LabelType::Times, Vector2D(10.0f, weapons.position.y + 20.0f));
+    auto& levelUp = createChildDebugLabel(entity, LabelType::LevelUp, Vector2D(10.0f, entities.position.y + 20.0f), "levelUp").getComponent<Transform>();
+    auto& enemyInfo = createChildDebugLabel(entity, LabelType::EnemyInfo, Vector2D(10.0f, levelUp.position.y + 20.0f), "enemyInfo").getComponent<Transform>();
+    auto& health = createChildDebugLabel(entity, LabelType::Health, Vector2D(10.0f, enemyInfo.position.y + 20.0f), "health").getComponent<Transform>();
+    auto& weapons = createChildDebugLabel(entity, LabelType::Weapons, Vector2D(10.0f, health.position.y + 20.0f), "weapons").getComponent<Transform>();
+    auto& times = createChildDebugLabel(entity, LabelType::Times, Vector2D(10.0f, weapons.position.y + 20.0f), "times");
     times.addComponent<Children>();
 }
 

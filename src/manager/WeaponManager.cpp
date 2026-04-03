@@ -159,3 +159,7 @@ void WeaponManager::upgradeRandStat(Entity& entity, dataBundle bundle) {
 		}
 	}
 }
+
+float WeaponManager::applyItemUpgrade(float baseRate, float itemUpgrade) {
+	return baseRate + (1.0f * itemUpgrade);
+}

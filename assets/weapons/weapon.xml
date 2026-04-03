@@ -21,11 +21,11 @@
             damageModifier="1.0"
             projectileSizeModifier="1.0"
             projectileModifier="1.0"
-            aoeModifier="1.3"
+            aoeModifier="0.0"
             critDamageModifier="2.0"
             critChanceModifier="0.15"
             projectileSpeedModifier="1.0"
-            cooldown = "1.0"
+            cooldown = "0.15"
     />
     <weapon
             name="RingofFire"

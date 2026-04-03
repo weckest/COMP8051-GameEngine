@@ -95,20 +95,23 @@ void CollisionSystem::update(World &world, Timer& timer) {
                         //dont do collisions if the entity is dead
                         if (!entityB->isActive()) continue;
                         // if (!entityB->hasComponent<Collider>()) continue;
+                        try {
+                            if (colliderA.mask & colliderB.layer) {
+                                if (Collision::AABB(colliderA, colliderB)) {
+                                    CollisionKey key = makeKey(entityA, entityB);
+                                    if (currentCollisions.contains(key)) continue;
+                                    currentCollisions.insert(key);
 
-                        if (colliderA.mask & colliderB.layer) {
-                            if (Collision::AABB(colliderA, colliderB)) {
-                                CollisionKey key = makeKey(entityA, entityB);
-                                if (currentCollisions.contains(key)) continue;
-                                currentCollisions.insert(key);
-
-                                if (!activeCollisions.contains(key)) {
-                                    events.emplace_back(entityA, entityB, CollisionState::Enter);
-                                } else {
-                                    events.emplace_back(entityA, entityB, CollisionState::Stay);
+                                    if (!activeCollisions.contains(key)) {
+                                        events.emplace_back(entityA, entityB, CollisionState::Enter);
+                                    } else {
+                                        events.emplace_back(entityA, entityB, CollisionState::Stay);
+                                    }
                                 }
+                                break;
                             }
-                            break;
+                        } catch (std::exception& e) {
+                            std::cerr << e.what() << std::endl;
                         }
 
 
@@ -138,8 +141,11 @@ void CollisionSystem::update(World &world, Timer& timer) {
         }
     }
     timer.stopTimer("activeCollisions");
-
-    activeCollisions = std::move(currentCollisions); //update with current collisions
+    try {
+        activeCollisions = std::move(currentCollisions); //update with current collisions
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 std::vector<Entity*> CollisionSystem::getAllWithin(World &world, Entity &entity, float distance) {

@@ -72,9 +72,13 @@ World::World() {
                         debugState.range = !debugState.range;
                         std::cout << "Debug Range: " << debugState.range << std::endl;
                         break;
-                    case SDLK_M:
-                        getEventManager().emit(SpawnPrefabEvent{"magnet", getPlayer()->getComponent<Transform>().position});
+                    case SDLK_M: {
+                        Vector2D center = getPlayer()->getComponent<Transform>().position;
+                        center.x += getPlayer()->getComponent<Sprite>().dst.w / 2.0f;
+                        center.y += getPlayer()->getComponent<Sprite>().dst.h / 2.0f;
+                        getEventManager().emit(SpawnPrefabEvent{"magnet", center});
                         break;
+                    }
                     case SDLK_SLASH:
                         debugState.stopSpawn = !debugState.stopSpawn;
                         std::cout << "Debug Stop Spawn: " << debugState.stopSpawn << std::endl;

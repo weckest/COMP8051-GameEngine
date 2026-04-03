@@ -230,13 +230,13 @@ struct PlayerTag {
 };
 
 struct Stats {
-    float damageModifier = 1;
-    float speedModifier = 1;
-    float fireRateModifier = 1;
-    float playerSizeModifier = 1;
-    float projectileSizeModifier = 1;
-    float aoeModifier = 1;
-    float xpModifier = 1;
+    float damageModifier = 0.0f;
+    float speedModifier = 1.0f;
+    float fireRateModifier = 0.0f;
+    float playerSizeModifier = 1.0f;
+    float projectileSizeModifier = 0.0f;
+    float aoeModifier = 1.0f;
+    float xpModifier = 1.0f;
 };
 
 struct ItemList {

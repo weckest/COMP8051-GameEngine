@@ -76,33 +76,7 @@ void EventResponseSystem::onCollision(
 
     if (!getCollisionEntities(e, ATag, BTag, entityA, entityB)) return;
 
-    if (checkTagsFor(ATag, BTag, "item") && checkTagsFor(ATag, BTag, "player")) {
-
-
-        if (e.state != CollisionState::Enter) return;
-
-
-        ///TEST CODE. NEED TO REMOVE LATER
-        auto& stats = entityA->getComponent<PlayerTag>();
-        stats.xp += 101;
-
-        ///END OF TEST CODE
-
-        // em.emit(DeathEvent(entityB));
-        entityB->destroy();
-
-
-
-        // for (auto& entity: world.getEntities()) {
-        //     if (!entity->hasComponent<SceneState>()) continue;
-        //
-        //     auto& sceneState = entity->getComponent<SceneState>();
-        //     sceneState.coinsCollected++;
-        //     if (sceneState.coinsCollected > 1) {
-        //         Game::onSceneChangeRequest("level2");
-        //     }
-        // }
-    } else if ((checkTagsFor(ATag, BTag, "player") || checkTagsFor(ATag, BTag, "enemy")) && checkTagsFor(ATag, BTag, "wall")) {
+    if ((checkTagsFor(ATag, BTag, "player") || checkTagsFor(ATag, BTag, "enemy")) && checkTagsFor(ATag, BTag, "wall")) {
 
         if (e.state != CollisionState::Stay) return;
 

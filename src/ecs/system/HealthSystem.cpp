@@ -13,7 +13,7 @@ void HealthSystem::update(const std::vector<std::unique_ptr<Entity>>& entities, 
     auto& pt = player->getComponent<PlayerTag>();
 
     for (auto& e: entities) {
-        if (e->hasComponent<HealthBar>()) {
+        if (e->hasComponent<HealthBar>() && e->hasComponent<Children>()) {
             auto& c = e->getComponent<Children>().children.front();
             if (c->hasComponent<Sprite>()) {
                 auto& s = c->getComponent<Sprite>();

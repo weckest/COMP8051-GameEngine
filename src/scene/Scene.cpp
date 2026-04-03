@@ -572,7 +572,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
 
 
 
-    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getWeapon("shotgun"));
+    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getWeapon("bubblegun"));
 
 
     world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{830, 120}});

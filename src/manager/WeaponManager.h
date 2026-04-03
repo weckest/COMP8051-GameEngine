@@ -15,6 +15,7 @@ public:
 	 void switchWeapon(Entity& entity);
 	static const Weapon getWeapon(std::string name);
 	static void upgradeRandStat(Entity &entity, dataBundle bundle);
+	static float applyItemUpgrade(float baseRate, float itemUpgrade);
 };
 
 #endif //INC_8051TUTORIAL_WEAPONMANAGER_H
