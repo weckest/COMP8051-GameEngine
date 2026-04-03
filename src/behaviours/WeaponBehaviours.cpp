@@ -224,7 +224,12 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                         centerPos.y - c.rect.h / 2.0f
                     };
 
-                    ring.addComponent<RingFireTag>(radius );
+                    ring.addComponent<RingFireTag>();
+                    RingFireTag& RFT = ring.getComponent<RingFireTag>();
+
+                    RFT.range = radius;
+                    RFT.critMultiplier = getStat(weapon, "critDamageModifier", 1.5f);
+                    RFT.critChance = getStat(weapon, "critChanceModifier", 0.0f);
 
                     // lifetime instead of nested spawner
                     ring.addComponent<Lifetime>(getStat(weapon, "lifetime", 0.1f));
@@ -241,8 +246,6 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                         0.0f
                         );
 
-                    auto weaponCopy = weapon; // make a copy of Weapon
-                    ring.addComponent<Weapon>(weaponCopy); // safe copy
                     ring.addComponent<weaponOrigin>(&weapon);
 
                 }

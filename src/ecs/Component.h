@@ -162,6 +162,8 @@ struct DamageTag {
     float timeLeft;
 };
 struct RingFireTag {
+    float critMultiplier;
+    float critChance;
     float range;
 };
 struct FoodTag {

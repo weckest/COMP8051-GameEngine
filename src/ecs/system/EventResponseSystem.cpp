@@ -293,7 +293,6 @@ void EventResponseSystem::onCollision(
             }
         }
         auto& ringFire = entityA->getComponent<RingFireTag>();
-        auto& weaponInfo = entityA->getComponent<Weapon>();
         auto& projectileInfo = entityA->getComponent<ProjectileTag>();
         float range = ringFire.range;
 
@@ -303,8 +302,8 @@ void EventResponseSystem::onCollision(
         std::vector<Entity*> enemies = CollisionSystem::getAllWithin(world, *player, range);
         std::vector<Entity*> toDestroy;
 
-        float critChance = getStat(weaponInfo, "critChanceModifier", 0.0f) ;
-        float critMultiplier = getStat(weaponInfo, "critDamageModifier", 1.5f);
+        float critChance = ringFire.critChance;
+        float critMultiplier = ringFire.critMultiplier;
 
         Label damageLabel = {
             "0",
