@@ -167,7 +167,13 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
         if (sceneName == "mainmenu")
         {
+            //gamestate reset logic
             gameState.playerHealth = 100;
+            for (auto& e : gameState.WeaponDamage)
+            {
+                e.second = 0;
+            }
+
             audioManager.playMusic("musicMainMenu");
         }
 

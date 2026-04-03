@@ -292,11 +292,6 @@ public:
         return collisionSystem;
     }
 
-    void resetGame()
-    {
-        //TODO: Handle reset logic somewhere reasonable
-    }
-
     Map& getMap() {return map;}
 
     DebugState& getDebugState() {return debugState;}

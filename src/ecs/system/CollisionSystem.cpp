@@ -89,12 +89,11 @@ void CollisionSystem::update(World &world, Timer& timer) {
                     //check for the collider collision
                     //inner loop
                     for (auto& entityB : cell) {
+                        if (!entityB->hasComponent<Collider>()) continue; //emergency
                         auto& colliderB = entityB->getComponent<Collider>();
-
                         if (entityA == entityB) continue;
                         //dont do collisions if the entity is dead
                         if (!entityB->isActive()) continue;
-                        // if (!entityB->hasComponent<Collider>()) continue;
                         try {
                             if (colliderA.mask & colliderB.layer) {
                                 if (Collision::AABB(colliderA, colliderB)) {
