@@ -67,17 +67,60 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
         Game::onSceneChangeRequest("gameplay");
     };
 
+    auto& playText = world.createEntity();
+    playText.addComponent<Transform>(Vector2D(playButton.getComponent<Transform>().position.x + 34, windowHeight / 2.0f + 1), 0.0f, 1.0f);
+
+    Label plLabel = {
+        "PLAY",
+        AssetManager::getFont("monogram-button"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmPlayLabel"
+    };
+    auto& playLabel = playText.addComponent<Label>(plLabel);
+    playLabel.dirty = true;
+    TextureManager::loadLabel(playLabel);
+
     //SETTINGS
     auto& setButton = makeGenericButton("grey", windowHeight / 2.0f + 70, windowWidth);
     auto& setSprite = setButton.getComponent<Sprite>();
     SDL_Texture *setNormal = setSprite.texture;
     auto& setClick = setButton.getComponent<Clickable>();
 
+    auto& setText = world.createEntity();
+    setText.addComponent<Transform>(Vector2D(setButton.getComponent<Transform>().position.x + 6, windowHeight / 2.0f + 71), 0.0f, 1.0f);
+
+    Label seLabel = {
+        "SETTINGS",
+        AssetManager::getFont("monogram-button"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmSetLabel"
+    };
+    auto& settingsLabel = setText.addComponent<Label>(seLabel);
+    settingsLabel.dirty = true;
+    TextureManager::loadLabel(settingsLabel);
+
     //CREDITS
     auto& credButton = makeGenericButton("grey", windowHeight / 2.0f + 140, windowWidth);
     auto& credSprite = credButton.getComponent<Sprite>();
     SDL_Texture *credNormal = credSprite.texture;
     auto& credClick = credButton.getComponent<Clickable>();
+
+
+    auto& credText = world.createEntity();
+    credText.addComponent<Transform>(Vector2D(credButton.getComponent<Transform>().position.x + 12, windowHeight / 2.0f + 141), 0.0f, 1.0f);
+
+    Label crLabel = {
+        "CREDITS",
+        AssetManager::getFont("monogram-button"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmCredLabel"
+    };
+    auto& creditsLabel = credText.addComponent<Label>(crLabel);
+    creditsLabel.dirty = true;
+    TextureManager::loadLabel(creditsLabel);
 
     //QUIT
     auto& quitButton = makeGenericButton("red", windowHeight / 2.0f + 210, windowWidth);
@@ -91,8 +134,24 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
         Game::onSceneChangeRequest("quit");
     };
 
+    auto& quitText = world.createEntity();
+    quitText.addComponent<Transform>(Vector2D(quitButton.getComponent<Transform>().position.x + 34, windowHeight / 2.0f + 211), 0.0f, 1.0f);
+
+    Label quLabel = {
+        "QUIT",
+        AssetManager::getFont("monogram-button"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmQuitLabel"
+    };
+    auto& quitLabel = quitText.addComponent<Label>(quLabel);
+    quitLabel.dirty = true;
+    TextureManager::loadLabel(quitLabel);
+
     //OVERLAYS
     auto& setBox = createSettingsBox(windowWidth, windowHeight);
+    //TODO: UPDATE TO CRED BOX WHEN WORKING ON THIS
+    auto& credBox = createSettingsBox(windowWidth, windowHeight);
 
     setClick.onReleased = [this, &setSprite, setNormal, &setBox] {
         setSprite.texture = setNormal;
@@ -100,11 +159,12 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
         toggleSettingsOverlayVisibility(setBox);
     };
 
-    // credClick.onReleased = [this, &credSprite, credNormal, &credBox] {
-    //     //Game::onSceneChangeRequest("gameplay");
-    //     //toggleCreditsOverlayVisibility(overlay);
-    //     credSprite.texture = credNormal;
-    // };
+    credClick.onReleased = [this, &credSprite, credNormal, &credBox] {
+        //Game::onSceneChangeRequest("gameplay");
+        //toggleCreditsOverlayVisibility(overlay);
+        std::cout << "Show Credits Box" << std::endl;
+        credSprite.texture = credNormal;
+    };
 
     //COLLIDER HANDLING
     menuButtonColliders.push_back(&playButton.getComponent<Collider>());
