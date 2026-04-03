@@ -147,9 +147,8 @@ void Scene::initGameOver(int windowWidth, int windowHeight) {
     auto& stat1Text = world.createEntity();
     stat1Text.addComponent<Transform>(Vector2D(windowWidth / 2.0f - 146, windowHeight / 3.0f), 0.0f, 1.0f);
 
-    int totalSeconds = static_cast<int>(Game::gameState.time / 1000.0f);
+    int totalSeconds = static_cast<int>(Game::gameState.time);
     int remainder = totalSeconds % 60;
-
 
     Label s1Label = {
         "Time Survived: " + std::to_string(totalSeconds / 60) + ":" + (remainder < 10 ? "0" : "") + std::to_string(remainder),
