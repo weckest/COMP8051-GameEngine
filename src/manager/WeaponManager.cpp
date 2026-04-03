@@ -152,9 +152,19 @@ void WeaponManager::upgradeRandStat(Entity& entity, dataBundle bundle) {
 				targ.weaponStats["projectileModifier"] += 1;
 			}
 
-			// random percentage between 10% -> 20%
-			float percentage = (std::rand() % 11 + 10) / 100.0f;
-			targ.weaponStats[bundle.name] += percentage;
+			if (bundle.name == "baseCooldown") {
+				// reduce cooldown by 5% -> 10% per upgrade
+				float reduction = (std::rand() % 6 + 5) / 100.0f; 
+				targ.weaponStats["baseCooldown"] *= (1.0f - reduction);
+
+
+				if (targ.weaponStats["baseCooldown"] < 0.2f)
+					targ.weaponStats["baseCooldown"] = 0.2f;
+			} else {
+				// random stat upgrade (10% -> 20%)
+				float percentage = (std::rand() % 11 + 10) / 100.0f;
+				targ.weaponStats[bundle.name] += percentage;
+			}
 			break;
 		}
 	}

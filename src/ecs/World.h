@@ -15,6 +15,7 @@
 #include "CollisionSystem.h"
 #include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
+#include "EffectAnimationSystem.h"
 #include "EffectSystem.h"
 #include "EnemyMovementSystem.h"
 #include "Entity.h"
@@ -76,6 +77,7 @@ class World {
     EnemyMovementSystem enemyMovementSystem;
     BobbingSystem bobbingSystem;
     EffectSystem effectSystem;
+    EffectAnimationSystem effectAnimationSystem;
     EventResponseSystem eventResponseSystem{*this};
     GameOverSystem gameOverSystem;
     SpawnerSystem spawnerSystem{*this};
@@ -131,6 +133,7 @@ public:
             timer.stopTimer("colliders");
             effectSystem.update(entities, dt);
             animationSystem.update(entities, dt);
+            effectAnimationSystem.update(entities,dt);
             cameraSystem.update(entities);
             if (!debugState.stopSpawn) {
                 weaponFireSystem.update(*this, dt);

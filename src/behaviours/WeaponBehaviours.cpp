@@ -1,6 +1,7 @@
 #include "WeaponBehaviours.h"
 #include "World.h"
 #include "../manager/TextureManager.h"
+#include "manager/AssetManager.h"
 
 float getStat(const Weapon& weapon, const std::string& key, float defaultValue) {
     auto it = weapon.weaponStats.find(key);
@@ -8,278 +9,180 @@ float getStat(const Weapon& weapon, const std::string& key, float defaultValue) 
 }
 
 std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> weaponBehaviours {
-    {
-        "bubblegun",
+
+    // ------------------- Bubble Gun -------------------
+    { "bubblegun",
         [](Weapon &weapon, Entity &entity, World &world) {
-             if (!entity.hasComponent<Collider>())
-            return;
+            if (!entity.hasComponent<Collider>()) return;
 
-        // int count = std::max(1, (int)getStat(weapon, "projectileModifier", 1.0f));
+            auto &stats = entity.getComponent<Stats>();
+            int count = std::max(1, (int)getStat(weapon, "projectileModifier", 1.0f));
 
-        float fireRate = getStat(weapon, "fireRate", 1.0f);
-        // float cooldown = getStat(weapon, "cooldown", 1.0f);
-        float fireRateMod = entity.getComponent<Stats>().fireRateModifier;
+            // Calculate delay between shots based on fire rate upgrades
+            float fireRate = WeaponManager::applyItemUpgrade(getStat(weapon, "fireRate", 1.0f), stats.fireRateModifier);
+            float delayBetweenShots = 0.15f / fireRate;
 
-        float delayBetweenShots = 1.0f / WeaponManager::applyItemUpgrade(fireRate, fireRateMod);
+            entity.addComponent<TimedSpawner>(
+                delayBetweenShots,
+                [&weapon, &entity, &world, count, shotsFired = 0, stats]() mutable {
 
-        entity.addComponent<TimedSpawner>(
-            delayBetweenShots,
-            [&weapon, &entity, &world]() mutable {
+                    if (shotsFired >= count) return;
+                    shotsFired++;
 
-                auto &bullet = world.createDeferredEntity();
-                auto &t = entity.getComponent<Transform>();
-                auto &s = entity.getComponent<Sprite>();
-                auto& stats = entity.getComponent<Stats>();
+                    auto &bullet = world.createDeferredEntity();
+                    auto &t = entity.getComponent<Transform>();
+                    auto &s = entity.getComponent<Sprite>();
 
-                SDL_Texture *tex = TextureManager::load("../assets/bubble.png");
+                    SDL_Texture *tex = TextureManager::load("../assets/bubble.png");
+                    SDL_FRect src = {0,0,32,32};
 
-                SDL_FRect src = {0,0,32,32};
+                    float sizeMod = WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSizeModifier", 1.0f), stats.projectileSizeModifier);
+                    SDL_FRect dst = { t.position.x, t.position.y, src.w * sizeMod, src.h * sizeMod };
 
-                float sizeMod = WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSizeModifier", 1.0f),
-                    stats.projectileSizeModifier);
+                    bullet.addComponent<Sprite>(tex, src, dst);
+                    auto &bT = bullet.addComponent<Transform>(
+                        Vector2D(t.position.x + s.dst.w/2 - dst.w/2, t.position.y + s.dst.h/2 - dst.h/2),
+                        0.0f, 1.0f
+                    );
 
-                SDL_FRect dst = {
-                    t.position.x,
-                    t.position.y,
-                    src.w * sizeMod,
-                    src.h * sizeMod,
-                };
+                    Entity* closestEntity = CollisionSystem::getClosestEntity(world, entity, 200);
+                    if (!closestEntity) { bullet.destroy(); return; }
 
-                bullet.addComponent<Sprite>(tex, src, dst);
+                    Vector2D dir = (closestEntity->getComponent<Transform>().position - bT.position).normalize();
+                    float speed = 200.0f * WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSpeedModifier", 1.0f), stats.projectileSizeModifier);
 
-                auto& bT = bullet.addComponent<Transform>(
-                    Vector2D(
-                        t.position.x + s.dst.w/2 - dst.w/2,
-                        t.position.y + s.dst.h/2 - dst.h/2
-                    ),
-                    0.0f,
-                    1.0f
-                );
+                    bullet.addComponent<Velocity>(dir, speed);
 
-                Entity* closestEntity = CollisionSystem::getClosestEntity(world, entity, 200);
-                if (!closestEntity) {
-                    // world.getEventManager().emit(DeathEvent{&bullet});
-                    bullet.destroy();
-                    return;
-                }
-
-                // std::cout << "Spawn Bubble " << &bullet << std::endl;
-
-                auto& eT = closestEntity->getComponent<Transform>();
-                Vector2D dir = (eT.position - bT.position).normalize();
-
-                bullet.addComponent<Velocity>(dir, 200.0f *
-                    WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSpeedModifier", 1.0f), 0.0f));
-
-                auto &c = bullet.addComponent<Collider>("bullet");
-                c.rect.w = dst.w;
-                c.rect.h = dst.h;
+                    auto &c = bullet.addComponent<Collider>("bullet");
+                    c.rect.w = dst.w; c.rect.h = dst.h;
                     c.layer = CollisionLayer::PROJECTILE;
                     c.mask = CollisionLayer::ENEMY;
 
-
-
-                float damage =
-                    50.0f *
-                    WeaponManager::applyItemUpgrade(
-                        getStat(weapon, "damageModifier", 1.0f),
-                        stats.damageModifier
-                    );
-
-                float aoe = 100.0f * WeaponManager::applyItemUpgrade(getStat(weapon, "aoeModifier", 1.0f), stats.aoeModifier);
-
-                bullet.addComponent<ProjectileTag>(damage, aoe);
-                bullet.addComponent<Weapon>(weapon);
-
-                bullet.addComponent<weaponOrigin>(&weapon);
-            }
-        );
-        }
-    } ,
-    { "shotgun",
-        [](Weapon &weapon, Entity &entity, World &world) {
-           if (!entity.hasComponent<Collider>())
-            return;
-
-        float fireRate = getStat(weapon, "fireRate", 1.0f);
-        float fireRateMod = entity.getComponent<Stats>().fireRateModifier;
-        float delayBetweenShots = 1.0f / WeaponManager::applyItemUpgrade(fireRate, fireRateMod);
-
-        entity.addComponent<TimedSpawner>(
-            delayBetweenShots,
-            [&entity, &world, &weapon] {
-
-                int count = std::max(1, (int)(getStat(weapon, "projectileModifier", 1.0f) * 3));
-
-                float baseAngle = getStat(weapon, "spreadModifier", 1.0f);
-                float step = (count > 1) ? (baseAngle / (count - 1)) : 0.0f;
-
-                auto &t = entity.getComponent<Transform>();
-                auto &s = entity.getComponent<Sprite>();
-                auto &v = entity.getComponent<Velocity>();
-                auto& stats = entity.getComponent<Stats>();
-
-                Vector2D forward = v.direction;
-                if (forward.length() == 0) forward = Vector2D(1, 0);
-                forward = forward.normalize();
-
-                SDL_Texture *tex = TextureManager::load("../assets/bullet.png");
-                SDL_FRect src = {0, 0, 32, 32};
-
-                float sizeMod = WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSizeModifier", 1.0f),
-                    stats.projectileSizeModifier);
-
-                for (int i = 0; i < count; i++) {
-
-                    auto &bullet = world.createDeferredEntity();
-                    // std::cout << "Spawn Shot " << &bullet << std::endl;
-
-                    SDL_FRect dst = {
-                        t.position.x,
-                        t.position.y,
-                        src.w * sizeMod,
-                        src.h * sizeMod,
-                    };
-
-                    bullet.addComponent<Sprite>(tex, src, dst);
-
-                    float angle = step * ((count - 1) / 2.0f - i);
-
-                    auto &bT = bullet.addComponent<Transform>(
-                        Vector2D(
-                            t.position.x + s.dst.w/2 - dst.w/2,
-                            t.position.y + s.dst.h/2 - dst.h/2
-                        ),
-                        angle,
-                        1.0f
-                    );
-
-
-
-                    Vector2D dir(
-                        forward.x * cos(angle) - forward.y * sin(angle),
-                        forward.x * sin(angle) + forward.y * cos(angle)
-                    );
-
-                    bullet.addComponent<Velocity>(dir, 300.0f *
-                        WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSpeedModifier", 1.0f), 0.0f));
-
-                    auto &c = bullet.addComponent<Collider>("bullet");
-                    c.rect.w = dst.w;
-                    c.rect.h = dst.h;
-                c.layer = CollisionLayer::PROJECTILE;
-                c.mask = CollisionLayer::ENEMY;
-
-
-
-
-                    float damage =
-                        50.0f *
-                        WeaponManager::applyItemUpgrade(getStat(weapon, "damageModifier", 1.0f),
-                            stats.damageModifier);
-
-                    float aoe =
-                        100.0f *
-                        WeaponManager::applyItemUpgrade(getStat(weapon, "aoeModifier", 1.0f),
-                            stats.aoeModifier);
+                    float damage = 50.0f * WeaponManager::applyItemUpgrade(getStat(weapon, "damageModifier", 1.0f), stats.damageModifier);
+                    float aoe = 100.0f * WeaponManager::applyItemUpgrade(getStat(weapon, "aoeModifier", 1.0f), stats.aoeModifier);
 
                     bullet.addComponent<ProjectileTag>(damage, aoe);
                     bullet.addComponent<Weapon>(weapon);
                     bullet.addComponent<weaponOrigin>(&weapon);
                 }
-            }
-        );
+            );
         }
     },
-    {"RingofFire",
-        [](Weapon &weapon, Entity &entity, World &world) {
-            if (!entity.hasComponent<Collider>())
-                return;
 
+    // ------------------- Shotgun -------------------
+    { "shotgun",
+        [](Weapon &weapon, Entity &entity, World &world) {
+            if (!entity.hasComponent<Collider>()) return;
+
+            auto &stats = entity.getComponent<Stats>();
+            int baseCount = (int)getStat(weapon, "projectileModifier", 1.0f) * 3;
+            int count = std::max(1, baseCount);
+
+            float baseAngle = getStat(weapon, "spreadModifier", 1.0f);
+            float step = (count > 1) ? (baseAngle / (count - 1)) : 0.0f;
+
+            auto &t = entity.getComponent<Transform>();
+            auto &s = entity.getComponent<Sprite>();
+            auto &v = entity.getComponent<Velocity>();
+
+            Vector2D forward = v.direction.length() == 0 ? Vector2D(1, 0) : v.direction.normalize();
+
+            SDL_Texture *tex = TextureManager::load("../assets/bullet.png");
+            SDL_FRect src = {0, 0, 32, 32};
+            float sizeMod = WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSizeModifier", 1.0f), stats.projectileSizeModifier);
+
+            float speedMod = WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSpeedModifier", 1.0f), 0.0f);
+            float damageMod = WeaponManager::applyItemUpgrade(getStat(weapon, "damageModifier", 1.0f), stats.damageModifier);
+            float aoeMod = WeaponManager::applyItemUpgrade(getStat(weapon, "aoeModifier", 1.0f), stats.aoeModifier);
+
+            for (int i = 0; i < count; i++) {
+                auto &bullet = world.createDeferredEntity();
+
+                SDL_FRect dst = { t.position.x, t.position.y, src.w * sizeMod, src.h * sizeMod };
+                bullet.addComponent<Sprite>(tex, src, dst);
+
+                float angle = step * ((count - 1) / 2.0f - i);
+                auto &bT = bullet.addComponent<Transform>(
+                    Vector2D(t.position.x + s.dst.w/2 - dst.w/2, t.position.y + s.dst.h/2 - dst.h/2),
+                    angle, 1.0f
+                );
+
+                Vector2D dir(forward.x * cos(angle) - forward.y * sin(angle),
+                             forward.x * sin(angle) + forward.y * cos(angle));
+
+                bullet.addComponent<Velocity>(dir, 300.0f * speedMod);
+
+                auto &c = bullet.addComponent<Collider>("bullet");
+                c.rect.w = dst.w; c.rect.h = dst.h;
+                c.layer = CollisionLayer::PROJECTILE;
+                c.mask = CollisionLayer::ENEMY;
+
+                bullet.addComponent<ProjectileTag>(50.0f * damageMod, 100.0f * aoeMod);
+                bullet.addComponent<Weapon>(weapon);
+                bullet.addComponent<weaponOrigin>(&weapon);
+            }
+        }
+    },
+
+    // ------------------- Ring of Fire -------------------
+    { "RingofFire",
+        [](Weapon &weapon, Entity &entity, World &world) {
+            if (!entity.hasComponent<Collider>()) return;
+
+            auto &stats = entity.getComponent<Stats>();
             int count = std::max(1, (int)getStat(weapon, "projectileModifier", 1.0f));
 
-            float fireRate = getStat(weapon, "fireRate", 1.0f);
-            float fireRateMod = 1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier;
+            auto &playerTransform = entity.getComponent<Transform>();
+            auto &playerSprite = entity.getComponent<Sprite>();
+            Vector2D centerPos = {playerTransform.position.x + playerSprite.dst.w / 2.0f,
+                                  playerTransform.position.y + playerSprite.dst.h / 2.0f};
 
-            float delayBetweenShots = 0.15f / (fireRate * fireRateMod);
+            float radius = 50.0f * WeaponManager::applyItemUpgrade(getStat(weapon, "rangeModifier", 1.0f), stats.aoeModifier);
+            float damage = 25.0f * WeaponManager::applyItemUpgrade(getStat(weapon, "damageModifier", 1.0f), stats.damageModifier);
 
-            entity.addComponent<TimedSpawner>(
-                delayBetweenShots,
-                [&weapon, &entity,&world,count, shotsFired = 0]() mutable {
+            for (int i = 0; i < count; ++i) {
+                auto &ring = world.createDeferredEntity();
 
-                    if (shotsFired >= count) return;
-                    shotsFired++;
+                // Transform
+                ring.addComponent<Transform>(Vector2D(centerPos.x - radius, centerPos.y - radius), 0.0f, 1.0f);
 
-                    auto &ring = world.createDeferredEntity();
+                // Collider
+                auto& c = ring.addComponent<Collider>("RingoFire");
+                c.rect.w = radius * 2.0f; c.rect.h = radius * 2.0f;
+                c.layer = CollisionLayer::PROJECTILE;
+                c.mask = CollisionLayer::ENEMY;
 
-                    auto& playerTransform = entity.getComponent<Transform>();
-                    auto& playerSprite = entity.getComponent<Sprite>();
+                // Sprite
+                SDL_Texture* tex = TextureManager::load("../assets/animations/ringOfFire.png");
+                SDL_FRect src = {0, 0, 64, 64};
+                SDL_FRect dst = {centerPos.x - radius, centerPos.y - radius, radius * 2.0f, radius * 2.0f};
+                ring.addComponent<Sprite>(tex, src, dst);
 
-                    ring.addComponent<Transform>(playerTransform.position, 0.0f, 1.0f);
+                // Animation
+                auto& anim = ring.addComponent<Animation>();
+                anim = AssetManager::getAnimation("spin_effect");
+                anim.currentClip = "spin_effect"; anim.currentFrame = 0; anim.time = 0.0f; anim.speed = 0.05f;
 
-                    auto& c = ring.addComponent<Collider>("RingoFire");
-                    // std::cout << "RoF " << &c << std::endl;
+                // RingFireTag
+                ring.addComponent<RingFireTag>();
+                RingFireTag& RFT = ring.getComponent<RingFireTag>();
+                RFT.range = radius;
+                RFT.critMultiplier = WeaponManager::applyItemUpgrade(getStat(weapon, "critDamageModifier", 1.5f), stats.damageModifier);
+                RFT.critChance = WeaponManager::applyItemUpgrade(getStat(weapon, "critChanceModifier", 0.0f), stats.damageModifier);
 
-                    float radius = 50.0f * getStat(weapon, "rangeModifier", 1.0f);
+                // Lifetime
+                ring.addComponent<Lifetime>(getStat(weapon, "lifetime", 0.5f));
 
-                    c.rect.w = radius;
-                    c.rect.h = radius;
-                    c.layer = CollisionLayer::PROJECTILE;
-                    c.mask = CollisionLayer::ENEMY;
-
-                    Vector2D centerPos = {
-                        playerTransform.position.x + playerSprite.dst.w / 2.0f,
-                        playerTransform.position.y + playerSprite.dst.h / 2.0f
-                    };
-
-                    ring.getComponent<Transform>().position = {
-                        centerPos.x - c.rect.w / 2.0f,
-                        centerPos.y - c.rect.h / 2.0f
-                    };
-
-                    ring.addComponent<RingFireTag>();
-                    RingFireTag& RFT = ring.getComponent<RingFireTag>();
-
-                    RFT.range = radius;
-                    RFT.critMultiplier = getStat(weapon, "critDamageModifier", 1.5f);
-                    RFT.critChance = getStat(weapon, "critChanceModifier", 0.0f);
-
-                    // lifetime instead of nested spawner
-                    ring.addComponent<Lifetime>(getStat(weapon, "lifetime", 0.1f));
-
-                    auto& stats = entity.getComponent<Stats>();
-
-                    float damage =
-                        25.0f *
-                            WeaponManager::applyItemUpgrade(getStat(weapon, "damageModifier", 1.0f),
-                                stats.damageModifier);
-
-                    ring.addComponent<ProjectileTag>(
-                        damage,
-                        0.0f
-                        );
-
-                    ring.addComponent<weaponOrigin>(&weapon);
-
-                }
-            );
-            // periodically check for all entities within the collider using
-            // the collision system
-
-            // do damage
-
-            //destroy itself
+                // ProjectileTag
+                ring.addComponent<ProjectileTag>(damage, 0.0f);
+                ring.addComponent<weaponOrigin>(&weapon);
+            }
+        }
     }
-    }
-
 };
 
-std::function<void(Weapon&, Entity&, World&)> getWeaponBehaviour(const std::string& name)
-{
+std::function<void(Weapon&, Entity&, World&)> getWeaponBehaviour(const std::string& name) {
     auto it = weaponBehaviours.find(name);
-
-    if (it != weaponBehaviours.end())
-        return it->second;
-
+    if (it != weaponBehaviours.end()) return it->second;
     return nullptr;
 }

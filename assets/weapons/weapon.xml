@@ -12,6 +12,7 @@
             spreadModifier="1.0"
             projectileModifier="1.0"
             projectileSpeedModifier="1.0"
+            baseCooldown="1.25"
             cooldown = "1.0"
     />
     <weapon
@@ -25,7 +26,8 @@
             critDamageModifier="2.0"
             critChanceModifier="0.15"
             projectileSpeedModifier="1.0"
-            cooldown = "0.15"
+            baseCooldown="2.0"
+            cooldown = "1.0"
     />
     <weapon
             name="RingofFire"
@@ -33,13 +35,12 @@
             fireRate="0.25"
             damageModifier="1.0"
             rangeModifier="2.0"
-            projectileModifier="2.0"
+            projectileModifier="1.0"
             aoeModifier="1.0"
-            lifetime = "0.2f"
+            lifetime = "0.5f"
             critDamageModifier="1.25"
             critChanceModifier="0.15"
-            projectileSizeModifier="1.0"
-            projectileSpeedModifier="0.0"
+            baseCooldown="2.0"
             cooldown="1.0"
     />
 </weapons>
