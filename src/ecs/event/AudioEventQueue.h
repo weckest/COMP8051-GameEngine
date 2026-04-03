@@ -13,15 +13,27 @@
 class AudioEvent
 {
 public:
-    explicit AudioEvent(const std::string &name) : name(name) {}
+    explicit AudioEvent(const std::string &name, int type) : name(name), type(type) {}
 
     void execute() const
     {
-        AudioManager::playSfx(name);
+        switch (type)
+        {
+            case 1:
+                AudioManager::playSfx(name);
+                break;
+            case 2:
+                AudioManager::playWeaponSfx(name);
+                break;
+        case 3:
+                AudioManager::playDamageSfx(name);
+        }
+
     }
 
 private:
     std::string name;
+    int type;
 };
 
 class AudioEventQueue

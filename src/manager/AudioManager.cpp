@@ -9,6 +9,7 @@
 
 MIX_Track* AudioManager::sfxTrack;
 MIX_Track* AudioManager::weaponSfxTrack;
+MIX_Track* AudioManager::damageSfxTrack;
 std::unordered_map<std::string, MIX_Audio*> AudioManager::audio;
 
 AudioManager::AudioManager()
@@ -29,9 +30,11 @@ AudioManager::AudioManager()
     musicTrack = MIX_CreateTrack(mixer);
     sfxTrack = MIX_CreateTrack(mixer);
     weaponSfxTrack = MIX_CreateTrack(mixer);
+    damageSfxTrack = MIX_CreateTrack(mixer);
     MIX_SetTrackGain(musicTrack, 0.8f);
     MIX_SetTrackGain(sfxTrack, 0.6f);
     MIX_SetTrackGain(weaponSfxTrack, 0.3f);
+    MIX_SetTrackGain(damageSfxTrack, 0.5f);
 }
 
 void AudioManager::loadAudio(const std::string& name, const char* path) const
@@ -98,6 +101,19 @@ void AudioManager::playWeaponSfx(const std::string& name)
     }
 
     MIX_PlayTrack(weaponSfxTrack, 0);
+    //std::cout << "Playing SFX: " << name << std::endl;
+    //commented because of spam
+}
+
+void AudioManager::playDamageSfx(const std::string& name)
+{
+    if (MIX_SetTrackAudio(damageSfxTrack, audio[name]) == 0)
+    {
+        std::cout << "MIX_SetTrackAudio() failed" << std::endl;
+        return;
+    }
+
+    MIX_PlayTrack(damageSfxTrack, 0);
     //std::cout << "Playing SFX: " << name << std::endl;
     //commented because of spam
 }

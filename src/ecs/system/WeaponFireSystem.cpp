@@ -27,6 +27,7 @@ void WeaponFireSystem::update(World &world, float dt) {
 				// std::cout << "Weapon System" << std::endl;
 				weapon.spawnFunction(weapon, *entity, world);
 				// std::cout << "Weapon System Done" << std::endl;
+				world.getAudioEventQueue().push(std::make_unique<AudioEvent>("fire-" + weapon.name, 2));
 
 
 				float baseFireRate = weapon.weaponStats["fireRate"];

@@ -124,7 +124,7 @@ void EventResponseSystem::onCollision(
         //ideally we would only operate on data in an update function (hinting at transient entities)
         auto& health = entityA->getComponent<Health>();
         health.currentHealth--;
-
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit", 3));
 
         Game::gameState.playerHealth = health.currentHealth;
 
@@ -228,7 +228,7 @@ void EventResponseSystem::onCollision(
 
         explosion.addComponent<EffectTag>();
 
-
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("explosion", 1));
         //destroy the bullet
         // em.emit(DeathEvent(entityA));
         entityA->destroy();

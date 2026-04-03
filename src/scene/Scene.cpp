@@ -32,7 +32,6 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     auto& cam = world.createEntity();
     cam.addComponent<Camera>();
 
-
     //menu
     auto& menu(world.createEntity());
     auto& menuTransform = menu.addComponent<Transform>(Vector2D(0,0), 0.0f, 1.0f);
@@ -62,8 +61,9 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     SDL_Texture *playNormal = playSprite.texture;
     auto& pClick = playButton.getComponent<Clickable>();
 
-    pClick.onReleased = [&playSprite, playNormal] {
+    pClick.onReleased = [this, &playSprite, playNormal] {
         playSprite.texture = playNormal;
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1));
         Game::onSceneChangeRequest("gameplay");
     };
 
@@ -85,8 +85,9 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     SDL_Texture *quitNormal = quitSprite.texture;
     auto& quitClick = quitButton.getComponent<Clickable>();
 
-    quitClick.onReleased = [&quitSprite, quitNormal] {
+    quitClick.onReleased = [this, &quitSprite, quitNormal] {
         quitSprite.texture = quitNormal;
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1));
         Game::onSceneChangeRequest("quit");
     };
 
@@ -94,8 +95,9 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     auto& setBox = createSettingsBox(windowWidth, windowHeight);
 
     setClick.onReleased = [this, &setSprite, setNormal, &setBox] {
-        toggleSettingsOverlayVisibility(setBox);
         setSprite.texture = setNormal;
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1));
+        toggleSettingsOverlayVisibility(setBox);
     };
 
     // credClick.onReleased = [this, &credSprite, credNormal, &credBox] {
@@ -343,6 +345,7 @@ void Scene::createSettingsComponents(Entity &overlay) {
 
     clickable.onReleased = [this, &overlay, &closeTransform] {
         closeTransform.scale = 1.0f;
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1));
         toggleSettingsOverlayVisibility(overlay);
     };
 
@@ -405,6 +408,7 @@ void Scene::createCreditsComponents(Entity &overlay) {
 
     clickable.onReleased = [this, &overlay, &closeTransform] {
         closeTransform.scale = 1.0f;
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1));
         toggleSettingsOverlayVisibility(overlay);
     };
 
@@ -858,6 +862,8 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
 
         world.getEventManager().emit(LevelUpChoiceEvent{true, w, i});
 
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 3));
+
         toggleSettingsOverlayVisibility(overlay);
         createInventoryUI(800, 600); // use design size
     };
@@ -952,6 +958,8 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
         itemTransform.scale = 1.0f;
 
         world.getEventManager().emit(LevelUpChoiceEvent{false, w, i});
+
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 3));
 
         toggleSettingsOverlayVisibility(overlay);
         createInventoryUI(800, 600);

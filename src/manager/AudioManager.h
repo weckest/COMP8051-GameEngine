@@ -16,6 +16,7 @@ class AudioManager
     MIX_Track *musicTrack = nullptr;
     static MIX_Track *sfxTrack;
     static MIX_Track *weaponSfxTrack;
+    static MIX_Track *damageSfxTrack;
     static std::unordered_map<std::string, MIX_Audio*> audio;
 
 public:
@@ -28,6 +29,7 @@ public:
 
     static void playSfx(const std::string& name);
     static void playWeaponSfx(const std::string& name);
+    static void playDamageSfx(const std::string& name);
 private:
     std::string currentTrack;
 

@@ -102,7 +102,7 @@ public:
         if (sceneType == SceneType::MainMenu) {
             //pass through
         } else if (sceneType == SceneType::GameOver) {
-            gameOverSystem.update(event);
+            gameOverSystem.update(*this, event);
         }
         else if (isPaused) {
             keyboardInputSystem.update(*this, entities, event);
