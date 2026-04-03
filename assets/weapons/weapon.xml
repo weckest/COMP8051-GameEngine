@@ -6,7 +6,7 @@
             fireRate="1.0"
             damageModifier="0.5"
             projectileSizeModifier="1.0"
-            aoeModifier="1.0"
+            aoeModifier="0.0"
             critDamageModifier="2.0"
             critChanceModifier="0.1"
             spreadModifier="1.0"

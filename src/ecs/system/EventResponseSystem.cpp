@@ -209,13 +209,13 @@ void EventResponseSystem::onCollision(
 
         //make explosion where the bullet hit the enemy
         //add a little extra since the sprite is the full size
-        float explosionSize = bTag.aoe * 1.2;
+        float explosionSize = bTag.aoe * 1.1;
         auto& explosion = world.createDeferredEntity();
         auto& bt = entityA->getComponent<Transform>();
         auto& bs = entityA->getComponent<Sprite>();
         auto& t = explosion.addComponent<Transform>(bt.position, 0.0f, 1.0f);
-        t.position.x = bt.position.x - bs.dst.w / 2 - (explosionSize / 2 - bs.dst.w / 2);
-        t.position.y = bt.position.y - bs.dst.h / 2 - (explosionSize / 2 - bs.dst.h / 2);
+        t.position.x = bt.position.x - (explosionSize / 2 - bs.dst.w / 2);
+        t.position.y = bt.position.y - (explosionSize / 2 - bs.dst.h / 2);
 
         auto& a = AssetManager::getAnimation("explosion");
         auto& animation = explosion.addComponent<Animation>(a);

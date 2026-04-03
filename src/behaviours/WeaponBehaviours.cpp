@@ -102,9 +102,11 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
             return;
 
         float fireRate = getStat(weapon, "fireRate", 1.0f);
+        float fireRateMod = entity.getComponent<Stats>().fireRateModifier;
+        float delayBetweenShots = 1.0f / WeaponManager::applyItemUpgrade(fireRate, fireRateMod);
 
         entity.addComponent<TimedSpawner>(
-            1.0f / fireRate + (1.0f + 0.05f * entity.getComponent<Stats>().fireRateModifier),
+            delayBetweenShots,
             [&entity, &world, &weapon] {
 
                 int count = std::max(1, (int)(getStat(weapon, "projectileModifier", 1.0f) * 3));
@@ -141,23 +143,26 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
                     bullet.addComponent<Sprite>(tex, src, dst);
 
+                    float angle = step * ((count - 1) / 2.0f - i);
+
                     auto &bT = bullet.addComponent<Transform>(
                         Vector2D(
                             t.position.x + s.dst.w/2 - dst.w/2,
                             t.position.y + s.dst.h/2 - dst.h/2
                         ),
-                        0.0f,
+                        angle,
                         1.0f
                     );
 
-                    float angle = step * ((count - 1) / 2.0f - i);
+
 
                     Vector2D dir(
                         forward.x * cos(angle) - forward.y * sin(angle),
                         forward.x * sin(angle) + forward.y * cos(angle)
                     );
 
-                    bullet.addComponent<Velocity>(dir, 300.0f * WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSpeedModifier", 1.0f), 0.0f));
+                    bullet.addComponent<Velocity>(dir, 300.0f *
+                        WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSpeedModifier", 1.0f), 0.0f));
 
                     auto &c = bullet.addComponent<Collider>("bullet");
                     c.rect.w = dst.w;
