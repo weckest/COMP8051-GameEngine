@@ -89,7 +89,15 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
     //load audio
     audioManager.loadAudio("theme", "../assets/audio/switch_with_me.ogg");
-    audioManager.loadAudio("collect", "../assets/audio/coin.ogg");
+
+    audioManager.loadAudio("fire-bubble", "../assets/audio/sfx/bubble.mp3");
+    audioManager.loadAudio("fire-shotgun", "../assets/audio/sfx/shotgun.mp3");
+    audioManager.loadAudio("fire-rof", "../assets/audio/sfx/rof.mp3");
+    audioManager.loadAudio("collect", "../assets/audio/sfx/coin.ogg");
+    audioManager.loadAudio("player-hit", "../assets/audio/sfx/playerhit.mp3");
+    audioManager.loadAudio("levelup", "../assets/audio/sfx/levelup.mp3");
+    audioManager.loadAudio("select", "../assets/audio/sfx/uiselect.mp3");
+    audioManager.loadAudio("explosion", "../assets/audio/sfx/explosion.mp3");
 
     audioManager.loadAudio("musicMainMenu", "../assets/audio/music/TLCMainMenu.mp3");
     audioManager.loadAudio("musicGameplay", "../assets/audio/music/TLCMainTheme.mp3");
