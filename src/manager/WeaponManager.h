@@ -13,6 +13,7 @@ public:
 	static void loadWeaponFromXML(const char* path);
 	static const dataBundle getRandWeapon();
 	 void switchWeapon(Entity& entity);
+	static const Weapon getWeapon(std::string name);
 	static void upgradeRandStat(Entity &entity, dataBundle bundle);
 };
 

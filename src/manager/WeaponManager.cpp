@@ -14,6 +14,16 @@
 
 std::vector<Weapon> WeaponManager::weapons;
 
+const Weapon WeaponManager::getWeapon(std::string name) {
+	for (const auto& weapon : weapons) {
+		if (weapon.name == name) {
+			return weapon;
+		}
+	}
+
+	throw std::runtime_error("Weapon not found: " + name);
+}
+
 
 const dataBundle WeaponManager::getRandWeapon() {
 	if (weapons.empty()) {

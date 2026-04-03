@@ -209,8 +209,8 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
                     float radius = 50.0f * getStat(weapon, "rangeModifier", 1.0f);
 
-                    c.rect.w = radius * 2;
-                    c.rect.h = radius * 2;
+                    c.rect.w = radius;
+                    c.rect.h = radius;
                     c.layer = CollisionLayer::PROJECTILE;
                     c.mask = CollisionLayer::ENEMY;
 

@@ -570,7 +570,9 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     // adjust this so it fires through weapon manager.
     //make the player shoot
 
-    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getRandWeapon().weapon);
+
+
+    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getWeapon("shotgun"));
 
 
     world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{830, 120}});
