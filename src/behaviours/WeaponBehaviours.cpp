@@ -23,7 +23,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
         entity.addComponent<TimedSpawner>(
             delayBetweenShots,
-            [&, entity,count, shotsFired = 0]() mutable {
+            [&weapon, &entity, &world ,count, shotsFired = 0]() mutable {
 
                 if (shotsFired >= count) return;
                 shotsFired++;
@@ -192,7 +192,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
             entity.addComponent<TimedSpawner>(
                 delayBetweenShots,
-                [&, entity,count, shotsFired = 0]() mutable {
+                [&weapon, &entity,&world,count, shotsFired = 0]() mutable {
 
                     if (shotsFired >= count) return;
                     shotsFired++;
