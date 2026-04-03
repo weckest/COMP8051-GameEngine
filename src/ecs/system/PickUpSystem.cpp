@@ -30,8 +30,14 @@ void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World&
                 }
 
                 if (e->hasComponent<FoodTag>()) {
-                    player->getComponent<Health>().currentHealth += e->getComponent<FoodTag>().heal;
-                    Game::gameState.playerHealth = player->getComponent<Health>().currentHealth;
+                    auto& health = player->getComponent<Health>().currentHealth += e->getComponent<FoodTag>().heal;
+
+                    //prevent overheal
+                    if (health > 100) {
+                        health = 100;
+                    }
+
+                    Game::gameState.playerHealth = health;
                     // world.getEventManager().emit(DeathEvent(e.get()));
                     e->destroy();
                     continue;
