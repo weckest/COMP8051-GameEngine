@@ -89,7 +89,11 @@ void CollisionSystem::update(World &world, Timer& timer) {
                     //check for the collider collision
                     //inner loop
                     for (auto& entityB : cell) {
-                        if (!entityB->hasComponent<Collider>()) continue; //emergency
+                        if (!entityB->hasComponent<Collider>())
+                        {
+                            std::cout << "EdgeCaseHit: No Collider in CollisionSystem.cpp" << std::endl;
+                            continue;
+                        }
                         auto& colliderB = entityB->getComponent<Collider>();
                         if (entityA == entityB) continue;
                         //dont do collisions if the entity is dead
