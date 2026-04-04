@@ -97,11 +97,14 @@ struct Slider {
     float max = 1.0f;
     float value = 0.5f;
 
-    float width = 100.0f;
-
-    Entity* handle = nullptr;
+    bool dragging = false;
 
     std::function<void(float)> onValueChanged;
+};
+
+struct SliderKnob
+{
+    Entity* slider;
 };
 
 enum CollisionLayer {

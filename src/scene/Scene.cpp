@@ -55,6 +55,54 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 
     title.addComponent<ItemTag>();
 
+    auto& testSlider = world.createEntity();
+
+    auto& tsT = testSlider.addComponent<Transform>(Vector2D(windowWidth / 3.0f, windowHeight / 3.0f), 0.0f, 1.0f);
+
+    SDL_FRect tsCDst = {tsT.position.x, tsT.position.y, 200.0f, 20.0f};
+
+    testSlider.addComponent<Collider>("ui", tsCDst, true);
+
+    testSlider.addComponent<Clickable>();
+
+    auto& s = testSlider.addComponent<Slider>();
+
+    SDL_Texture* barTex = TextureManager::load("../assets/ui/sliderbar.png");
+    SDL_FRect barSrc = {0, 0, 38, 8};
+
+    testSlider.addComponent<Sprite>(barTex, barSrc, tsCDst);
+
+    s.onValueChanged = [this](float value)
+    {
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("update", 0, value));
+    };
+
+    auto& knob = world.createEntity();
+
+    knob.addComponent<Transform>(
+        Vector2D(tsT.position.x, tsT.position.y), 0.0f, 1.0f
+    );
+
+    SDL_Texture* knobTex = TextureManager::load("../assets/ui/sliderknob.png");
+
+    SDL_FRect ksrc{0,0,8,8};
+    SDL_FRect kdst{tsT.position.x, tsT.position.y, tsCDst.h, tsCDst.h};
+
+    knob.addComponent<Sprite>(knobTex, ksrc, kdst);
+
+    knob.addComponent<Clickable>();
+
+    knob.addComponent<Collider>(
+        "ui",
+        kdst,
+        true
+    );
+
+    // Link to slider
+    knob.addComponent<SliderKnob>(SliderKnob{ &testSlider });
+
+
+
     //PLAY
     auto& playButton = makeGenericButton("green", windowHeight / 2.0f, windowWidth);
     auto& playSprite = playButton.getComponent<Sprite>();
@@ -63,7 +111,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 
     pClick.onReleased = [this, &playSprite, playNormal] {
         playSprite.texture = playNormal;
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1));
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1, 0.0f));
         Game::onSceneChangeRequest("gameplay");
     };
 
@@ -130,7 +178,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 
     quitClick.onReleased = [this, &quitSprite, quitNormal] {
         quitSprite.texture = quitNormal;
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1));
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1, 0.0f));
         Game::onSceneChangeRequest("quit");
     };
 
@@ -155,7 +203,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 
     setClick.onReleased = [this, &setSprite, setNormal, &setBox] {
         setSprite.texture = setNormal;
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1));
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1, 0.0f));
         toggleSettingsOverlayVisibility(setBox);
     };
 
@@ -405,7 +453,7 @@ void Scene::createSettingsComponents(Entity &overlay) {
 
     clickable.onReleased = [this, &overlay, &closeTransform] {
         closeTransform.scale = 1.0f;
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1));
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1, 0.0f));
         toggleSettingsOverlayVisibility(overlay);
     };
 
@@ -468,7 +516,7 @@ void Scene::createCreditsComponents(Entity &overlay) {
 
     clickable.onReleased = [this, &overlay, &closeTransform] {
         closeTransform.scale = 1.0f;
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1));
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1, 0.0f));
         toggleSettingsOverlayVisibility(overlay);
     };
 
@@ -922,7 +970,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
 
         world.getEventManager().emit(LevelUpChoiceEvent{true, w, i});
 
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 3));
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 3, 0.0f));
 
         toggleSettingsOverlayVisibility(overlay);
         createInventoryUI(800, 600); // use design size
@@ -1019,7 +1067,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
 
         world.getEventManager().emit(LevelUpChoiceEvent{false, w, i});
 
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 3));
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 3, 0.0f));
 
         toggleSettingsOverlayVisibility(overlay);
         createInventoryUI(800, 600);

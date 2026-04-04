@@ -28,7 +28,7 @@ private:
     void onPlayerAction(const PlayerActionEvent& e,
         const std::function<void(Entity* player, PlayerAction action)>& callback);
 
-    void onMouseInteraction(const MouseInteractionEvent& e);
+    void onMouseInteraction(const MouseInteractionEvent& e, World& world);
 };
 
 #endif //INC_8051TUTORIAL_EVENTRESPONSESYSTEM_H

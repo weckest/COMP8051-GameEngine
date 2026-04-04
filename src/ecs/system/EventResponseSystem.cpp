@@ -45,7 +45,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
            if (e.type != EventType::MouseInteraction) return;
            const auto& mouseEvent = static_cast<const MouseInteractionEvent&>(e);
 
-              onMouseInteraction(mouseEvent);
+              onMouseInteraction(mouseEvent, world);
 
        }
    );
@@ -124,7 +124,7 @@ void EventResponseSystem::onCollision(
         //ideally we would only operate on data in an update function (hinting at transient entities)
         auto& health = entityA->getComponent<Health>();
         health.currentHealth--;
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit", 3));
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit", 3, 0.0f));
 
         Game::gameState.playerHealth = health.currentHealth;
 
@@ -228,7 +228,7 @@ void EventResponseSystem::onCollision(
 
         explosion.addComponent<EffectTag>();
 
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("explosion", 1));
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("explosion", 1, 0.0f));
         //destroy the bullet
         // em.emit(DeathEvent(entityA));
         entityA->destroy();
@@ -317,22 +317,60 @@ bool EventResponseSystem::getCollisionEntities(
 
 }
 
-void EventResponseSystem::onMouseInteraction(const MouseInteractionEvent& e) {
+void EventResponseSystem::onMouseInteraction(const MouseInteractionEvent& e, World& world) {
     if (!e.entity->hasComponent<Clickable>()) return;
 
     auto& clickable = e.entity->getComponent<Clickable>();
 
     switch (e.state) {
         case MouseInteractionState::Pressed:
-            clickable.onPressed();
+            if (clickable.onPressed)
+            {
+                clickable.onPressed();
+            }
             break;
         case MouseInteractionState::Released:
-            clickable.onReleased();
+            if (clickable.onReleased)
+            {
+                clickable.onReleased();
+            }
             break;
         case MouseInteractionState::Cancel:
-           clickable.onCancel();
+        if (clickable.onCancel)
+        {
+            clickable.onCancel();
+        }
             break;
         default:
             break;
     }
+
+    if (!e.entity->hasComponent<Slider>() || e.entity->hasComponent<SliderKnob>())
+    {
+        Entity* sliderEntity = nullptr;
+
+        if (e.entity->hasComponent<Slider>())
+        {
+            sliderEntity = e.entity;
+        } else if (e.entity->hasComponent<SliderKnob>())
+        {
+            sliderEntity = e.entity->getComponent<SliderKnob>().slider;
+        }
+
+        if (!sliderEntity) return;
+
+        if (e.state == MouseInteractionState::Pressed)
+        {
+            world.getUIState().activeSlider = sliderEntity;
+        } else if (e.state == MouseInteractionState::Released || e.state == MouseInteractionState::Cancel)
+        {
+            if (world.getUIState().activeSlider == sliderEntity)
+                world.getUIState().activeSlider = nullptr;
+        }
+
+    }
+
+
+
+
 }

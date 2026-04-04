@@ -13,20 +13,31 @@
 class AudioEvent
 {
 public:
-    explicit AudioEvent(const std::string &name, int type) : name(name), type(type) {}
+    explicit AudioEvent(const std::string &name, int type, float value) : name(name), type(type), value(value) {}
 
     void execute() const
     {
-        switch (type)
+
+        if (name == "update")
         {
+            std::cout << "[AudioEvent::update]" << std::endl;
+            AudioManager::updateVolume(type, value);
+        } else {
+            switch (type)
+            {
             case 1:
                 AudioManager::playSfx(name);
                 break;
             case 2:
                 AudioManager::playWeaponSfx(name);
                 break;
-        case 3:
+            case 3:
                 AudioManager::playDamageSfx(name);
+                break;
+            default:
+                std::cerr << "Unknown event type in AudioEvent" << type << std::endl;
+                break;
+            }
         }
 
     }
@@ -34,6 +45,7 @@ public:
 private:
     std::string name;
     int type;
+    float value = 0.0f;
 };
 
 class AudioEventQueue

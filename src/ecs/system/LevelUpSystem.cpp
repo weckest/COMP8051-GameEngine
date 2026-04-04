@@ -37,7 +37,7 @@ void LevelUpSystem::update(const std::vector<std::unique_ptr<Entity>>& entities,
         stats.xp -= xpToLevelUp;
         xpToLevelUp+=200;
         world.getEventManager().emit(LevelUpEvent{stats.level});
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("levelup", 1));
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("levelup", 1, 0.0f));
         //std::cout << "LEVEL UP!" << std::endl;
     }
 

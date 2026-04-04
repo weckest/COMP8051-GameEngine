@@ -64,5 +64,32 @@ void MouseInputSystem::update(World& world, const SDL_Event& e, SDL_Renderer* re
 			}
 		}
 	}
+
+	if (e.type == SDL_EVENT_MOUSE_MOTION)
+	{
+		auto* active = world.getUIState().activeSlider;
+		if (!active) return;
+
+		if (!active->hasComponent<Slider>() || !active->hasComponent<Collider>()) return;
+
+		auto& slider = active->getComponent<Slider>();
+		auto& collider = active->getComponent<Collider>();
+
+		float t = (logicalX - collider.rect.x) / collider.rect.w;
+		t = std::clamp(t, 0.0f, 1.0f);
+
+		float newValue = slider.min + t * (slider.max - slider.min);
+
+		if (newValue != slider.value) {
+			slider.value = newValue;
+
+			if (slider.onValueChanged) {
+				slider.onValueChanged(slider.value);
+			}
+		}
+
+	}
+
+
 }
 

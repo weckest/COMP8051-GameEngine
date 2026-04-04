@@ -43,6 +43,8 @@
 #include "WeaponFireSystem.h"
 #include "Timer.h"
 #include "UIRenderSystem.h"
+#include "UISliderSystem.h"
+#include "UIState.h"
 #include "data/DebugState.h"
 #include "event/AudioEventQueue.h"
 #include "manager/ItemManager.hpp"
@@ -54,6 +56,7 @@ class World {
     Map map;
     Timer timer;
     DebugState debugState;
+    UIState uiState;
     Entity* player;
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::vector<std::vector<Entity*>>> entityGrid;
@@ -86,6 +89,7 @@ class World {
     WeaponFireSystem weaponFireSystem;
     LevelUpHandler levelUpHandler{*this};
     UIRenderSystem uiRenderSystem;
+    UISliderSystem uisliderSystem;
     MouseInputSystem mouseInputSystem;
     PlayerStatListener playerStatListener{*this};
     PickUpSystem pickUpSystem;
@@ -206,6 +210,7 @@ public:
         }
         timer.stopTimer("debug");
         uiRenderSystem.render(entities);
+        uisliderSystem.render(entities);
 
     }
 
@@ -295,6 +300,8 @@ public:
     Map& getMap() {return map;}
 
     DebugState& getDebugState() {return debugState;}
+
+    UIState& getUIState() {return uiState;}
 
     Entity* getPlayer() {
         return player;

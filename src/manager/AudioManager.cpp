@@ -10,6 +10,8 @@
 MIX_Track* AudioManager::sfxTrack;
 MIX_Track* AudioManager::weaponSfxTrack;
 MIX_Track* AudioManager::damageSfxTrack;
+MIX_Track* AudioManager::musicTrack;
+
 std::unordered_map<std::string, MIX_Audio*> AudioManager::audio;
 
 AudioManager::AudioManager()
@@ -32,9 +34,13 @@ AudioManager::AudioManager()
     weaponSfxTrack = MIX_CreateTrack(mixer);
     damageSfxTrack = MIX_CreateTrack(mixer);
     MIX_SetTrackGain(musicTrack, 0.8f);
+    trackVolumes.push_back(0.8f);
     MIX_SetTrackGain(sfxTrack, 0.6f);
+    trackVolumes.push_back(0.6f);
     MIX_SetTrackGain(weaponSfxTrack, 0.3f);
+    trackVolumes.push_back(0.3f);
     MIX_SetTrackGain(damageSfxTrack, 0.5f);
+    trackVolumes.push_back(0.5f);
 }
 
 void AudioManager::loadAudio(const std::string& name, const char* path) const
@@ -116,4 +122,48 @@ void AudioManager::playDamageSfx(const std::string& name)
     MIX_PlayTrack(damageSfxTrack, 0);
     //std::cout << "Playing SFX: " << name << std::endl;
     //commented because of spam
+}
+
+void AudioManager::getVolume(int track)
+{
+    switch (track)
+    {
+    case 0:
+        MIX_GetTrackGain(musicTrack);
+        break;
+    case 1:
+        MIX_GetTrackGain(sfxTrack);
+        break;
+    case 2:
+        MIX_GetTrackGain(weaponSfxTrack);
+        break;
+    case 3:
+        MIX_GetTrackGain(damageSfxTrack);
+        break;
+    default:
+        std::cout << "MIX_GetTrackGain() failed" << std::endl;
+        break;
+    }
+}
+
+void AudioManager::updateVolume(int track, float volume)
+{
+    switch (track)
+    {
+        case 0:
+            MIX_SetTrackGain(musicTrack, volume);
+            break;
+        case 1:
+            MIX_SetTrackGain(sfxTrack, volume);
+            break;
+        case 2:
+            MIX_SetTrackGain(weaponSfxTrack, volume);
+            break;
+        case 3:
+            MIX_SetTrackGain(damageSfxTrack, volume);
+            break;
+        default:
+            std::cout << "MIX_SetTrackGain() failed" << std::endl;
+            break;
+    }
 }

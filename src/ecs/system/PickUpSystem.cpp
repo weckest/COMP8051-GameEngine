@@ -50,7 +50,7 @@ void PickUpSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World&
                 stats.xp += (10 * modifiers.xpModifier);
                 Game::gameState.points += 1;
 
-                world.getAudioEventQueue().push(std::make_unique<AudioEvent>("collect", 1));
+                world.getAudioEventQueue().push(std::make_unique<AudioEvent>("collect", 1, 0.0f));
 
                 ///END OF TEST CODE
                 // world.getEventManager().emit(DeathEvent(e.get()));
