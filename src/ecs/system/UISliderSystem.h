@@ -32,23 +32,23 @@ public:
             auto& t = entity->getComponent<Transform>();
             auto& sprite = entity->getComponent<Sprite>();
 
+            float knobHalf = sprite.dst.w / 2.0f;
+            float minX = collider.rect.x + knobHalf;
+            float maxX = collider.rect.x + collider.rect.w - knobHalf;
+
             float percent = (slider.value - slider.min) / (slider.max - slider.min);
+            float knobX = minX + percent * (maxX - minX);
 
-            // Position knob along bar
-            float knobX = collider.rect.x + percent * collider.rect.w;
-
-            t.position.x = knobX - sprite.dst.w / 2.0f;
+            t.position.x = knobX - knobHalf;
             t.position.y = collider.rect.y + (collider.rect.h - sprite.dst.h) / 2.0f;
 
-            // Sync sprite position
             sprite.dst.x = t.position.x;
             sprite.dst.y = t.position.y;
 
-            if (entity->hasComponent<Collider>())
-            {
+            if (entity->hasComponent<Collider>()) {
                 auto& col = entity->getComponent<Collider>();
-                col.rect.x = sprite.dst.x;
-                col.rect.y = sprite.dst.y;
+                col.rect.x = t.position.x;
+                col.rect.y = t.position.y;
             }
         }
     }

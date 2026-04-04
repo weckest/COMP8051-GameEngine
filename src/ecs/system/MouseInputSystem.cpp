@@ -75,9 +75,16 @@ void MouseInputSystem::update(World& world, const SDL_Event& e, SDL_Renderer* re
 		auto& slider = active->getComponent<Slider>();
 		auto& collider = active->getComponent<Collider>();
 
-		float t = (logicalX - collider.rect.x) / collider.rect.w;
-		t = std::clamp(t, 0.0f, 1.0f);
+		float knobWidth = 20.0f;
+		float knobHalf = knobWidth / 2.0f;
 
+		// Clamp mouse to the usable bar area
+		float minX = collider.rect.x + knobHalf;
+		float maxX = collider.rect.x + collider.rect.w - knobHalf;
+		float clampedX = std::clamp(logicalX, minX, maxX);
+
+		// Calculate normalized value 0->1
+		float t = (clampedX - minX) / (maxX - minX);
 		float newValue = slider.min + t * (slider.max - slider.min);
 
 		if (newValue != slider.value) {

@@ -20,7 +20,6 @@ public:
 
         if (name == "update")
         {
-            std::cout << "[AudioEvent::update]" << std::endl;
             AudioManager::updateVolume(type, value);
         } else {
             switch (type)
