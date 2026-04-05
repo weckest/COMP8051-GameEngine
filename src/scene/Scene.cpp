@@ -147,7 +147,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     //OVERLAYS
     auto& setBox = createSettingsBox(windowWidth, windowHeight);
     //TODO: UPDATE TO CRED BOX WHEN WORKING ON THIS
-    auto& credBox = createSettingsBox(windowWidth, windowHeight);
+    auto& credBox = createCreditsBox(windowWidth, windowHeight);
 
     setClick.onReleased = [this, &setSprite, setNormal, &setBox] {
         setSprite.texture = setNormal;
@@ -156,10 +156,9 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     };
 
     credClick.onReleased = [this, &credSprite, credNormal, &credBox] {
-        //Game::onSceneChangeRequest("gameplay");
-        //toggleCreditsOverlayVisibility(overlay);
-        std::cout << "Show Credits Box" << std::endl;
         credSprite.texture = credNormal;
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1, 0.0f));
+        toggleSettingsOverlayVisibility(credBox);
     };
 
     //COLLIDER HANDLING
@@ -567,9 +566,9 @@ void Scene::createSettingsComponents(Entity &overlay) {
 
 Entity& Scene::createCreditsBox(int windowWidth, int windowHeight) {
     auto& overlay(world.createEntity());
-    SDL_Texture *overlayTex = TextureManager::load("../assets/ui/TFC-MenuBox.jpg");
+    SDL_Texture *overlayTex = TextureManager::load("../assets/ui/TFC-MenuBox.png");
 
-    SDL_FRect overlaySrc = {0,0,windowWidth*0.85f,windowHeight*0.85f};
+    SDL_FRect overlaySrc = {0,0,windowWidth*0.60f,windowHeight*0.80f};
     SDL_FRect overlayDst = {
         (float)windowWidth/2 - overlaySrc.w/2,
         (float)windowHeight/2 - overlaySrc.h / 2,
@@ -577,9 +576,9 @@ Entity& Scene::createCreditsBox(int windowWidth, int windowHeight) {
         overlaySrc.h};
 
     overlay.addComponent<Transform>(Vector2D(overlayDst.x, overlayDst.y), 0.0f, 1.0f);
-    overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDst, RenderLayer::UI,false);
+    overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDst, RenderLayer::UI, false);
 
-    createSettingsUIComponents(overlay);
+    createCreditsComponents(overlay);
 
     return overlay;
 }
@@ -591,41 +590,139 @@ void Scene::createCreditsComponents(Entity &overlay) {
 
     auto& overlayTrans = overlay.getComponent<Transform>();
     auto& overlaySprite = overlay.getComponent<Sprite>();
+    auto& overlayChildren = overlay.getComponent<Children>();
 
-    float baseX = overlayTrans.position.x;
-    float baseY = overlayTrans.position.y;
+    auto& credExitButton = makeGenericButton(
+        "red", overlaySprite.dst.y + 350, overlaySprite.dst.x + overlaySprite.dst.w + 160);
+    auto& credExitSprite = credExitButton.getComponent<Sprite>();
+    credExitSprite.visible = false;
+    SDL_Texture *credExitNormal = credExitSprite.texture;
+    auto& credExitClick = credExitButton.getComponent<Clickable>();
 
-    auto& closeButton = world.createEntity();
-    auto& closeTransform = closeButton.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40,baseY + 10), 0.0f, 0.0f);
-
-    SDL_Texture* tex = TextureManager::load("../assets/ui/close.png");
-    SDL_FRect closeSrc = {0, 0, 32, 32};
-    SDL_FRect closeDst = {closeTransform.position.x, closeTransform.position.y, closeSrc.w, closeSrc.h};
-
-    closeButton.addComponent<Sprite>(tex, closeSrc, closeDst, RenderLayer::UI, false);
-
-    closeButton.addComponent<Collider>("ui", closeDst);
-
-    auto& clickable = closeButton.addComponent<Clickable>();
-
-    clickable.onPressed = [&closeTransform] {
-        closeTransform.scale = 0.5f;
-    };
-
-    clickable.onReleased = [this, &overlay, &closeTransform] {
-        closeTransform.scale = 1.0f;
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1, 0.0f));
+    credExitClick.onReleased = [this, &credExitSprite, credExitNormal, &overlay] {
         toggleSettingsOverlayVisibility(overlay);
+        credExitSprite.texture = credExitNormal;
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1, 0.0f));
+
     };
 
-    clickable.onCancel = [&closeTransform] {
-        closeTransform.scale = 1.0f;
+    auto& credExitText = world.createEntity();
+    credExitText.addComponent<Transform>(
+        Vector2D(overlaySprite.dst.x + overlaySprite.dst.w / 2.0f - 25, overlaySprite.dst.y + 351), 0.0f, 1.0f);
+
+    Label cExitLabel = {
+        "BACK",
+        AssetManager::getFont("monogram-button"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmcExit"
     };
+    auto& credExitLabel = credExitText.addComponent<Label>(cExitLabel);
 
-    closeButton.addComponent<Parent>(&overlay);
-    auto& parentChildren = overlay.getComponent<Children>();
+    credExitLabel.visible = false;
+    credExitLabel.dirty = true;
 
-    parentChildren.children.push_back(&closeButton);
+    credExitButton.addComponent<Parent>(&overlay);
+    credExitText.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&credExitButton);
+    overlayChildren.children.push_back(&credExitText);
+
+
+    //title
+    auto& credTitleEntity = world.createEntity();
+    auto& credTitleLabel = credTitleEntity.addComponent<Label>(Label{
+        "CREDITS",
+        AssetManager::getFont("monogram-title"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmcTitle"
+    });
+
+    credTitleEntity.addComponent<Transform>(Vector2D(
+        overlayTrans.position.x + overlaySprite.dst.w / 2 - 90, overlayTrans.position.y + 40), 0.0f, 1.0f);
+
+    credTitleEntity.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&credTitleEntity);
+
+    credTitleLabel.visible = false;
+    credTitleLabel.dirty = true;
+
+    //name1
+    auto& name1Entity = world.createEntity();
+    auto& name1Label = name1Entity.addComponent<Label>(Label{
+        "Weckest",
+        AssetManager::getFont("monogram-title"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmcn1"
+    });
+
+    name1Entity.addComponent<Transform>(Vector2D(
+        overlayTrans.position.x + overlaySprite.dst.w / 2 - 90, overlayTrans.position.y + 110), 0.0f, 1.0f);
+
+    name1Entity.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&name1Entity);
+
+    name1Label.visible = false;
+    name1Label.dirty = true;
+
+    //name2
+    auto& name2Entity = world.createEntity();
+    auto& name2Label = name2Entity.addComponent<Label>(Label{
+        "HeckB",
+        AssetManager::getFont("monogram-title"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmcn2"
+    });
+
+    name2Entity.addComponent<Transform>(Vector2D(
+        overlayTrans.position.x + overlaySprite.dst.w / 2 - 62, overlayTrans.position.y + 160), 0.0f, 1.0f);
+
+    name2Entity.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&name2Entity);
+
+    name2Label.visible = false;
+    name2Label.dirty = true;
+
+    //name3
+    auto& name3Entity = world.createEntity();
+    auto& name3Label = name3Entity.addComponent<Label>(Label{
+        "Flanks",
+        AssetManager::getFont("monogram-title"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmcn3"
+    });
+
+    name3Entity.addComponent<Transform>(Vector2D(
+        overlayTrans.position.x + overlaySprite.dst.w / 2 - 78, overlayTrans.position.y + 210), 0.0f, 1.0f);
+
+    name3Entity.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&name3Entity);
+
+    name3Label.visible = false;
+    name3Label.dirty = true;
+
+    //name4
+    auto& name4Entity = world.createEntity();
+    auto& name4Label = name4Entity.addComponent<Label>(Label{
+        "Zynity",
+        AssetManager::getFont("monogram-title"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmcn4"
+    });
+
+    name4Entity.addComponent<Transform>(Vector2D(
+        overlayTrans.position.x + overlaySprite.dst.w / 2 - 78, overlayTrans.position.y + 260), 0.0f, 1.0f);
+
+    name4Entity.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&name4Entity);
+
+    name4Label.visible = false;
+    name4Label.dirty = true;
+
 }
 
 void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidth, int windowHeight) {
@@ -908,13 +1005,10 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 
     auto& sprite = overlay.getComponent<Sprite>();
 
-    //auto& children = overlay.getComponent<Children>().children;
-
     bool newVisibility = !sprite.visible;
 
-    toggleColliders(newVisibility);
-
     sprite.visible = newVisibility;
+    toggleColliders(newVisibility);
 
     if (overlay.hasComponent<Children>()) {
 
@@ -922,15 +1016,13 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 
         for (auto& child : children.children) {
 
+            if (child && child->hasComponent<Collider>()) {
+                child->getComponent<Collider>().enabled = newVisibility;
+            }
+
             if (child && child->hasComponent<Sprite>()) {
 
                 child->getComponent<Sprite>().visible = newVisibility;
-
-            }
-
-            if (child && child->hasComponent<Collider>()) {
-
-                child->getComponent<Collider>().enabled = newVisibility;
 
             }
 
