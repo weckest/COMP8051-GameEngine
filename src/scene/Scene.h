@@ -38,6 +38,7 @@ private:
     void initGameplay(SDL_Window *window, const char *mapPath, int windowWidth, int windowHeight);
 
     Entity& makeGenericButton(const std::string& color, int buttonHeight, int windowWidth);
+    Entity& makeGenericSlider(Entity& overlay, int type, float sliderX, float sliderY);
 
     Entity& createSettingsBox(int windowWidth, int windowHeight);
     void createSettingsComponents(Entity& overlay);

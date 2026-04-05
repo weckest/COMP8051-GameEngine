@@ -55,54 +55,6 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 
     title.addComponent<ItemTag>();
 
-    auto& testSlider = world.createEntity();
-
-    auto& tsT = testSlider.addComponent<Transform>(Vector2D(windowWidth / 3.0f, windowHeight / 3.0f), 0.0f, 1.0f);
-
-    SDL_FRect tsCDst = {tsT.position.x, tsT.position.y, 200.0f, 20.0f};
-
-    testSlider.addComponent<Collider>("ui", tsCDst, true);
-
-    testSlider.addComponent<Clickable>();
-
-    auto& s = testSlider.addComponent<Slider>();
-
-    SDL_Texture* barTex = TextureManager::load("../assets/ui/sliderbar.png");
-    SDL_FRect barSrc = {0, 0, 38, 8};
-
-    testSlider.addComponent<Sprite>(barTex, barSrc, tsCDst);
-
-    s.onValueChanged = [this](float value)
-    {
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("update", 0, value));
-    };
-
-    auto& knob = world.createEntity();
-
-    knob.addComponent<Transform>(
-        Vector2D(tsT.position.x, tsT.position.y), 0.0f, 1.0f
-    );
-
-    SDL_Texture* knobTex = TextureManager::load("../assets/ui/sliderknob.png");
-
-    SDL_FRect ksrc{0,0,8,8};
-    SDL_FRect kdst{tsT.position.x, tsT.position.y, tsCDst.h, tsCDst.h};
-
-    knob.addComponent<Sprite>(knobTex, ksrc, kdst);
-
-    knob.addComponent<Clickable>();
-
-    knob.addComponent<Collider>(
-        "ui",
-        kdst,
-        true
-    );
-
-    // Link to slider
-    knob.addComponent<SliderKnob>(SliderKnob{ &testSlider });
-
-
-
     //PLAY
     auto& playButton = makeGenericButton("green", windowHeight / 2.0f, windowWidth);
     auto& playSprite = playButton.getComponent<Sprite>();
@@ -127,7 +79,6 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     };
     auto& playLabel = playText.addComponent<Label>(plLabel);
     playLabel.dirty = true;
-    TextureManager::loadLabel(playLabel);
 
     //SETTINGS
     auto& setButton = makeGenericButton("grey", windowHeight / 2.0f + 70, windowWidth);
@@ -147,7 +98,6 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     };
     auto& settingsLabel = setText.addComponent<Label>(seLabel);
     settingsLabel.dirty = true;
-    TextureManager::loadLabel(settingsLabel);
 
     //CREDITS
     auto& credButton = makeGenericButton("grey", windowHeight / 2.0f + 140, windowWidth);
@@ -168,7 +118,6 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     };
     auto& creditsLabel = credText.addComponent<Label>(crLabel);
     creditsLabel.dirty = true;
-    TextureManager::loadLabel(creditsLabel);
 
     //QUIT
     auto& quitButton = makeGenericButton("red", windowHeight / 2.0f + 210, windowWidth);
@@ -194,7 +143,6 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     };
     auto& quitLabel = quitText.addComponent<Label>(quLabel);
     quitLabel.dirty = true;
-    TextureManager::loadLabel(quitLabel);
 
     //OVERLAYS
     auto& setBox = createSettingsBox(windowWidth, windowHeight);
@@ -404,6 +352,50 @@ Entity& Scene::makeGenericButton(const std::string& color, int buttonHeight, int
     return button;
 }
 
+Entity& Scene::makeGenericSlider(Entity& overlay, int type, float sliderX, float sliderY)
+{
+    //SLIDER
+    auto& slider = world.createEntity();
+    auto& sTransform = slider.addComponent<Transform>(Vector2D(sliderX, sliderY), 0.0f, 1.0f);
+
+    SDL_Texture* barTex = TextureManager::load("../assets/ui/sliderbar.png");
+    SDL_FRect barSrc = {0, 0, 38, 8};
+    SDL_FRect barDst = {sTransform.position.x, sTransform.position.y, 100.0f, 20.0f};
+
+    slider.addComponent<Sprite>(barTex, barSrc, barDst, RenderLayer::UI, false);
+    slider.addComponent<Collider>("ui", barDst, false);
+    slider.addComponent<Clickable>();
+
+    auto& s = slider.addComponent<Slider>();
+
+    s.value = AudioManager::getVolume(type);
+    s.onValueChanged = [this, type](float value)
+    {
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("update", type, value));
+    };
+
+    auto& knob = world.createEntity();
+    knob.addComponent<Transform>(Vector2D(sTransform.position.x, sTransform.position.y), 0.0f, 1.0f);
+    SDL_Texture* knobTex = TextureManager::load("../assets/ui/sliderknob.png");
+
+    SDL_FRect kSrc{0,0,10,10};
+    SDL_FRect kDst{sTransform.position.x, sTransform.position.y, kSrc.w * 2.0f, kSrc.h * 2.0f};
+
+    knob.addComponent<Sprite>(knobTex, kSrc, kDst, RenderLayer::UI, false);
+    knob.addComponent<Clickable>();
+    knob.addComponent<Collider>("ui", kDst, false);
+    knob.addComponent<SliderKnob>(SliderKnob{&slider});
+
+    slider.addComponent<Parent>(&overlay);
+    knob.addComponent<Parent>(&overlay);
+
+    auto& overlayChildren = overlay.getComponent<Children>();
+    overlayChildren.children.push_back(&slider);
+    overlayChildren.children.push_back(&knob);
+
+    return slider;
+}
+
 Entity& Scene::createSettingsBox(int windowWidth, int windowHeight) {
     auto& overlay(world.createEntity());
     SDL_Texture *overlayTex = TextureManager::load("../assets/ui/TFC-MenuBox.png");
@@ -430,41 +422,147 @@ void Scene::createSettingsComponents(Entity &overlay) {
 
     auto& overlayTrans = overlay.getComponent<Transform>();
     auto& overlaySprite = overlay.getComponent<Sprite>();
+    auto& overlayChildren = overlay.getComponent<Children>();
 
-    float baseX = overlayTrans.position.x;
-    float baseY = overlayTrans.position.y;
+    //exit
+    auto& setExitButton = makeGenericButton(
+        "red", overlaySprite.dst.y + 350, overlaySprite.dst.x + overlaySprite.dst.w + 160);
+    auto& setExitSprite = setExitButton.getComponent<Sprite>();
+    setExitSprite.visible = false;
+    SDL_Texture *setExitNormal = setExitSprite.texture;
+    auto& setExitClick = setExitButton.getComponent<Clickable>();
 
-    auto& closeButton = world.createEntity();
-    auto& closeTransform = closeButton.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40,baseY + 10), 0.0f, 1.0f);
-
-    SDL_Texture* tex = TextureManager::load("../assets/ui/close.png");
-    SDL_FRect closeSrc = {0, 0, 32, 32};
-    SDL_FRect closeDst = {closeTransform.position.x, closeTransform.position.y, closeSrc.w, closeSrc.h};
-
-    closeButton.addComponent<Sprite>(tex, closeSrc, closeDst, RenderLayer::UI, false);
-
-    closeButton.addComponent<Collider>("ui", closeDst, false);
-
-    auto& clickable = closeButton.addComponent<Clickable>();
-
-    clickable.onPressed = [&closeTransform] {
-        closeTransform.scale = 0.5f;
-    };
-
-    clickable.onReleased = [this, &overlay, &closeTransform] {
-        closeTransform.scale = 1.0f;
+    setExitClick.onReleased = [this, &setExitSprite, setExitNormal, &overlay] {
+        setExitSprite.texture = setExitNormal;
         world.getAudioEventQueue().push(std::make_unique<AudioEvent>("select", 1, 0.0f));
         toggleSettingsOverlayVisibility(overlay);
     };
 
-    clickable.onCancel = [&closeTransform] {
-        closeTransform.scale = 1.0f;
+    auto& setExitText = world.createEntity();
+    setExitText.addComponent<Transform>(
+        Vector2D(overlaySprite.dst.x + overlaySprite.dst.w / 2.0f - 25, overlaySprite.dst.y + 351), 0.0f, 1.0f);
+
+    Label sExitLabel = {
+        "BACK",
+        AssetManager::getFont("monogram-button"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmsExit"
     };
+    auto& setExitLabel = setExitText.addComponent<Label>(sExitLabel);
 
-    closeButton.addComponent<Parent>(&overlay);
-    auto& parentChildren = overlay.getComponent<Children>();
+    setExitLabel.visible = false;
+    setExitLabel.dirty = true;
 
-    parentChildren.children.push_back(&closeButton);
+    setExitButton.addComponent<Parent>(&overlay);
+    setExitText.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&setExitButton);
+    overlayChildren.children.push_back(&setExitText);
+
+    auto& setTitleEntity = world.createEntity();
+    auto& setTitleLabel = setTitleEntity.addComponent<Label>(Label{
+        "SETTINGS",
+        AssetManager::getFont("monogram-title"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmsTitle"
+    });
+
+    setTitleEntity.addComponent<Transform>(Vector2D(
+        overlayTrans.position.x + overlaySprite.dst.w / 2 - 100, overlayTrans.position.y + 40), 0.0f, 1.0f);
+
+    setTitleEntity.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&setTitleEntity);
+
+    setTitleLabel.visible = false;
+    setTitleLabel.dirty = true;
+
+    //music
+    auto& musicEntity = world.createEntity();
+    auto& musicLabel = musicEntity.addComponent<Label>(Label{
+        "MUSIC",
+        AssetManager::getFont("monogram-button"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmsMusic"
+    });
+
+    musicEntity.addComponent<Transform>(Vector2D(
+        overlayTrans.position.x + overlaySprite.dst.w / 5.0f + 7, overlaySprite.dst.y + 150), 0.0f, 1.0f);
+
+
+    musicEntity.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&musicEntity);
+
+    musicLabel.visible = false;
+    musicLabel.dirty = true;
+
+    makeGenericSlider(overlay, 0, overlayTrans.position.x + overlaySprite.dst.w / 5.0f - 10, overlaySprite.dst.y + 180);
+
+    //general
+    auto& genEntity = world.createEntity();
+    auto& genLabel = genEntity.addComponent<Label>(Label{
+        "GENERAL",
+        AssetManager::getFont("monogram-button"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmsGen"
+    });
+
+    genEntity.addComponent<Transform>(Vector2D(
+        overlayTrans.position.x + overlaySprite.dst.w / 5.0f * 3.0f + 13, overlaySprite.dst.y + 150), 0.0f, 1.0f);
+
+    genEntity.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&genEntity);
+
+    genLabel.visible = false;
+    genLabel.dirty = true;
+
+    makeGenericSlider(overlay, 1, overlayTrans.position.x + overlaySprite.dst.w / 5.0f * 3.0f + 10, overlaySprite.dst.y + 180);
+
+    //weapons
+    auto& wepEntity = world.createEntity();
+    auto& wepLabel = wepEntity.addComponent<Label>(Label{
+        "WEAPONS",
+        AssetManager::getFont("monogram-button"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmsWeap"
+    });
+
+    wepEntity.addComponent<Transform>(Vector2D(
+        overlayTrans.position.x + overlaySprite.dst.w / 5.0f - 7, overlaySprite.dst.y + 250), 0.0f, 1.0f);
+
+    wepEntity.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&wepEntity);
+
+    wepLabel.visible = false;
+    wepLabel.dirty = true;
+
+    makeGenericSlider(overlay, 2, overlayTrans.position.x + overlaySprite.dst.w / 5.0f - 10, overlaySprite.dst.y + 280);
+
+    //damage
+    auto& dmgEntity = world.createEntity();
+    auto& dmgLabel = dmgEntity.addComponent<Label>(Label{
+        "DAMAGE",
+        AssetManager::getFont("monogram-button"),
+        {255,255,255,255},
+        LabelType::UI,
+        "mmsDmg"
+    });
+
+    dmgEntity.addComponent<Transform>(Vector2D(
+        overlayTrans.position.x + overlaySprite.dst.w / 5.0f * 3.0f + 19, overlaySprite.dst.y + 250), 0.0f, 1.0f);
+
+    dmgEntity.addComponent<Parent>(&overlay);
+    overlayChildren.children.push_back(&dmgEntity);
+
+    dmgLabel.visible = false;
+    dmgLabel.dirty = true;
+
+    makeGenericSlider(overlay, 3, overlayTrans.position.x + overlaySprite.dst.w / 5.0f * 3.0f + 10, overlaySprite.dst.y + 280);
+
+
 }
 
 Entity& Scene::createCreditsBox(int windowWidth, int windowHeight) {
@@ -664,7 +762,6 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     // playerCollider.rect.h = playerDst.h;
 
     // GAME: Reduce hitbox size
-    //TODO: This will need to change when we configure the new sprite
     auto& playerCollider = player.addComponent<Collider>("player");
     std::cout << "Player " << &playerCollider << std::endl;
     playerCollider.rect.w = playerDst.w / 2;

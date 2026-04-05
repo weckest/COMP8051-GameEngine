@@ -7,7 +7,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 #include "SDL3_mixer/SDL_mixer.h"
 
@@ -19,8 +18,6 @@ class AudioManager
     static MIX_Track *weaponSfxTrack;
     static MIX_Track *damageSfxTrack;
     static std::unordered_map<std::string, MIX_Audio*> audio;
-
-    std::vector<float> trackVolumes;
 
 public:
     AudioManager();
@@ -34,7 +31,7 @@ public:
     static void playWeaponSfx(const std::string& name);
     static void playDamageSfx(const std::string& name);
 
-    static void getVolume(int track);
+    static float getVolume(int track);
     static void updateVolume(int track, float volume);
 private:
     std::string currentTrack;

@@ -58,6 +58,7 @@ void MouseInputSystem::update(World& world, const SDL_Event& e, SDL_Renderer* re
 						clickable.pressed = false;
 						//released event
 						world.getEventManager().emit(MouseInteractionEvent{entity.get(), MouseInteractionState::Released });
+						break;
 
 					}
 				}
