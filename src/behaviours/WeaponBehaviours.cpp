@@ -122,7 +122,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     rotationDeg,
                     1.0f
                 );
-                bullet.addComponent<ProjectileTag>(50.0f * damageMod, 100.0f * aoeMod);
+                bullet.addComponent<ProjectileTag>(75.0f * damageMod, 100.0f * aoeMod);
                 bullet.addComponent<Weapon>(weapon);
                 bullet.addComponent<weaponOrigin>(&weapon);
             }
