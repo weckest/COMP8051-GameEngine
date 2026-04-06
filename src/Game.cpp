@@ -11,11 +11,8 @@
 #include <chrono>
 #include <manager/WeaponManager.h>
 
-#include "AnimationClip.h"
 #include "manager/AssetManager.h"
 #include "manager/ItemManager.hpp"
-
-// GameObject* player = nullptr;
 
 GameState Game::gameState{};
 std::function<void(std::string)> Game::onSceneChangeRequest;
@@ -123,14 +120,6 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
     ItemManager::loadAllItems("../assets/items/items.xml");
 
-    // Item item = ItemManager::getRandItem();
-    // std::cout << item.name << std::endl;
-    // std::cout << item.aoeModifier << std::endl;
-    //
-    // item = ItemManager::getRandItem();
-    // std::cout << item.name << std::endl;
-    // std::cout << item.aoeModifier << std::endl;
-
     std::cout << "Animations loaded..." << std::endl;
 
     //load scenes
@@ -147,7 +136,6 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
 
     //start music
     audioManager.playMusic("musicMainMenu");
-
 
     //start level
     sceneManager.changeSceneDeferred("mainmenu");

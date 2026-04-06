@@ -17,9 +17,6 @@ EventResponseSystem::EventResponseSystem(World &world) {
             if (e.type != EventType::Collision) return;
             const auto& collision = static_cast<const CollisionEvent&>(e); //cast base type into collision type
 
-            //item pickup is handled by PickUpSystem.cpp
-            //onCollision(collision, "player", "item", world);
-
             onCollision(collision, "player", "wall", world);
             onCollision(collision, "enemy", "wall", world);
             onCollision(collision, "player", "enemy", world);
@@ -230,7 +227,6 @@ void EventResponseSystem::onCollision(
 
         world.getAudioEventQueue().push(std::make_unique<AudioEvent>("explosion", 1, 0.0f));
         //destroy the bullet
-        // em.emit(DeathEvent(entityA));
         entityA->destroy();
     } else if (entityA->hasComponent<RingFireTag>() && checkTagsFor(ATag, BTag, "enemy")) {
 

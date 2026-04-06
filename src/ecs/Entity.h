@@ -44,8 +44,6 @@ public:
     }
 
     //template can receive multiple arguments
-    //entity.addComponent<Position>(4,5)
-    //entity.addComponent<Health>(100)
     template <typename T, typename... mArgs>
     T& addComponent(mArgs&&...args) {
         //implements perfect forwarding

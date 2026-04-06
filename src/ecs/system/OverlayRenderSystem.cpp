@@ -36,12 +36,7 @@ void OverlayRenderSystem::draw(const Camera& cam) {
             dest.x = std::round(worldX - cam.view.x);
             dest.y = std::round(worldY - cam.view.y);
 
-
-            //FOR THE GAME
             int tileX = (type-1) % 20; // -1 because TMX start from 1 but pixels are 0
-            // if (tileX == 0) {
-            //     tileX = 20;
-            // }
             int tileY = type / 20;
             if (tileX == 19) { //handle tileX -1
                 tileY -= 1;
@@ -51,34 +46,6 @@ void OverlayRenderSystem::draw(const Camera& cam) {
             src.y = tileY * scale;
             src.w = scale;
             src.h = scale;
-
-
-            //FOR THE LECTURE SLIDES
-            // switch (type) {
-            //     case 1:
-            //         //dirt
-            //         src.x = 0;
-            //         src.y = 0;
-            //         src.w = 32;
-            //         src.h = 32;
-            //         break;
-            //     case 2:
-            //         //grass
-            //         src.x = 32;
-            //         src.y = 0;
-            //         src.w = 32;
-            //         src.h = 32;
-            //         break;
-            //     case 4:
-            //         //water
-            //         src.x = 32;
-            //         src.y = 32;
-            //         src.w = 32;
-            //         src.h = 32;
-            //         break;
-            //     default:
-            //         break;
-            // }
 
             TextureManager::draw(tileset, &src, &dest);
         }

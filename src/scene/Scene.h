@@ -31,7 +31,6 @@ public:
 private:
     std::string name;
     SceneType type;
-    void createProjectile(Vector2D pos, Vector2D dir, int speed);
 
     void initMainMenu(int windowWidth, int windowHeight);
     void initGameOver(int windowWidth, int windowHeight);
@@ -49,10 +48,6 @@ private:
     std::vector<Collider*> menuButtonColliders;
     void toggleColliders(bool isVisible);
 
-    //LECTURE
-    Entity& createSettingsOverlay(int windowWidth, int windowHeight);
-    Entity& createCogButton(int windowWidth, int windowHeight, Entity& overlay);
-    void createSettingsUIComponents(Entity& overlay);
     void toggleSettingsOverlayVisibility(Entity& overlay);
 
     Entity& createPlayerPosLabel();

@@ -12,7 +12,6 @@ SpawnerSystem::SpawnerSystem(World &world) {
 
         spawners["coin"] = [&world](const Vector2D &v) {
                 auto& coin = world.createDeferredEntity();
-                // std::cout << "Coin " << &coin << std::endl;
                 auto& cT = coin.addComponent<Transform>(v, 0.0f, 0.5f);
                 cT.oldPosition = cT.position;
 
@@ -30,7 +29,6 @@ SpawnerSystem::SpawnerSystem(World &world) {
 
         spawners["magnet"] = [&world](const Vector2D &v) {
                 auto& magnet = world.createDeferredEntity();
-                // std::cout << "Spawn Magnet: " << &magnet << std::endl;
                 auto& mT = magnet.addComponent<Transform>(v, 0.0f, 0.75f);
                 mT.oldPosition = mT.position;
 
@@ -49,7 +47,6 @@ SpawnerSystem::SpawnerSystem(World &world) {
 
         spawners["food"] = [&world](const Vector2D &v) {
                 auto& magnet = world.createDeferredEntity();
-                // std::cout << "Spawn Food: " << &magnet << std::endl;
                 auto& mT = magnet.addComponent<Transform>(v, 0.0f, 0.75f);
                 mT.oldPosition = mT.position;
 

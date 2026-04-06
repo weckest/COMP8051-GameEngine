@@ -172,6 +172,4 @@ World::World() {
 void World::initDebug() {
     gridSystem.createDebugLabels(*this, &rows, &cols);
     debugRenderSystem.initDebugLabel();
-    // std::cout << "ColWidth: " << getMap().width * getMap().scale / entityGrid[0].size() << std::endl;
-    // std::cout << "RowHeight: " << getMap().height * getMap().scale / entityGrid[0].size() << std::endl;
 }

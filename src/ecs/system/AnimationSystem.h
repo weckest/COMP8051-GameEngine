@@ -35,19 +35,6 @@ public:
                     newClip = (velocity.facingRight) ? "idle_right" : "idle_left";
                 }
 
-
-                // if (velocity.direction.x > 0.0f) {
-                //     newClip = "walk_right";
-                // } else if (velocity.direction.x < 0.0f) {
-                //     newClip = "walk_left";
-                // } else if (velocity.direction.y > 0.0f) {
-                //     newClip = "walk_down";
-                // } else if (velocity.direction.y < 0.0f) {
-                //     newClip = "walk_up";
-                // } else {
-                //     newClip = "idle_down";
-                // }
-
                 //check if the animation has switched
                 //if the chosen clip is different from the current one, switch to new clip
                 //reset time and frame index

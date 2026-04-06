@@ -173,10 +173,6 @@ public:
                 auto& camera = e->getComponent<Camera>();
 
                 map.draw(camera);
-                // if (debugState.debug && debugState.grid) {
-                //     gridSystem.draw(e->getComponent<Camera>());
-                //     gridSystem.updateCellLabels(*this);
-                // }
             }
         }
 

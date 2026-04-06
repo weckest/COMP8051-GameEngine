@@ -166,9 +166,6 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     menuButtonColliders.push_back(&setButton.getComponent<Collider>());
     menuButtonColliders.push_back(&credButton.getComponent<Collider>());
     menuButtonColliders.push_back(&quitButton.getComponent<Collider>());
-
-    auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
-    createCogButton(windowWidth, windowHeight, settingsOverlay);
 }
 
 void Scene::initGameOver(int windowWidth, int windowHeight) {
@@ -730,7 +727,6 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     Game::gameState.points = 0;
     Game::gameState.time = 0.0f;
 
-
     world.getEventManager().subscribe([this, window](const BaseEvent& e) {
         if (e.type != EventType::ShowLevelUpMenu) return;
 
@@ -740,10 +736,6 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
 
         createLevelUpMenu(800, 600, ev.bundle, ev.item);
     });
-
-
-
-
 
     //load our map
     if (std::strcmp(mapPath, "../assets/map-tlc/TLC-MapUpdated.tmx") == 0) {
@@ -763,30 +755,8 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
         c.rect.w = collider.rect.w;
         c.rect.h = collider.rect.h;
         c.layer = CollisionLayer::WALL;
-
-        //just to have a visual of the colliders
-        // SDL_Texture* tex = TextureManager::load("../assets/spritesheet.png");
-        // SDL_FRect tileSrc {0, 32, 32, 32};
-        // SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-        // e.addComponent<Sprite>(tex, tileSrc, tileDst);
     }
 
-    // for (auto& item: world.getMap().items) {
-    //     auto& e = world.createEntity();
-    //     e.addComponent<Transform>(Vector2D(item.rect.x, item.rect.y), 0.0f, 1.0f);
-    //     auto& c = e.addComponent<Collider>("item");
-    //     c.rect.x = item.rect.x;
-    //     c.rect.y = item.rect.y;
-    //     c.rect.w = item.rect.w;
-    //     c.rect.h = item.rect.h;
-    //
-    //     //adding texture to the coins
-    //     SDL_Texture* tex = TextureManager::load("../assets/coin.png");
-    //     SDL_FRect tileSrc {0, 0, 32, 32};
-    //     SDL_FRect tileDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-    //     e.addComponent<Sprite>(tex, tileSrc, tileDst);
-    //     e.addComponent<ItemTag>();
-    // }
 
     // add spawners
     for (auto& t: world.getMap().spawners) {
@@ -819,8 +789,6 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
         e.addComponent<Transform>(t);
     }
 
-    // player = new GameObject("../assets/ball.png", 0, 0);
-
     //add entities
     auto& cam = world.createEntity();
     SDL_FRect camView{};
@@ -832,19 +800,14 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
 
 
     auto& player = world.createEntity();
-    // std::cout << "Player " << &player << std::endl;
     world.setPlayer(&player);
-    auto& pt = player.addComponent<PlayerTag>();
+    player.addComponent<PlayerTag>();
     auto& playerStats = player.addComponent<Stats>();
 
-    //LECTURE
-    //auto& playerTransform = player.addComponent<Transform>(Vector2D(world.getMap().width * 32 / 2,world.getMap().height * 32 / 2), 0.0f, 0.0f);
-
-    //GAME
     //direct position of middle of intersection
     auto& playerTransform = player.addComponent<Transform>(Vector2D((14 * 32) - 16,(25 * 32) + 16), 0.0f, 1.0f);
 
-    auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0.0f,0.0f), 120.0f * playerStats.speedModifier);
+    player.addComponent<Velocity>(Vector2D(0.0f,0.0f), 120.0f * playerStats.speedModifier);
 
     Animation anim = AssetManager::getAnimation("player");
     player.addComponent<Animation>(anim);
@@ -854,11 +817,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64 * playerStats.playerSizeModifier, 64 * playerStats.playerSizeModifier};
     player.addComponent<Sprite>(tex, playerSrc, playerDst, RenderLayer::World);
 
-    // auto& playerCollider = player.addComponent<Collider>("player");
-    // playerCollider.rect.w = playerDst.w;
-    // playerCollider.rect.h = playerDst.h;
-
-    // GAME: Reduce hitbox size
+    // Reduce hitbox size of the player to better reflect sprite
     auto& playerCollider = player.addComponent<Collider>("player");
     std::cout << "Player " << &playerCollider << std::endl;
     playerCollider.rect.w = playerDst.w / 2;
@@ -872,12 +831,6 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     player.addComponent<ItemList>();
     player.addComponent<WeaponList>();
 
-
-    // adjust this so it fires through weapon manager.
-    //make the player shoot
-
-
-
     player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getWeapon("shotgun"));
 
 
@@ -886,118 +839,15 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{1210, 280}});
     world.getEventManager().emit(SpawnPrefabEvent{"food", Vector2D{190, 120}});
 
-
-
     //add scene state
     auto& state(world.createEntity());
     state.addComponent<SceneState>();
 
-    // createPlayerPosLabel();
     createPointsLabel();
     world.initDebug();
     createInventoryUI(windowWidth, windowHeight);
     createLevelUpUI(windowWidth, windowHeight);
     createHealthBar(windowWidth, windowHeight);
-
-}
-
-//LECTURE
-Entity& Scene::createSettingsOverlay(int windowWidth, int windowHeight) {
-
-    auto& overlay(world.createEntity());
-    SDL_Texture *overlayTex = TextureManager::load("../assets/ui/settings.jpg");
-
-    SDL_FRect overlaySrc = {0,0,windowWidth*0.85f,windowHeight*0.85f};
-    SDL_FRect overlayDst = {
-        (float)windowWidth/2 - overlaySrc.w/2,
-        (float)windowHeight/2 - overlaySrc.h / 2,
-        overlaySrc.w,
-        overlaySrc.h};
-
-    overlay.addComponent<Transform>(Vector2D(overlayDst.x, overlayDst.y), 0.0f, 1.0f);
-    overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDst, RenderLayer::UI,false);
-
-    createSettingsUIComponents(overlay);
-
-    return overlay;
-}
-
-Entity& Scene::createCogButton(int windowWidth, int windowHeight, Entity& overlay) {
-
-    auto& cog(world.createEntity());
-
-    auto& cogTransform = cog.addComponent<Transform>(Vector2D((float)windowWidth - 50, (float)windowHeight - 50), 0.0f, 1.0f);
-
-    SDL_Texture* tex = TextureManager::load("../assets/ui/cog.png");
-    SDL_FRect cogSrc = {0, 0, 32, 32};
-    SDL_FRect cogDst = {cogTransform.position.x, cogTransform.position.y, cogSrc.w, cogSrc.h};
-
-    cog.addComponent<Sprite>(tex, cogSrc, cogDst, RenderLayer::UI);
-    cog.addComponent<Collider>("ui", cogDst);
-
-    auto& clickable = cog.addComponent<Clickable>();
-
-    clickable.onPressed =  [&cogTransform] {
-        cogTransform.scale = 0.5f;
-    };
-
-    clickable.onReleased =  [this , &cogTransform, &overlay] {
-        cogTransform.scale = 1.0f;
-        toggleSettingsOverlayVisibility(overlay);
-    };
-
-
-    clickable.onCancel =  [&cogTransform] {
-        cogTransform.scale = 1.0f;
-    };
-
-    return cog;
-
-}
-
-//LECTURE
-void Scene::createSettingsUIComponents(Entity& overlay) {
-
-    if (!overlay.hasComponent<Children>() ) {
-        overlay.addComponent<Children>();
-    }
-
-    auto& overlayTrans = overlay.getComponent<Transform>();
-    auto& overlaySprite = overlay.getComponent<Sprite>();
-
-    float baseX = overlayTrans.position.x;
-    float baseY = overlayTrans.position.y;
-
-    auto& closeButton = world.createEntity();
-    auto& closeTransform = closeButton.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40,baseY + 10), 0.0f, 0.0f);
-
-    SDL_Texture* tex = TextureManager::load("../assets/ui/close.png");
-    SDL_FRect closeSrc = {0, 0, 32, 32};
-    SDL_FRect closeDst = {closeTransform.position.x, closeTransform.position.y, closeSrc.w, closeSrc.h};
-
-    closeButton.addComponent<Sprite>(tex, closeSrc, closeDst, RenderLayer::UI, false);
-
-    closeButton.addComponent<Collider>("ui", closeDst, false);
-
-    auto& clickable = closeButton.addComponent<Clickable>();
-
-    clickable.onPressed = [&closeTransform] {
-        closeTransform.scale = 0.5f;
-    };
-
-    clickable.onReleased = [this, &overlay, &closeTransform] {
-      closeTransform.scale = 1.0f;
-        toggleSettingsOverlayVisibility(overlay);
-    };
-
-    clickable.onCancel = [&closeTransform] {
-        closeTransform.scale = 1.0f;
-    };
-
-    closeButton.addComponent<Parent>(&overlay);
-    auto& parentChildren = overlay.getComponent<Children>();
-
-    parentChildren.children.push_back(&closeButton);
 
 }
 

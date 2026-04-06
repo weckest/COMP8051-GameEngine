@@ -33,19 +33,14 @@ public:
                 auto& spawner = entity->getComponent<TimedSpawner>();
                 auto& transform = entity->getComponent<Transform>();
 
-                // std::cout << "Camera: " << cam.view.x << " " << cam.view.y << " " << cam.view.w << " " << cam.view.h << std::endl;
-
                 float tX = transform.position.x;
                 float tY = transform.position.y;
-                // std::cout << transform.position.x << " " << transform.position.y << std::endl;
 
                 if ((tX > cam.view.x && tX < cam.view.x + cam.view.w) && (tY > cam.view.y && tY < cam.view.y + cam.view.h)
                     && !entity->hasComponent<PlayerTag>() && !entity->hasComponent<EnemyTag>()) {
-                    // std::cout << "Skipping" << std::endl;
                     continue;
                 }
 
-                // std::cout << "Not Skipped" << std::endl;
                 spawner.timer -= dt;
 
                 if (spawner.timer <= 0) {

@@ -27,7 +27,6 @@ void WeaponFireSystem::update(World &world, float dt) {
 
 				// Fire the weapon (lambdas handle projectiles as before)
 				weapon.spawnFunction(weapon, *entity, world);
-				// std::cout << "Weapon System Done" << std::endl;
 				world.getAudioEventQueue().push(std::make_unique<AudioEvent>("fire-" + weapon.name, 2, 0.0f));
 
 

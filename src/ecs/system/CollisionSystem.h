@@ -15,7 +15,6 @@
 
 using CollisionKey = std::pair<Entity*, Entity*>;
 
-
 //forward declaring
 class World;
 
