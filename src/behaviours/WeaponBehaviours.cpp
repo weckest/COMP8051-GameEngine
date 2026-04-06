@@ -102,10 +102,6 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 bullet.addComponent<Sprite>(tex, src, dst);
 
                 float angle = step * ((count - 1) / 2.0f - i);
-                auto &bT = bullet.addComponent<Transform>(
-                    Vector2D(t.position.x + s.dst.w/2 - dst.w/2, t.position.y + s.dst.h/2 - dst.h/2),
-                    angle, 1.0f
-                );
 
                 Vector2D dir(forward.x * cos(angle) - forward.y * sin(angle),
                              forward.x * sin(angle) + forward.y * cos(angle));
@@ -117,6 +113,15 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 c.layer = CollisionLayer::PROJECTILE;
                 c.mask = CollisionLayer::ENEMY;
 
+                float angleRad = atan2(dir.y, dir.x);
+                float rotationDeg = angleRad * (180.0f / M_PI);
+
+                auto &bT = bullet.addComponent<Transform>(
+                    Vector2D(t.position.x + s.dst.w/2 - dst.w/2,
+                             t.position.y + s.dst.h/2 - dst.h/2),
+                    rotationDeg,
+                    1.0f
+                );
                 bullet.addComponent<ProjectileTag>(50.0f * damageMod, 100.0f * aoeMod);
                 bullet.addComponent<Weapon>(weapon);
                 bullet.addComponent<weaponOrigin>(&weapon);
