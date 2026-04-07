@@ -46,7 +46,7 @@ const dataBundle WeaponManager::getRandWeapon() {
 	do {
 		randStatIndex = std::rand() % w.statNames.size();
 		randomStat = w.statNames[randStatIndex];
-	} while (randomStat == "projectileModifier");
+	} while (randomStat == "projectileModifier" || randomStat ==  "cooldown");
 
 	return dataBundle{randomStat, w};
 }
