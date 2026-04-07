@@ -25,6 +25,7 @@ SpawnerSystem::SpawnerSystem(World &world) {
 
                 coin.addComponent<Sprite>(tex, tileSrc, tileDst);
                 coin.addComponent<ItemTag>();
+                coin.addComponent<Lifetime>(10.0f, true);
         };
 
         spawners["magnet"] = [&world](const Vector2D &v) {
