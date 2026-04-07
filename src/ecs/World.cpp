@@ -96,7 +96,7 @@ World::World() {
                                 auto &t = entity->getComponent<Transform>();
                                 auto &s = entity->getComponent<Sprite>();
 
-                                SDL_Texture *tex = TextureManager::load("../assets/bubble.png");
+                                SDL_Texture *tex = TextureManager::load("assets/bubble.png");
 
                                 SDL_FRect src = {0,0,32,32};
 

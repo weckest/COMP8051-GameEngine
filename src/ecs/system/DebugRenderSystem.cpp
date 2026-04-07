@@ -179,7 +179,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
                 if (e->hasComponent<Sprite>() && !e->hasComponent<EffectTag>()) {
                     auto& sprite = e->getComponent<Sprite>();
 
-                    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+                    SDL_Texture* tex = TextureManager::load("assets/colors.png");
                     SDL_FRect src {0,32,32,32};
                     SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, sprite.dst.w, sprite.dst.h};
 

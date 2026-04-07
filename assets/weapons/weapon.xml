@@ -2,7 +2,7 @@
 <weapons>
     <weapon
             name="shotgun"
-            path = "../assets/sprites/Shotgun.png"
+            path = "assets/sprites/Shotgun.png"
             fireRate="1.0"
             damageModifier="0.5"
             projectileSizeModifier="1.0"
@@ -17,7 +17,7 @@
     />
     <weapon
             name="bubblegun"
-            path="../assets/sprites/BubbleGun.png"
+            path="assets/sprites/BubbleGun.png"
             fireRate="1.0"
             damageModifier="1.0"
             projectileSizeModifier="1.0"
@@ -31,7 +31,7 @@
     />
     <weapon
             name="RingofFire"
-            path = "../assets/sprites/RingOfFire.png"
+            path = "assets/sprites/RingOfFire.png"
             fireRate="0.25"
             damageModifier="1.0"
             rangeModifier="2.0"

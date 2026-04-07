@@ -33,7 +33,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                     auto &t = entity.getComponent<Transform>();
                     auto &s = entity.getComponent<Sprite>();
 
-                    SDL_Texture *tex = TextureManager::load("../assets/bubble.png");
+                    SDL_Texture *tex = TextureManager::load("assets/bubble.png");
                     SDL_FRect src = {0,0,32,32};
 
                     float sizeMod = WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSizeModifier", 1.0f), stats.projectileSizeModifier);
@@ -87,7 +87,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
 
             Vector2D forward = v.direction.length() == 0 ? Vector2D(1, 0) : v.direction.normalize();
 
-            SDL_Texture *tex = TextureManager::load("../assets/bullet.png");
+            SDL_Texture *tex = TextureManager::load("assets/bullet.png");
             SDL_FRect src = {0, 0, 32, 32};
             float sizeMod = WeaponManager::applyItemUpgrade(getStat(weapon, "projectileSizeModifier", 1.0f), stats.projectileSizeModifier);
 
@@ -158,7 +158,7 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                 c.mask = CollisionLayer::ENEMY;
 
                 // Sprite
-                SDL_Texture* tex = TextureManager::load("../assets/animations/ringOfFire.png");
+                SDL_Texture* tex = TextureManager::load("assets/animations/ringOfFire.png");
                 SDL_FRect src = {0, 0, 64, 64};
                 SDL_FRect dst = {centerPos.x - radius, centerPos.y - radius, radius * 2.0f, radius * 2.0f};
                 ring.addComponent<Sprite>(tex, src, dst);
