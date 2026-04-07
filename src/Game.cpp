@@ -85,8 +85,6 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     }
 
     //load audio
-    audioManager.loadAudio("theme", "assets/audio/switch_with_me.ogg");
-
     audioManager.loadAudio("fire-bubblegun", "assets/audio/sfx/bubble.mp3");
     audioManager.loadAudio("fire-shotgun", "assets/audio/sfx/shotgun.mp3");
     audioManager.loadAudio("fire-RingofFire", "assets/audio/sfx/rof.mp3");
@@ -125,8 +123,6 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     //load scenes
     sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, width, height, window);
     sceneManager.loadScene(SceneType::GameOver, "gameover", nullptr, width, height, window);
-    sceneManager.loadScene(SceneType::Gameplay, "level1", "assets/map.tmx", width, height, window);
-    sceneManager.loadScene(SceneType::Gameplay, "level2", "assets/map2/map2.tmx", width, height, window);
     sceneManager.loadScene(SceneType::Gameplay, "gameplay", "assets/map-tlc/TLC-MapUpdated.tmx", width, height, window);
 
     std::cout << "Scenes loaded..." << std::endl;
