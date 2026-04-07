@@ -284,7 +284,7 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
                     break;
                 }
             }
-            label.text += " eHealth: " + std::to_string(100.0f * (1.0f + Game::gameState.time * Game::gameState.time / 22500.0f));
+            label.text += " eHealth: " + std::to_string(100.0f * (1.0f + Game::gameState.time * Game::gameState.time / 40000.0f));
             label.dirty = true;
         } else if (label.type == LabelType::Health) {
             if (player->hasComponent<Health>()) {

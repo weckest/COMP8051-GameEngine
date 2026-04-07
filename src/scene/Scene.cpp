@@ -779,7 +779,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
             c.layer = CollisionLayer::ENEMY;
             c.mask = CollisionLayer::PLAYER | CollisionLayer::WALL | CollisionLayer::PROJECTILE;
 
-            auto& h = e.addComponent<EnemyTag>(100.0f * (1.0f + Game::gameState.time * Game::gameState.time / 22500.0f));
+            auto& h = e.addComponent<EnemyTag>(100.0f * (1.0f + Game::gameState.time * Game::gameState.time / 40000.0f));
         });
         e.addComponent<Transform>(t);
     }
