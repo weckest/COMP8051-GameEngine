@@ -37,7 +37,7 @@
             rangeModifier="2.0"
             projectileModifier="1.0"
             aoeModifier="1.0"
-            lifetime = "0.5f"
+            lifetime = "0.5"
             critDamageModifier="1.25"
             critChanceModifier="0.15"
             baseCooldown="2.0"
