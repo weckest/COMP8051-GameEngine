@@ -738,12 +738,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     });
 
     //load our map
-    if (std::strcmp(mapPath, "assets/map-tlc/TLC-MapUpdated.tmx") == 0) {
-        world.getMap().load(mapPath, TextureManager::load("assets/map-tlc/TLC-Tilesheet.png"));
-    } else {
-        world.getMap().load(mapPath, TextureManager::load("assets/spritesheet.png"));
-    }
-
+    world.getMap().load(mapPath, TextureManager::load("assets/map-tlc/TLC-Tilesheet.png"));
 
     for (auto& collider: world.getMap().colliders) {
         auto& e = world.createEntity();
