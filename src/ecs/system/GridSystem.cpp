@@ -24,6 +24,7 @@ GridSystem::GridSystem(World &world) : world(world) {
             auto& entity = death.entity;
 
 
+
             if (entity->hasComponent<Collider>() && entity->hasComponent<Transform>()) {
                 auto& t = entity->getComponent<Transform>();
 
@@ -49,27 +50,38 @@ GridSystem::GridSystem(World &world) : world(world) {
 
                 //check if the top left is outside the grid
                 if (!(gridPosition.tl.x < grid[0].size() && gridPosition.tl.x >= 0) || !(gridPosition.tl.y < grid.size() && gridPosition.tl.y >= 0)) {
-                    //outside world. use the old position
-                    // std::cout << "top left outside the grid" << std::endl;
-                    getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.tl);
+                    if (entity->hasComponent<RingFireTag>()) {
+                        gridPosition.tl.x = std::max(gridPosition.tl.x, 0.0f);
+                        gridPosition.tl.y = std::max(gridPosition.tl.y, 0.0f);
+                    } else {
+                        //outside world. use the old position
+                        // std::cout << "top left outside the grid" << std::endl;
+                        getGridIndex(&t.oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.tl);
+                    }
 
                 }
 
                 //check if the bottom right is outside the grid
                 if (!(gridPosition.br.x < grid[0].size() && gridPosition.br.x >= 0) || !(gridPosition.br.y < grid.size() && gridPosition.br.y >= 0)) {
                     // std::cout << "bottom right outside the grid" << std::endl;
-                    Vector2D oldPosition = t.oldPosition;
-                    if (entity->hasComponent<Sprite>()) {
-                        auto& s = entity->getComponent<Sprite>();
-                        oldPosition.x += s.dst.w;
-                        oldPosition.y += s.dst.h;
-                    } else if (entity->hasComponent<Collider>()) {
-                        auto& c = entity->getComponent<Collider>();
-                        oldPosition.x += c.rect.w;
-                        oldPosition.y += c.rect.h;
-                    }
 
-                    getGridIndex(&oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.br);
+                    if (entity->hasComponent<RingFireTag>()) {
+                        gridPosition.br.x = std::min(grid[0].size() * 1.0f, gridPosition.br.x);
+                        gridPosition.br.y = std::min(grid.size() * 1.0f, gridPosition.br.y);
+                    } else {
+                        Vector2D oldPosition = t.oldPosition;
+                        if (entity->hasComponent<Sprite>()) {
+                            auto& s = entity->getComponent<Sprite>();
+                            oldPosition.x += s.dst.w;
+                            oldPosition.y += s.dst.h;
+                        } else if (entity->hasComponent<Collider>()) {
+                            auto& c = entity->getComponent<Collider>();
+                            oldPosition.x += c.rect.w;
+                            oldPosition.y += c.rect.h;
+                        }
+
+                        getGridIndex(&oldPosition, width, height, grid[0].size(), grid.size(), &gridPosition.br);
+                    }
                 }
 
                 //remove the entity from all cells

@@ -12,6 +12,7 @@ This C/C++ game was built using SDL within an ECS environment. There are a numbe
 Press `ESC` during gameplay in order to enable debug mode, which displays timers on sections of the game update function. Additional keybinds are available during this mode.
 
 ### Debug Keybinds
+`Esc`: Toggle Debug Mode \
 `G`: Displays the grid lines used for handling collisions, as well as the number of entities that exist within each cell. \
 `J`: Displays the distance lines between the player and other spawned entities. \
 `C`: Draws boxes around all entities representing their sprite and collider sizes. Colliders change colors as they move between grid cells. \

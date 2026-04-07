@@ -91,7 +91,7 @@ void CollisionSystem::update(World &world, Timer& timer) {
                     for (auto& entityB : cell) {
                         if (!entityB->hasComponent<Collider>())
                         {
-                            std::cout << "EdgeCaseHit: No Collider in CollisionSystem.cpp" << std::endl;
+                            std::cout << "EdgeCaseHit: No Collider in CollisionSystem.cpp " << entityB->isActive() << std::endl;
                             continue;
                         }
                         auto& colliderB = entityB->getComponent<Collider>();
@@ -232,36 +232,33 @@ Entity * CollisionSystem::getClosestEntity(World& world, Entity &entity, float r
                     // std::cout << "Checking: " <<  xIndex << " " << yIndex << std::endl;
 
                     for (auto& entityB : cell) {
+                        if (!entityB->isActive()) continue;
                         if (entityB->hasComponent<Transform>() &&
                             (entityB->hasComponent<Sprite>() || entityB->hasComponent<Collider>()) &&
                             entityB->hasComponent<EnemyTag>()
                         ) {
                             // std::cout << entityB << std::endl;
                             auto& bT = entityB->getComponent<Transform>();
-                            try {
-                                Vector2D bCenterPoint = bT.position;
+                            Vector2D bCenterPoint = bT.position;
 
-                                if (entityB->hasComponent<Sprite>()) {
-                                    auto& s = entityB->getComponent<Sprite>();
-                                    bCenterPoint.x += s.dst.w / 2;
-                                    bCenterPoint.y += s.dst.h / 2;
-                                } else {
-                                    auto& c = entityB->getComponent<Collider>();
-                                    bCenterPoint.x -= c.rect.w / 2;
-                                    bCenterPoint.y -= c.rect.h / 2;
-                                }
+                            if (entityB->hasComponent<Sprite>()) {
+                                auto& s = entityB->getComponent<Sprite>();
+                                bCenterPoint.x += s.dst.w / 2;
+                                bCenterPoint.y += s.dst.h / 2;
+                            } else {
+                                auto& c = entityB->getComponent<Collider>();
+                                bCenterPoint.x -= c.rect.w / 2;
+                                bCenterPoint.y -= c.rect.h / 2;
+                            }
 
-                                if ((bCenterPoint - centerPoint).length() > radius) continue;
+                            if ((bCenterPoint - centerPoint).length() > radius) continue;
 
-                                if (closestEntity == nullptr) {
-                                    closestEntity = entityB;
-                                    distance = (centerPoint - bCenterPoint).length();
-                                } else if ((centerPoint - bCenterPoint).length() < distance) {
-                                    closestEntity = entityB;
-                                    distance = (centerPoint - bCenterPoint).length();
-                                }
-                            } catch (std::exception& e) {
-                                continue;
+                            if (closestEntity == nullptr) {
+                                closestEntity = entityB;
+                                distance = (centerPoint - bCenterPoint).length();
+                            } else if ((centerPoint - bCenterPoint).length() < distance) {
+                                closestEntity = entityB;
+                                distance = (centerPoint - bCenterPoint).length();
                             }
                         }
                     }

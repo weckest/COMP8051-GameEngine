@@ -253,6 +253,7 @@ void EventResponseSystem::onCollision(
 
         for (auto& enemy : enemies) {
             if (!enemy->hasComponent<EnemyTag>()) continue;
+            if (!enemy->isActive()) continue;
 
             bool isCrit = (static_cast<float>(rand()) / RAND_MAX) < critChance;
 
