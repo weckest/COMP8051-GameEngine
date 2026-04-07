@@ -45,7 +45,9 @@ std::unordered_map<std::string, std::function<void(Weapon&, Entity&, World&)>> w
                         0.0f, 1.0f
                     );
 
-                    Entity* closestEntity = CollisionSystem::getClosestEntity(world, entity, 200);
+                    float rangeMod = WeaponManager::applyItemUpgrade(getStat(weapon, "rangeModifier", 1.0f), stats.aoeModifier);
+
+                    Entity* closestEntity = CollisionSystem::getClosestEntity(world, entity, 200 * rangeMod);
                     if (!closestEntity) { bullet.destroy(); return; }
 
                     Vector2D dir = (closestEntity->getComponent<Transform>().position - bT.position).normalize();

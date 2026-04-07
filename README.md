@@ -5,6 +5,8 @@ Game Engine Development Project for COMP-8051
 If running normally, just launch the standalone .exe file.
 Otherwise, you can run the project through the cmake-build-debug folder.
 
+Toggle fullscreen by pressing `9`.
+
 ## Architecture
 This C/C++ game was built using SDL within an ECS environment. There are a number of additional managers and behavior files as well.
 
@@ -12,7 +14,7 @@ This C/C++ game was built using SDL within an ECS environment. There are a numbe
 Press `ESC` during gameplay in order to enable debug mode, which displays timers on sections of the game update function. Additional keybinds are available during this mode.
 
 ### Debug Keybinds
-`Esc`: Toggle Debug Mode \
+`Esc`: Enable/Disable Debug mode. \
 `G`: Displays the grid lines used for handling collisions, as well as the number of entities that exist within each cell. \
 `J`: Displays the distance lines between the player and other spawned entities. \
 `C`: Draws boxes around all entities representing their sprite and collider sizes. Colliders change colors as they move between grid cells. \
