@@ -148,9 +148,16 @@ target_include_directories(8051Tutorial PRIVATE
 
 if(WIN32)
     add_custom_command(TARGET 8051Tutorial POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${PROJECT_SOURCE_DIR}/assets
-        $<TARGET_FILE_DIR:8051Tutorial>/assets
-        COMMENT "Copying assets to build output"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${PROJECT_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:8051Tutorial>/assets
+            COMMENT "Copying assets to build output (Windows)"
     )
-endif ()
+elseif(APPLE)
+    add_custom_command(TARGET 8051Tutorial POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${PROJECT_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:8051Tutorial>/assets
+            COMMENT "Copying assets into .app bundle (macOS)"
+    )
+endif()
