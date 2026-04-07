@@ -39,8 +39,14 @@ const dataBundle WeaponManager::getRandWeapon() {
 	}
 
 	// Pick a random stat name
-	int randStatIndex = std::rand() % w.statNames.size();
-	std::string randomStat = w.statNames[randStatIndex];
+	int randStatIndex;
+	std::string randomStat;
+
+	// Keep rolling until it's NOT projectileModifier
+	do {
+		randStatIndex = std::rand() % w.statNames.size();
+		randomStat = w.statNames[randStatIndex];
+	} while (randomStat == "projectileModifier");
 
 	return dataBundle{randomStat, w};
 }
