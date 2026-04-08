@@ -36,7 +36,7 @@ public:
     //game loop functons (handleEvents, update, render)
     void handleEvents(); //checks for inputs and system events
     void update(float deltaTime); //handles the game logic and changes to game state
-    void render(); //handles the drawing of the current game state to the screen
+    void render(float dt, float at); //handles the drawing of the current game state to the screen
     SDL_Window* getWindow() {
         return window;
     }

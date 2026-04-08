@@ -14,7 +14,7 @@ int main() {
     Uint64 actualFrameTime;
 
     game = new Game();
-    game->init("8051 Tutorial Engine", 800, 600, false);
+    game->init("The Final Corpse", 800, 600, false);
 
     //game loop
     while (game->running()) {
@@ -32,18 +32,9 @@ int main() {
         }
 
         game->update(deltaTime);
-        game->render();
+        game->render(deltaTime, actualFrameTime);
 
         actualFrameTime = SDL_GetTicksNS() - now; // frame time in ns
-
-        if (actualFrameTime != 0) {
-            SDL_SetWindowTitle(
-                game->getWindow(),
-                ("The Final Corpse [FPS: " + std::to_string((int)(1.0f / deltaTime)) +
-                 " A: " + std::to_string((int)(1000000000.0 / actualFrameTime)) + "]")
-                    .c_str()
-            );
-        }
 
         // frame limiter
         if (desiredFrameTime > actualFrameTime) {

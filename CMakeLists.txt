@@ -44,6 +44,7 @@ set(SRC_FILES
         src/ecs/system/OverlayRenderSystem.cpp
         src/ecs/system/GameStateSystem.cpp
         src/ecs/system/HUDSystem.cpp
+        src/icon.rc
 )
 
 # ALWAYS create the executable first

@@ -18,9 +18,9 @@ class DebugRenderSystem {
 public:
     DebugRenderSystem(World& world): world(world) {}
 
-    void render(const std::vector<std::unique_ptr<Entity>>& entities, DebugState debugState);
+    void render(const std::vector<std::unique_ptr<Entity>>& entities, DebugState debugState, float dt, float at);
     void initDebugLabel();
-    void updateDebugLabel(Entity& entity);
+    void updateDebugLabel(Entity& entity, float dt, float at);
     Entity& createChildDebugLabel(Entity& parent, LabelType type, Vector2D position, std::string key = "");
 };
 
