@@ -8,7 +8,7 @@
 #include "World.h"
 #include "manager/AssetManager.h"
 
-void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entities, DebugState debugState) {
+void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entities, DebugState debugState, float dt, float at) {
     Entity* player = world.getPlayer();
     auto& map = world.getMap();
     int scale = map.scale;
@@ -59,7 +59,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
     for (auto& e : entities) {
         if (e->hasComponent<Label>()) {
             if (e->getComponent<Label>().type == LabelType::DebugStats) {
-                updateDebugLabel(*e);
+                updateDebugLabel(*e, dt, at);
             }
         }
         if (e->hasComponent<Clickable>()) continue;
@@ -179,7 +179,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>> &entit
                 if (e->hasComponent<Sprite>() && !e->hasComponent<EffectTag>()) {
                     auto& sprite = e->getComponent<Sprite>();
 
-                    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+                    SDL_Texture* tex = TextureManager::load("assets/colors.png");
                     SDL_FRect src {0,32,32,32};
                     SDL_FRect dst {t.position.x - cam.view.x, t.position.y - cam.view.y, sprite.dst.w, sprite.dst.h};
 
@@ -249,7 +249,8 @@ void DebugRenderSystem::initDebugLabel() {
     auto& entities = entity.addComponent<Transform>(Vector2D(10.0f, 50.0f), 0.0f, 1.0f);
     auto& children = entity.addComponent<Children>();
 
-    auto& levelUp = createChildDebugLabel(entity, LabelType::LevelUp, Vector2D(10.0f, entities.position.y + 20.0f), "levelUp").getComponent<Transform>();
+    auto& frames = createChildDebugLabel(entity, LabelType::Frames, Vector2D(10.0f, entities.position.y + 20.0f), "frames").getComponent<Transform>();
+    auto& levelUp = createChildDebugLabel(entity, LabelType::LevelUp, Vector2D(10.0f, frames.position.y + 20.0f), "levelUp").getComponent<Transform>();
     auto& enemyInfo = createChildDebugLabel(entity, LabelType::EnemyInfo, Vector2D(10.0f, levelUp.position.y + 20.0f), "enemyInfo").getComponent<Transform>();
     auto& health = createChildDebugLabel(entity, LabelType::Health, Vector2D(10.0f, enemyInfo.position.y + 20.0f), "health").getComponent<Transform>();
     auto& weapons = createChildDebugLabel(entity, LabelType::Weapons, Vector2D(10.0f, health.position.y + 20.0f), "weapons").getComponent<Transform>();
@@ -257,7 +258,7 @@ void DebugRenderSystem::initDebugLabel() {
     times.addComponent<Children>();
 }
 
-void DebugRenderSystem::updateDebugLabel(Entity& entity) {
+void DebugRenderSystem::updateDebugLabel(Entity& entity, float dt, float at) {
     auto& parent = entity.getComponent<Label>();
     auto& children = entity.getComponent<Children>();
     auto player = world.getPlayer();
@@ -284,7 +285,7 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
                     break;
                 }
             }
-            label.text += " eHealth: " + std::to_string((100.0f * (1.0f + (Game::gameState.time / 1000.0f))));
+            label.text += " eHealth: " + std::to_string(100.0f * (1.0f + Game::gameState.time * Game::gameState.time / 40000.0f));
             label.dirty = true;
         } else if (label.type == LabelType::Health) {
             if (player->hasComponent<Health>()) {
@@ -317,6 +318,10 @@ void DebugRenderSystem::updateDebugLabel(Entity& entity) {
                 childLabel.text = timers[i] + ": " + std::to_string(world.getTimer().getAvgResult(timers[i])) + "ms";
                 childLabel.dirty = true;
             }
+        } else if (label.type == LabelType::Frames) {
+
+            label.text = "[FPS: " + std::to_string((int)(1.0f / dt)) + ", A: " +  std::to_string((int)(1000000000.0 / at)) + "]";
+            label.dirty = true;
         }
     }
 }

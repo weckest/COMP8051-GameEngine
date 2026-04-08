@@ -10,7 +10,6 @@ void HealthSystem::update(const std::vector<std::unique_ptr<Entity>>& entities, 
     Entity* player = world.getPlayer();
 
     if (!player) return;
-    auto& pt = player->getComponent<PlayerTag>();
 
     for (auto& e: entities) {
         if (e->hasComponent<HealthBar>() && e->hasComponent<Children>()) {

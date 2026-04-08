@@ -8,7 +8,7 @@
 #include "utils/data/GridPosition.h"
 
 GridSystem::GridSystem(World &world) : world(world) {
-    tex = TextureManager::load("../assets/colors.png");
+    tex = TextureManager::load("assets/colors.png");
     world.getEventManager().subscribe(
         [this, &world](const BaseEvent& e) {
             if (e.type != EventType::Death) return;

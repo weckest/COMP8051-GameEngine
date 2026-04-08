@@ -20,8 +20,8 @@ public:
         world.update(dt, e, type, renderer);
     }
 
-    void render() {
-        world.render();
+    void render(float dt, float at) {
+        world.render(dt, at);
     }
 
     World world;

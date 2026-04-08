@@ -44,10 +44,11 @@ set(SRC_FILES
         src/ecs/system/OverlayRenderSystem.cpp
         src/ecs/system/GameStateSystem.cpp
         src/ecs/system/HUDSystem.cpp
+        src/icon.rc
 )
 
 # ALWAYS create the executable first
-add_executable(8051Tutorial ${SRC_FILES})
+add_executable(8051Tutorial WIN32 ${SRC_FILES})
 
 # =========================
 # Windows Setup
@@ -145,3 +146,19 @@ target_include_directories(8051Tutorial PRIVATE
         ${PROJECT_SOURCE_DIR}/src/vendor
         ${PROJECT_SOURCE_DIR}/src/behaviours
 )
+
+if(WIN32)
+    add_custom_command(TARGET 8051Tutorial POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${PROJECT_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:8051Tutorial>/assets
+            COMMENT "Copying assets to build output (Windows)"
+    )
+elseif(APPLE)
+    add_custom_command(TARGET 8051Tutorial POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${PROJECT_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:8051Tutorial>/assets
+            COMMENT "Copying assets into .app bundle (macOS)"
+    )
+endif()

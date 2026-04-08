@@ -16,7 +16,7 @@ SpawnerSystem::SpawnerSystem(World &world) {
                 cT.oldPosition = cT.position;
 
                 //adding texture to the coins
-                SDL_Texture* tex = TextureManager::load("../assets/coin.png");
+                SDL_Texture* tex = TextureManager::load("assets/coin.png");
                 SDL_FRect tileSrc {0, 0, 32, 32};
                 SDL_FRect tileDst {cT.position.x, cT.position.y, tileSrc.w, tileSrc.h};
 
@@ -25,6 +25,7 @@ SpawnerSystem::SpawnerSystem(World &world) {
 
                 coin.addComponent<Sprite>(tex, tileSrc, tileDst);
                 coin.addComponent<ItemTag>();
+                coin.addComponent<Lifetime>(10.0f, true);
         };
 
         spawners["magnet"] = [&world](const Vector2D &v) {
@@ -32,7 +33,7 @@ SpawnerSystem::SpawnerSystem(World &world) {
                 auto& mT = magnet.addComponent<Transform>(v, 0.0f, 0.75f);
                 mT.oldPosition = mT.position;
 
-                SDL_Texture* tex = TextureManager::load("../assets/sprites/Magnet.png");
+                SDL_Texture* tex = TextureManager::load("assets/sprites/Magnet.png");
                 SDL_FRect tileSrc {0, 0, 32, 32};
                 SDL_FRect tileDst {mT.position.x, mT.position.y, tileSrc.w, tileSrc.h};
 
@@ -50,7 +51,7 @@ SpawnerSystem::SpawnerSystem(World &world) {
                 auto& mT = magnet.addComponent<Transform>(v, 0.0f, 0.75f);
                 mT.oldPosition = mT.position;
 
-                SDL_Texture* tex = TextureManager::load("../assets/sprites/Food.png");
+                SDL_Texture* tex = TextureManager::load("assets/sprites/Food.png");
                 SDL_FRect tileSrc {0, 0, 32, 32};
                 SDL_FRect tileDst {mT.position.x, mT.position.y, tileSrc.w, tileSrc.h};
 

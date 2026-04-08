@@ -77,7 +77,8 @@ enum class LabelType {
     LevelUp,
     Weapons,
     Times,
-    EnemyInfo
+    EnemyInfo,
+    Frames
 };
 
 struct Label {

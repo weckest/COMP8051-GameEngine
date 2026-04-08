@@ -166,7 +166,7 @@ public:
         }
     }
 
-    void render() {
+    void render(float dt, float at) {
 
         for (auto& e : entities) {
             if (e->hasComponent<Camera>()) {
@@ -202,7 +202,7 @@ public:
 
         timer.startTimer("debug");
         if (debugState.debug) {
-            debugRenderSystem.render(entities, debugState);
+            debugRenderSystem.render(entities, debugState, dt, at);
         }
         timer.stopTimer("debug");
         uiRenderSystem.render(entities);

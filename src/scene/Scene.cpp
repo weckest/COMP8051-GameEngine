@@ -36,7 +36,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     auto& menu(world.createEntity());
     auto& menuTransform = menu.addComponent<Transform>(Vector2D(0,0), 0.0f, 1.0f);
 
-    SDL_Texture* tex = TextureManager::load("../assets/menu/TFC-BG.png");
+    SDL_Texture* tex = TextureManager::load("assets/menu/TFC-BG.png");
     SDL_FRect src = {0, 0, 2304, 1296};
     SDL_FRect dst = {menuTransform.position.x, menuTransform.position.y, (float)windowWidth, (float)windowHeight};
 
@@ -48,7 +48,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
     auto& title = world.createEntity();
     auto& titleTransform = title.addComponent<Transform>(Vector2D((windowWidth / 4.0f), 30), 0.0f, 1.0f);
 
-    SDL_Texture* titleTex = TextureManager::load("../assets/menu/TFC-Title.png");
+    SDL_Texture* titleTex = TextureManager::load("assets/menu/TFC-Title.png");
     SDL_FRect titleSrc = {0, 0, 1280, 720};
     SDL_FRect titleDst = {titleTransform.position.x, titleTransform.position.y, (float)windowWidth / 2, (float)windowHeight / 3};
     title.addComponent<Sprite>(titleTex, titleSrc, titleDst);
@@ -177,7 +177,7 @@ void Scene::initGameOver(int windowWidth, int windowHeight) {
     auto& menu(world.createEntity());
     auto& menuTransform = menu.addComponent<Transform>(Vector2D(0,0), 0.0f, 1.0f);
 
-    SDL_Texture* tex = TextureManager::load("../assets/menu/TFC-GameOverBG.png");
+    SDL_Texture* tex = TextureManager::load("assets/menu/TFC-GameOverBG.png");
     SDL_FRect src = {0, 0, 2304, 1296};
     SDL_FRect dst = {menuTransform.position.x, menuTransform.position.y, (float)windowWidth, (float)windowHeight};
 
@@ -326,7 +326,7 @@ Entity& Scene::makeGenericButton(const std::string& color, int buttonHeight, int
     auto& button = world.createEntity();
     auto& bt = button.addComponent<Transform>(Vector2D((windowWidth / 2.0f), buttonHeight), 0.0f, 1.0f);
 
-    SDL_Texture* bTexNormal = TextureManager::load(("../assets/ui/buttons/" + color + "/normal.png").c_str());
+    SDL_Texture* bTexNormal = TextureManager::load(("assets/ui/buttons/" + color + "/normal.png").c_str());
     SDL_FRect bSrc = {0, 0, 48, 16};
     SDL_FRect bDst = {bt.position.x, bt.position.y, (float)bSrc.w * 2.5f, (float)bSrc.h * 2.5f};
     bt.position.x -= bDst.w / 2; //center it
@@ -335,7 +335,7 @@ Entity& Scene::makeGenericButton(const std::string& color, int buttonHeight, int
     button.addComponent<Collider>("ui", bDst);
 
     auto& bc = button.addComponent<Clickable>();
-    SDL_Texture* bTexPressed = TextureManager::load(("../assets/ui/buttons/" + color + "/clicked.png").c_str());
+    SDL_Texture* bTexPressed = TextureManager::load(("assets/ui/buttons/" + color + "/clicked.png").c_str());
 
     bc.onPressed =  [&bs, bTexPressed] {
         bs.texture = bTexPressed;
@@ -354,7 +354,7 @@ Entity& Scene::makeGenericSlider(Entity& overlay, int type, float sliderX, float
     auto& slider = world.createEntity();
     auto& sTransform = slider.addComponent<Transform>(Vector2D(sliderX, sliderY), 0.0f, 1.0f);
 
-    SDL_Texture* barTex = TextureManager::load("../assets/ui/sliderbar.png");
+    SDL_Texture* barTex = TextureManager::load("assets/ui/sliderbar.png");
     SDL_FRect barSrc = {0, 0, 38, 8};
     SDL_FRect barDst = {sTransform.position.x, sTransform.position.y, 100.0f, 20.0f};
 
@@ -372,7 +372,7 @@ Entity& Scene::makeGenericSlider(Entity& overlay, int type, float sliderX, float
 
     auto& knob = world.createEntity();
     knob.addComponent<Transform>(Vector2D(sTransform.position.x, sTransform.position.y), 0.0f, 1.0f);
-    SDL_Texture* knobTex = TextureManager::load("../assets/ui/sliderknob.png");
+    SDL_Texture* knobTex = TextureManager::load("assets/ui/sliderknob.png");
 
     SDL_FRect kSrc{0,0,10,10};
     SDL_FRect kDst{sTransform.position.x, sTransform.position.y, kSrc.w * 2.0f, kSrc.h * 2.0f};
@@ -394,7 +394,7 @@ Entity& Scene::makeGenericSlider(Entity& overlay, int type, float sliderX, float
 
 Entity& Scene::createSettingsBox(int windowWidth, int windowHeight) {
     auto& overlay(world.createEntity());
-    SDL_Texture *overlayTex = TextureManager::load("../assets/ui/TFC-MenuBox.png");
+    SDL_Texture *overlayTex = TextureManager::load("assets/ui/TFC-MenuBox.png");
 
     SDL_FRect overlaySrc = {0,0,windowWidth*0.60f,windowHeight*0.80f};
     SDL_FRect overlayDst = {
@@ -563,7 +563,7 @@ void Scene::createSettingsComponents(Entity &overlay) {
 
 Entity& Scene::createCreditsBox(int windowWidth, int windowHeight) {
     auto& overlay(world.createEntity());
-    SDL_Texture *overlayTex = TextureManager::load("../assets/ui/TFC-MenuBox.png");
+    SDL_Texture *overlayTex = TextureManager::load("assets/ui/TFC-MenuBox.png");
 
     SDL_FRect overlaySrc = {0,0,windowWidth*0.60f,windowHeight*0.80f};
     SDL_FRect overlayDst = {
@@ -738,12 +738,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     });
 
     //load our map
-    if (std::strcmp(mapPath, "../assets/map-tlc/TLC-MapUpdated.tmx") == 0) {
-        world.getMap().load(mapPath, TextureManager::load("../assets/map-tlc/TLC-Tilesheet.png"));
-    } else {
-        world.getMap().load(mapPath, TextureManager::load("../assets/spritesheet.png"));
-    }
-
+    world.getMap().load(mapPath, TextureManager::load("assets/map-tlc/TLC-Tilesheet.png"));
 
     for (auto& collider: world.getMap().colliders) {
         auto& e = world.createEntity();
@@ -761,7 +756,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     // add spawners
     for (auto& t: world.getMap().spawners) {
         auto& e(world.createEntity());
-        e.addComponent<TimedSpawner>(6.0f, [this, t] {
+        e.addComponent<TimedSpawner>(8.0f, [this, t] {
             //create our projectile (bird)
             auto& e(world.createDeferredEntity());
             // std::cout << "Spawn Enemy " << &e << std::endl;
@@ -772,7 +767,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
             e.addComponent<Animation>(anim);
 
             int zType = rand() % 4;
-            SDL_Texture* tex = TextureManager::load(("../assets/animations/z" + std::to_string(zType + 1) + "_anim.png").c_str());
+            SDL_Texture* tex = TextureManager::load(("assets/animations/z" + std::to_string(zType + 1) + "_anim.png").c_str());
             SDL_FRect src = {0, 0, 128, 128};
             SDL_FRect dst = {t.position.x, t.position.y, 64, 64};
             e.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
@@ -784,7 +779,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
             c.layer = CollisionLayer::ENEMY;
             c.mask = CollisionLayer::PLAYER | CollisionLayer::WALL | CollisionLayer::PROJECTILE;
 
-            auto& h = e.addComponent<EnemyTag>(100.0f * (1.0f + (Game::gameState.time / 500.0f)));
+            auto& h = e.addComponent<EnemyTag>(100.0f * (1.0f + Game::gameState.time * Game::gameState.time / 40000.0f));
         });
         e.addComponent<Transform>(t);
     }
@@ -812,7 +807,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     Animation anim = AssetManager::getAnimation("player");
     player.addComponent<Animation>(anim);
 
-    SDL_Texture* tex = TextureManager::load("../assets/animations/player_anim.png");
+    SDL_Texture* tex = TextureManager::load("assets/animations/player_anim.png");
     SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
     SDL_FRect playerDst = {playerTransform.position.x, playerTransform.position.y, 64 * playerStats.playerSizeModifier, 64 * playerStats.playerSizeModifier};
     player.addComponent<Sprite>(tex, playerSrc, playerDst, RenderLayer::World);
@@ -831,7 +826,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     player.addComponent<ItemList>();
     player.addComponent<WeaponList>();
 
-    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getWeapon("shotgun"));
+    player.getComponent<WeaponList>().weapons.push_back(WeaponManager::getWeapon("bubblegun"));
 
 
     world.getEventManager().emit(SpawnPrefabEvent{"magnet", Vector2D{830, 120}});
@@ -895,7 +890,7 @@ Entity& Scene::createLevelUpMenu(int windowWidth, int windowHeight, dataBundle w
     // ===== OVERLAY =====
     auto& overlay = world.createEntity();
 
-    SDL_Texture* bgTex = TextureManager::load("../assets/ui/settings.jpg");
+    SDL_Texture* bgTex = TextureManager::load("assets/ui/settings.jpg");
 
     float bgWidth = DESIGN_WIDTH * 0.7f;
     float bgHeight = DESIGN_HEIGHT * 0.7f;
@@ -1286,7 +1281,7 @@ void Scene::createLevelUpUI(int windowWidth, int windowHeight) {
     auto& c = back.addComponent<Children>();
     auto& t = back.addComponent<Transform>(Vector2D(0.0f, 0.0f), 0.0f, 1.0f);
 
-    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+    SDL_Texture* tex = TextureManager::load("assets/colors.png");
 
     SDL_FRect src{0,64,32,32};
     SDL_FRect dst{t.position.x, t.position.y, windowWidth * 1.0f, 25.0f};
@@ -1300,7 +1295,7 @@ void Scene::createLevelUpUI(int windowWidth, int windowHeight) {
     back.getComponent<Children>().children.push_back(&l);
     auto& lt = l.addComponent<Transform>(Vector2D(t.position.x + offset, t.position.y + offset), 0.0f, 1.0f);
 
-    SDL_Texture* ltex = TextureManager::load("../assets/colors.png");
+    SDL_Texture* ltex = TextureManager::load("assets/colors.png");
 
     SDL_FRect lsrc{65,33,30,31};
     SDL_FRect ldst{lt.position.x, lt.position.y, 0.0f, dst.h - offset * 2};
@@ -1314,7 +1309,7 @@ void Scene::createHealthBar(int windowWidth, int windowHeight) {
     auto& c = back.addComponent<Children>();
     auto& t = back.addComponent<Transform>(Vector2D(windowWidth - 225.0f, windowHeight - 50.0f), 0.0f, 1.0f);
 
-    SDL_Texture* tex = TextureManager::load("../assets/colors.png");
+    SDL_Texture* tex = TextureManager::load("assets/colors.png");
 
     SDL_FRect src{0,64,32,32};
     SDL_FRect dst{t.position.x, t.position.y, 200.0f, 25.0f};
@@ -1328,7 +1323,7 @@ void Scene::createHealthBar(int windowWidth, int windowHeight) {
     c.children.push_back(&health);
     auto& ht = health.addComponent<Transform>(Vector2D(t.position.x + offset, t.position.y + offset), 0.0f, 1.0f);
 
-    SDL_Texture* htex = TextureManager::load("../assets/colors.png");
+    SDL_Texture* htex = TextureManager::load("assets/colors.png");
 
     SDL_FRect hsrc{0,0,32,32};
     SDL_FRect hdst{t.position.x, t.position.y, 200.0f - offset * 2, 25.0f - offset * 2};

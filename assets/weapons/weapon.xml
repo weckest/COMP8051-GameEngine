@@ -2,7 +2,7 @@
 <weapons>
     <weapon
             name="shotgun"
-            path = "../assets/sprites/Shotgun.png"
+            path = "assets/sprites/Shotgun.png"
             fireRate="1.0"
             damageModifier="0.5"
             projectileSizeModifier="1.0"
@@ -17,27 +17,28 @@
     />
     <weapon
             name="bubblegun"
-            path="../assets/sprites/BubbleGun.png"
+            path="assets/sprites/BubbleGun.png"
             fireRate="1.0"
             damageModifier="1.0"
             projectileSizeModifier="1.0"
             projectileModifier="1.0"
+            rangeModifier="1.0"
             aoeModifier="0.0"
             critDamageModifier="2.0"
             critChanceModifier="0.15"
             projectileSpeedModifier="1.0"
-            baseCooldown="2.0"
+            baseCooldown="1.5"
             cooldown = "1.0"
     />
     <weapon
             name="RingofFire"
-            path = "../assets/sprites/RingOfFire.png"
+            path = "assets/sprites/RingOfFire.png"
             fireRate="0.25"
             damageModifier="1.0"
             rangeModifier="2.0"
             projectileModifier="1.0"
             aoeModifier="1.0"
-            lifetime = "0.5f"
+            lifetime = "0.75"
             critDamageModifier="1.25"
             critChanceModifier="0.15"
             baseCooldown="2.0"

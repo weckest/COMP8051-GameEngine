@@ -91,7 +91,9 @@ void CollisionSystem::update(World &world, Timer& timer) {
                     for (auto& entityB : cell) {
                         if (!entityB->hasComponent<Collider>())
                         {
-                            std::cout << "EdgeCaseHit: No Collider in CollisionSystem.cpp " << entityB->isActive() << std::endl;
+                            // std::cout << "EdgeCaseHit: No Collider in CollisionSystem.cpp " << entityB->isActive() << std::endl;
+                            // std::cout << entityB << " " << getComponentTypeID<RingFireTag>() << std::endl;
+                            world.getEventManager().emit(DeathEvent{entityB});
                             continue;
                         }
                         auto& colliderB = entityB->getComponent<Collider>();

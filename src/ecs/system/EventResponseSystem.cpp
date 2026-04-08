@@ -218,7 +218,7 @@ void EventResponseSystem::onCollision(
         auto& animation = explosion.addComponent<Animation>(a);
         animation.speed = 0.075f;
 
-        SDL_Texture* tex = TextureManager::load("../assets/animations/explosion.png");
+        SDL_Texture* tex = TextureManager::load("assets/animations/explosion.png");
         SDL_FRect src {0, 0, 85.33, 85.33};
         SDL_FRect dst {t.position.x, t.position.y, explosionSize, explosionSize};
         explosion.addComponent<Sprite>(tex, src, dst);

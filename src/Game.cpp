@@ -85,49 +85,45 @@ void Game::init(const char *title, int width, int height, bool fullscreen)
     }
 
     //load audio
-    audioManager.loadAudio("theme", "../assets/audio/switch_with_me.ogg");
+    audioManager.loadAudio("fire-bubblegun", "assets/audio/sfx/bubble.mp3");
+    audioManager.loadAudio("fire-shotgun", "assets/audio/sfx/shotgun.mp3");
+    audioManager.loadAudio("fire-RingofFire", "assets/audio/sfx/rof.mp3");
+    audioManager.loadAudio("collect", "assets/audio/sfx/coin.mp3");
+    audioManager.loadAudio("player-hit", "assets/audio/sfx/playerhit.mp3");
+    audioManager.loadAudio("levelup", "assets/audio/sfx/levelup.mp3");
+    audioManager.loadAudio("select", "assets/audio/sfx/uiselect.mp3");
+    audioManager.loadAudio("explosion", "assets/audio/sfx/explosion.mp3");
 
-    audioManager.loadAudio("fire-bubblegun", "../assets/audio/sfx/bubble.mp3");
-    audioManager.loadAudio("fire-shotgun", "../assets/audio/sfx/shotgun.mp3");
-    audioManager.loadAudio("fire-RingofFire", "../assets/audio/sfx/rof.mp3");
-    audioManager.loadAudio("collect", "../assets/audio/sfx/coin.mp3");
-    audioManager.loadAudio("player-hit", "../assets/audio/sfx/playerhit.mp3");
-    audioManager.loadAudio("levelup", "../assets/audio/sfx/levelup.mp3");
-    audioManager.loadAudio("select", "../assets/audio/sfx/uiselect.mp3");
-    audioManager.loadAudio("explosion", "../assets/audio/sfx/explosion.mp3");
-
-    audioManager.loadAudio("musicMainMenu", "../assets/audio/music/TLCMainMenu.mp3");
-    audioManager.loadAudio("musicGameplay", "../assets/audio/music/TLCMainTheme.mp3");
+    audioManager.loadAudio("musicMainMenu", "assets/audio/music/TLCMainMenu.mp3");
+    audioManager.loadAudio("musicGameplay", "assets/audio/music/TLCMainTheme.mp3");
 
     //load fonts
-    AssetManager::loadFont("arial", "../assets/fonts/arial.ttf", 16);
-    AssetManager::loadFont("bungee", "../assets/fonts/Bungee-Regular.ttf", 16);
-    AssetManager::loadFont("bungeeSmall", "../assets/fonts/Bungee-Regular.ttf", 12);
-    AssetManager::loadFont("bungeeLarge", "../assets/fonts/Bungee-Regular.ttf", 20);
-    AssetManager::loadFont("monogram", "../assets/fonts/monogram.ttf", 20);
-    AssetManager::loadFont("monogram-button", "../assets/fonts/monogram.ttf", 36);
-    AssetManager::loadFont("monogram-medium", "../assets/fonts/monogram.ttf", 40);
-    AssetManager::loadFont("monogram-title", "../assets/fonts/monogram.ttf", 72);
+    AssetManager::loadFont("arial", "assets/fonts/arial.ttf", 16);
+    AssetManager::loadFont("bungee", "assets/fonts/Bungee-Regular.ttf", 16);
+    AssetManager::loadFont("bungeeSmall", "assets/fonts/Bungee-Regular.ttf", 12);
+    AssetManager::loadFont("bungeeLarge", "assets/fonts/Bungee-Regular.ttf", 20);
+    AssetManager::loadFont("monogram", "assets/fonts/monogram.ttf", 20);
+    AssetManager::loadFont("monogram-button", "assets/fonts/monogram.ttf", 36);
+    AssetManager::loadFont("monogram-medium", "assets/fonts/monogram.ttf", 40);
+    AssetManager::loadFont("monogram-title", "assets/fonts/monogram.ttf", 72);
 
 
 
     //load assets
-    AssetManager::loadAnimation("player", "../assets/animations/player_animations.xml");
-    AssetManager::loadAnimation("enemy", "../assets/animations/zombie_animations.xml");
-    AssetManager::loadAnimation("explosion", "../assets/animations/explosion_animation.xml");
-    AssetManager::loadAnimation("spin_effect", "../assets/animations/ringOfFire.xml");
-    WeaponManager::loadWeaponFromXML("../assets/weapons/weapon.xml");
+    AssetManager::loadAnimation("player", "assets/animations/player_animations.xml");
+    AssetManager::loadAnimation("enemy", "assets/animations/zombie_animations.xml");
+    AssetManager::loadAnimation("explosion", "assets/animations/explosion_animation.xml");
+    AssetManager::loadAnimation("spin_effect", "assets/animations/ringOfFire.xml");
+    WeaponManager::loadWeaponFromXML("assets/weapons/weapon.xml");
 
-    ItemManager::loadAllItems("../assets/items/items.xml");
+    ItemManager::loadAllItems("assets/items/items.xml");
 
     std::cout << "Animations loaded..." << std::endl;
 
     //load scenes
     sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, width, height, window);
     sceneManager.loadScene(SceneType::GameOver, "gameover", nullptr, width, height, window);
-    sceneManager.loadScene(SceneType::Gameplay, "level1", "../assets/map.tmx", width, height, window);
-    sceneManager.loadScene(SceneType::Gameplay, "level2", "../assets/map2/map2.tmx", width, height, window);
-    sceneManager.loadScene(SceneType::Gameplay, "gameplay", "../assets/map-tlc/TLC-MapUpdated.tmx", width, height, window);
+    sceneManager.loadScene(SceneType::Gameplay, "gameplay", "assets/map-tlc/TLC-MapUpdated.tmx", width, height, window);
 
     std::cout << "Scenes loaded..." << std::endl;
 
@@ -225,7 +221,7 @@ void Game::update(float dt) {
     sceneManager.update(dt, event, renderer);
 }
 
-void Game::render() {
+void Game::render(float dt, float at) {
 
 
     SDL_SetRenderDrawColor(renderer, r, g, b, a);
@@ -233,7 +229,7 @@ void Game::render() {
     //every frame the renderer is cleared with the draw color
     SDL_RenderClear(renderer);
 
-    sceneManager.render();
+    sceneManager.render(dt,at);
     //all your drawing would go here
     // player->draw();
     //display everything that was just drawn
