@@ -1159,6 +1159,33 @@ void Scene::createInventoryUI(int windowWidth, int windowHeight) {
         SDL_FRect src = {0,0,32,32};
         SDL_FRect dst = {transform.position.x, transform.position.y, 48, 48};
 
+
+        //Label
+        auto& itemLevelEntity = world.createEntity();
+
+        Label itemLevelLabel = {
+            std::to_string(item.itemLevel),
+            AssetManager::getFont("bungee"),
+            {0,0,0,0},
+            LabelType::UI,
+            item.name + " Level"
+        };
+
+        itemLevelLabel.dirty = true;
+
+        TextureManager::loadLabel(itemLevelLabel);
+
+        float itemLevelX = dst.x + 5;
+        float itemLevelY = dst.y;
+
+        itemLevelEntity.addComponent<Label>(itemLevelLabel);
+        itemLevelEntity.addComponent<Transform>(Vector2D(itemLevelX, itemLevelY), 0.0f, 1.0f);
+        itemLevelEntity.addComponent<InventoryUI>();
+
+
+
+        //Label
+
         icon.addComponent<Sprite>(tex, src, dst, RenderLayer::UI, true);
         icon.addComponent<InventoryUI>();
 
@@ -1170,6 +1197,8 @@ void Scene::createInventoryUI(int windowWidth, int windowHeight) {
     float weaponY = startY - rowSpacing;
     for (auto& weapon : weapons) {
 
+
+
         auto& icon = world.createEntity();
 
         auto& transform = icon.addComponent<Transform>(
@@ -1180,6 +1209,33 @@ void Scene::createInventoryUI(int windowWidth, int windowHeight) {
 
         SDL_FRect src = {0,0,32,32};
         SDL_FRect dst = {transform.position.x, transform.position.y, 48, 48 };
+
+
+        //Label
+        auto& weaponLevelEntity = world.createEntity();
+
+        Label weaponLevelLabel = {
+            std::to_string(weapon.amtLevelUps),
+            AssetManager::getFont("bungee"),
+            {0,0,0,0},
+            LabelType::UI,
+            weapon.name + " Level"
+        };
+
+        weaponLevelLabel.dirty = true;
+
+        TextureManager::loadLabel(weaponLevelLabel);
+
+        float weaponLevelX = dst.x + 5;
+        float weaponLevelY = dst.y;
+
+        weaponLevelEntity.addComponent<Label>(weaponLevelLabel);
+        weaponLevelEntity.addComponent<Transform>(Vector2D(weaponLevelX, weaponLevelY), 0.0f, 1.0f);
+        weaponLevelEntity.addComponent<InventoryUI>();
+
+
+
+        //Label
 
         icon.addComponent<Sprite>(tex, src, dst, RenderLayer::UI, true);
         icon.addComponent<InventoryUI>();
