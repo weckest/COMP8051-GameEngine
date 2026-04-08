@@ -27,7 +27,7 @@
             critDamageModifier="2.0"
             critChanceModifier="0.15"
             projectileSpeedModifier="1.0"
-            baseCooldown="2.0"
+            baseCooldown="1.5"
             cooldown = "1.0"
     />
     <weapon
