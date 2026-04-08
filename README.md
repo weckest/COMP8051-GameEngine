@@ -5,7 +5,7 @@ Game Engine Development Project for COMP-8051
 If running normally, just launch the standalone .exe file.
 Otherwise, you can run the project through the cmake-build-debug folder.
 
-Toggle fullscreen by pressing `9`.
+Toggle fullscreen by pressing `9`, and pause by pressing `P`.
 
 ## Architecture
 This C/C++ game was built using SDL within an ECS environment. There are a number of additional managers and behavior files as well.
