@@ -756,7 +756,7 @@ void Scene::initGameplay(SDL_Window* window, const char* mapPath, int windowWidt
     // add spawners
     for (auto& t: world.getMap().spawners) {
         auto& e(world.createEntity());
-        e.addComponent<TimedSpawner>(6.0f, [this, t] {
+        e.addComponent<TimedSpawner>(8.0f, [this, t] {
             //create our projectile (bird)
             auto& e(world.createDeferredEntity());
             // std::cout << "Spawn Enemy " << &e << std::endl;
