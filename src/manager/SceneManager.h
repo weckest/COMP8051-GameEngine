@@ -63,8 +63,8 @@ public:
         }
     }
 
-    void render() {
-        if (currentScene) currentScene->render();
+    void render(float dt, float at) {
+        if (currentScene) currentScene->render(dt, at);
     }
 };
 

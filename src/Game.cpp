@@ -221,7 +221,7 @@ void Game::update(float dt) {
     sceneManager.update(dt, event, renderer);
 }
 
-void Game::render() {
+void Game::render(float dt, float at) {
 
 
     SDL_SetRenderDrawColor(renderer, r, g, b, a);
@@ -229,7 +229,7 @@ void Game::render() {
     //every frame the renderer is cleared with the draw color
     SDL_RenderClear(renderer);
 
-    sceneManager.render();
+    sceneManager.render(dt,at);
     //all your drawing would go here
     // player->draw();
     //display everything that was just drawn
